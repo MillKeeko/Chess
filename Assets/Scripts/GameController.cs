@@ -3,27 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // ---------- TO DO LIST ----------
-// X Get Pawns to be able to take attack and take an opposing enemy pawn
-// X Move board setup to SetupController.cs and out of GameController.cs
-// X Create a turn system in GameController.cs
-// X Create data structure in GameController.cs to keep track of pieces 
-// X Create rules for Bishops
-// X Create rules for Rooks
-// X Create rules for Queens
-// X Fix bug that Rook moves don't check for piece in between
-// X Create rules for Knights
-// X Create rules for Kings 
-// X Check that a Queen, Bishop, or Rook is not blocking castle
-// X Create check mechanic
-// X Fix bug in check that allows the ing to move in LOS while in check and not move out of LOS
-// X Create checkmate mechanic
-// X Fix castle bug found in game with Derek (Index outside bounds of array at line 159)
-// - Commit code to GitHub
 // - Allow pawns to perform an en passant
 // - Allow promotions for pawns
 // - Allow player to restart game on checkmate
 // - Create an AI that makes random moves
-// - Allow player to choose whehter they are playing white, black, or random
+// - Allow player to choose whether they are playing white, black, or random
 
 public class GameController : MonoBehaviour
 {   
@@ -35,7 +19,8 @@ public class GameController : MonoBehaviour
     private Piece savedPiece = null;
 
     private const int zIndex = -1;
-    
+    private Vector2 pawnDouble; 
+    private bool isEnPassant = false;
 
     // Start is called before the first frame update
     void Start()
@@ -75,27 +60,37 @@ public class GameController : MonoBehaviour
     {
         Vector3 kingPosition = FindKing();
 
-        // Only try to move piece if it's their turn and moves the piece in the right direction
-        if (IsYourTurn(piece) && piece.MovePiece(target.transform.position) == true)
+        if (IsYourTurn(piece))
         {
-            // Only try to move piece if King isn't in check, or it is but the move removes check
-            if (!IsKingInCheck(kingPosition) || DoesMoveRemoveCheck(piece, target.transform.position))
+            // Only try to move piece if it's their turn and moves the piece in the right direction
+            if (piece.MovePiece(target.transform.position) == true)
             {
-                // Bishops, Rooks, and Queens need to ensure nothing blocks their move
-                if (piece is Bishop || piece is Rook || piece is Queen)
+                // Only try to move piece if King isn't in check, or it is but the move removes check
+                if (!IsKingInCheck(kingPosition) || DoesMoveRemoveCheck(piece, target.transform.position))
                 {
-                    Vector3 targetPosition = new Vector3(target.transform.position.x, target.transform.position.y, zIndex);
-                    if (IsPieceBlocking(piece, targetPosition)) return;
-                }
+                    // Bishops, Rooks, and Queens need to ensure nothing blocks their move
+                    if (piece is Bishop || piece is Rook || piece is Queen)
+                    {
+                        Vector3 targetPosition = new Vector3(target.transform.position.x, target.transform.position.y, zIndex);
+                        if (IsPieceBlocking(piece, targetPosition)) return;
+                    }
 
+                    ExecuteMove(piece, target.transform.position, true);
+                }
+            }
+            // Check King Castle
+            else if (piece is King && !IsKingInCheck(kingPosition)) 
+            {
+                // A little redundant to check for check on king in IsCastleBlocked() through TryCastle() because this already checked
+                TryCastle(piece, target);
+            }
+            // Check En Passant
+            else if (piece is Pawn && IsEnPassant(piece, target.transform.position))
+            {
+                Debug.Log("En Passant.");
+                pieceTracker[(int)pawnDouble.x, (int)pawnDouble.y].DestroyInstance();
                 ExecuteMove(piece, target.transform.position, true);
             }
-        }
-        // Check King Castle
-        else if (IsYourTurn(piece) && piece is King && !IsKingInCheck(kingPosition)) 
-        {
-            // A little redundant to check for check on king in IsCastleBlocked() through TryCastle() because this already checked
-            TryCastle(piece, target);
         }
     }
 
@@ -125,6 +120,18 @@ public class GameController : MonoBehaviour
     //
     // ---------- Private Methods ----------
     //
+
+    private bool IsEnPassant(Piece piece, Vector3 targetPosition) // These are not the right rules!!! Im an idiot!!!!
+    {
+        bool returnValue = false;
+        if (piece.TakePiece(targetPosition) && (piece.transform.position.x == (pawnDouble.x + 1) || piece.transform.position.x == (pawnDouble.x - 1)))
+        {
+            if (turn == 0 && piece.transform.position.y == 4) returnValue = true;
+            else if (turn == 1 && piece.transform.position.y == 3) returnValue = true;
+        }
+
+        return returnValue;
+    }
 
     private bool IsPieceBlocking(Piece piece, Vector3 target)
     {
@@ -176,12 +183,29 @@ public class GameController : MonoBehaviour
     private void ExecuteMove(Piece piece, Vector3 targetPosition, bool changeTurn)
     {
         Vector3 kingPosition;
+        int yDistance = Mathf.Abs((int)targetPosition.y - (int)piece.transform.position.y);
+
         ChangeTrackerPosition(piece.transform.position, targetPosition, false);
         piece.transform.position = new Vector3(targetPosition.x, targetPosition.y, zIndex);
         
         if (changeTurn) 
         {
             ChangeTurn();
+
+            // Record Pawn's first move if double for en passant and destroy taken pawn
+            if (piece is Pawn && yDistance == 2)
+            {
+                //Debug.Log("Setting pawnDouble x " + (int)targetPosition.x + " y " + (int)targetPosition.y);
+                pawnDouble.x = (int)targetPosition.x;
+                pawnDouble.y = (int)targetPosition.y;
+            }
+            else
+            {
+                pawnDouble.x = -1;
+                pawnDouble.y = -1;
+            }
+
+            // Check for Checkmate
             kingPosition = FindKing();
             if (IsKingInCheck(kingPosition)) 
             {

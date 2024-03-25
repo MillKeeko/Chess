@@ -11,10 +11,17 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {   
+    // Events
+    public delegate bool OnCheckPieceBlocking(Piece piece, Vector3 target);
+    public static event OnCheckPieceBlocking onCheckPieceBlocking;
+    public delegate Piece OnNeedPieceAtLocation(int x, int y);
+    public static event OnNeedPieceAtLocation onNeedPieceAtLocation;
+    public delegate void OnNeedSetPieceAtLocation(Piece piece, int x, int y);
+    public static event OnNeedSetPieceAtLocation onNeedSetPieceAtLocation;
+
     public GameObject circle;
     public static GameController gameController { get; private set; }
 
-    private Piece[,] pieceTracker = new Piece[8,8];
     private int turn = 0; // 0 = White, 1 = Black
     private Piece savedPiece = null;
 
@@ -56,6 +63,29 @@ public class GameController : MonoBehaviour
     // ---------- Public Methods ----------
     //
 
+    public void TryToTakePiece(Piece piece, Piece target)
+    {
+        Vector3 kingPosition = FindKing();
+
+        // Only try to move piece if it's their turn and moves the piece in the right direction
+        if (IsYourTurn(piece) && piece.TakePiece(target.transform.position) == true)
+        {
+            // Only try to move piece if King isn't in check, or it is but the move removes check
+            if (!IsKingInCheck(kingPosition) || DoesMoveRemoveCheck(piece, target.transform.position))
+            {
+                // Bishops, Rooks, and Queens need to ensure nothing blocks their move
+                if (piece is Bishop || piece is Rook || piece is Queen)
+                {
+                    Vector3 targetPosition = new Vector3(target.transform.position.x, target.transform.position.y, zIndex);
+                    if (onCheckPieceBlocking?.Invoke(piece, targetPosition) == true) return;
+                }
+
+                ExecuteMove(piece, target.transform.position, true);
+                target.DestroyInstance();
+            }
+        }
+    }
+
     public void TryToMovePiece(Piece piece, Piece target)
     {
         Vector3 kingPosition = FindKing();
@@ -72,7 +102,7 @@ public class GameController : MonoBehaviour
                     if (piece is Bishop || piece is Rook || piece is Queen)
                     {
                         Vector3 targetPosition = new Vector3(target.transform.position.x, target.transform.position.y, zIndex);
-                        if (IsPieceBlocking(piece, targetPosition)) return;
+                        if (onCheckPieceBlocking?.Invoke(piece, targetPosition) == true) return;
                     }
 
                     ExecuteMove(piece, target.transform.position, true);
@@ -88,40 +118,18 @@ public class GameController : MonoBehaviour
             else if (piece is Pawn && IsEnPassant(piece, target.transform.position))
             {
                 Debug.Log("En Passant.");
-                pieceTracker[(int)pawnDouble.x, (int)pawnDouble.y].DestroyInstance();
+                Piece targetPiece = onNeedPieceAtLocation?.Invoke((int)target.transform.position.x, (int)target.transform.position.y);
+                targetPiece.DestroyInstance(); 
                 ExecuteMove(piece, target.transform.position, true);
             }
         }
     }
 
-    public void TryToTakePiece(Piece piece, Piece target)
-    {
-        Vector3 kingPosition = FindKing();
-
-        // Only try to move piece if it's their turn and moves the piece in the right direction
-        if (IsYourTurn(piece) && piece.TakePiece(target.transform.position) == true)
-        {
-            // Only try to move piece if King isn't in check, or it is but the move removes check
-            if (!IsKingInCheck(kingPosition) || DoesMoveRemoveCheck(piece, target.transform.position))
-            {
-                // Bishops, Rooks, and Queens need to ensure nothing blocks their move
-                if (piece is Bishop || piece is Rook || piece is Queen)
-                {
-                    Vector3 targetPosition = new Vector3(target.transform.position.x, target.transform.position.y, zIndex);
-                    if (IsPieceBlocking(piece, targetPosition)) return;
-                }
-
-                ExecuteMove(piece, target.transform.position, true);
-                target.DestroyInstance();
-            }
-        }
-    }
-
     //
-    // ---------- Private Methods ----------
+    // ---------- GameController Methods ----------
     //
 
-    private bool IsEnPassant(Piece piece, Vector3 targetPosition) // These are not the right rules!!! Im an idiot!!!!
+    private bool IsEnPassant(Piece piece, Vector3 targetPosition)
     {
         bool returnValue = false;
         if (piece.TakePiece(targetPosition) && (piece.transform.position.x == (pawnDouble.x + 1) || piece.transform.position.x == (pawnDouble.x - 1)))
@@ -131,53 +139,6 @@ public class GameController : MonoBehaviour
         }
 
         return returnValue;
-    }
-
-    private bool IsPieceBlocking(Piece piece, Vector3 target)
-    {
-        // Find the distance the piece is moving
-        int distanceX = (int)target.x - (int)piece.transform.position.x;
-        int distanceY = (int)target.y - (int)piece.transform.position.y;
-        int distance = 0;
-        if (Mathf.Abs(distanceX) > Mathf.Abs(distanceY)) distance = Mathf.Abs(distanceX);
-        else distance = Mathf.Abs(distanceY);
-
-        // Create unitary vector of the target relative to the piece
-        Vector3 moveVector = new Vector3((int)target.x - (int)piece.transform.position.x,
-                                         (int)target.y - (int)piece.transform.position.y, zIndex);
-        Vector3 unitMoveVector = moveVector.normalized;
-
-        // Simplify unit vector
-        int x, y = 0;
-        if (unitMoveVector.x > 0) x = 1;
-        else if (unitMoveVector.x < 0) x = -1;
-        else x = 0;
-        if (unitMoveVector.y > 0) y = 1;
-        else if (unitMoveVector.y < 0) y = -1;
-        else y = 0;
-
-        // Check if any pieces are in the way
-        //Debug.Log("Distance " + distance);
-        //Debug.Log("Target x " + target.x + " y " + target.y);
-        for (int i = 1; i < Mathf.Abs(distance); i++)
-        {
-            Vector3 checkPosition = new Vector3(piece.transform.position.x + (x * i), piece.transform.position.y + (y * i), zIndex);
-            // Debug.Log("IsPieceBlocking() checking " + piece + " at x " + piece.transform.position.x + " y " + piece.transform.position.y);
-            if (pieceTracker[(int)checkPosition.x,(int)checkPosition.y] != null) 
-            {
-                return true;
-            }
-            //Debug.Log("No piece in the way at x " + (int)checkPosition.x + " and y " + (int)checkPosition.y);
-        }
-
-        // If piece is king check 1 move
-        if (piece is King)
-        {
-            Vector3 checkPosition = new Vector3(piece.transform.position.x + x, piece.transform.position.y + y, zIndex);
-            if (pieceTracker[(int)checkPosition.x,(int)checkPosition.y] != null) return true;
-        }
-
-        return false;
     }
 
     private void ExecuteMove(Piece piece, Vector3 targetPosition, bool changeTurn)
@@ -215,16 +176,52 @@ public class GameController : MonoBehaviour
         }
     }
 
+    private string FindEnemyTag()
+    {
+        string enemyTag = null;
+        if (turn == 0) enemyTag = "PieceBlack";
+        else if (turn == 1) enemyTag = "PieceWhite";
+        return enemyTag;
+    }
+
+    private string FindAllyTag()
+    {
+        string allyTag = null;
+        if (turn == 0) allyTag = "PieceWhite";
+        else if (turn == 1) allyTag = "PieceBlack";
+        return allyTag;
+    }
+
+    private void ChangeTurn()
+    {
+        if (turn == 0) turn = 1;
+        else turn = 0;
+    }
+
+    private bool IsYourTurn (Piece piece)
+    {
+        if (piece.tag == "PieceWhite" && turn == 0) return true;
+        else if (piece.tag == "PieceBlack" && turn == 1) return true;
+        else return false;
+    }
+
+
+    //
+    // ---------- PieceTracker Methods ----------
+    //
+
     private bool IsCheckmate()
     {
         Piece allyPiece = null;
+        Piece targetPiece = null;
         Vector3 move;
         // Loop through all possible pieces
         for (int x = 0; x < 8; x++)
         {
             for (int y = 0; y < 8; y++)
             {
-                allyPiece = pieceTracker[x,y];
+                
+                allyPiece = onNeedPieceAtLocation?.Invoke(x,y);
                 if (allyPiece != null && !allyPiece.CompareTag(FindEnemyTag()))
                 {
                     // Loop through all possible moves
@@ -236,12 +233,13 @@ public class GameController : MonoBehaviour
                             // Check for a valid move, skip invalid
                             if ((allyPiece.TakePiece(move) || allyPiece.MovePiece(move)) && (allyPiece is Bishop || allyPiece is Rook || allyPiece is Queen || allyPiece is King))
                             {
-                                if (IsPieceBlocking(allyPiece, move)) continue;
+                                if (onCheckPieceBlocking?.Invoke(allyPiece, move) == true) continue;
                             }
                             else if (allyPiece is Pawn)
                             {
-                                if ((allyPiece.TakePiece(move) && pieceTracker[(int)move.x, (int)move.y] == null) ||
-                                    (allyPiece.MovePiece(move) && pieceTracker[(int)move.x, (int)move.y] != null)) continue;
+                                targetPiece = onNeedPieceAtLocation?.Invoke((int)move.x,(int)move.y);
+                                if ((allyPiece.TakePiece(move) && targetPiece == null) ||
+                                    (allyPiece.MovePiece(move) && targetPiece != null)) continue;
                             }
                             // Check if the valid move does remove the check
                             if (allyPiece.TakePiece(move) || allyPiece.MovePiece(move))
@@ -283,7 +281,7 @@ public class GameController : MonoBehaviour
         ChangeTrackerPosition(target, piece.transform.position, false); 
         if (savedPiece != null) 
         {
-            pieceTracker[(int)target.x, (int)target.y] = savedPiece;
+            onNeedSetPieceAtLocation?.Invoke(savedPiece, (int)target.x, (int)target.y);
             savedPiece = null;
             //Debug.Log("Changed tracker back to normal");
         }
@@ -291,23 +289,7 @@ public class GameController : MonoBehaviour
         return returnValue;
     }
 
-    private string FindEnemyTag()
-    {
-        string enemyTag = null;
-        if (turn == 0) enemyTag = "PieceBlack";
-        else if (turn == 1) enemyTag = "PieceWhite";
-        return enemyTag;
-    }
-
-    private string FindAllyTag()
-    {
-        string allyTag = null;
-        if (turn == 0) allyTag = "PieceWhite";
-        else if (turn == 1) allyTag = "PieceBlack";
-        return allyTag;
-    }
-
-    private Vector3 FindKing()
+     private Vector3 FindKing()
     {
         Piece kingSearch = null;
         Vector3 kingPosition = new Vector3 (-1, -1, -1);
@@ -316,7 +298,7 @@ public class GameController : MonoBehaviour
         {
             for (int y = 0; y < 8; y++)
             {
-                kingSearch = pieceTracker[x,y];
+                kingSearch = onNeedPieceAtLocation?.Invoke(x,y);
                 if (kingSearch != null && kingSearch.CompareTag(FindAllyTag()) && kingSearch is King)
                 {
                     kingPosition = new Vector3 (kingSearch.transform.position.x, kingSearch.transform.position.y, zIndex);
@@ -337,14 +319,14 @@ public class GameController : MonoBehaviour
         {
             for (int y = 0; y < 8; y++)
             {
-                enemyPiece = pieceTracker[x,y];
+                enemyPiece = onNeedPieceAtLocation?.Invoke(x,y);
                 if (enemyPiece != null && enemyPiece.CompareTag(FindEnemyTag()))
                 {
                     if (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook)
                     {
                         if (enemyPiece.TakePiece(kingPosition) == true)
                         {
-                            if (!IsPieceBlocking(enemyPiece, kingPosition)) 
+                            if (onCheckPieceBlocking?.Invoke(enemyPiece, kingPosition) == false) 
                             {
                                 //Debug.Log("King in Check! From " + enemyPiece + " at x " + enemyPiece.transform.position.x + " y " + enemyPiece.transform.position.y);
                                 //Debug.Log("King position x " + kingPosition.x + " at y " + kingPosition.y);
@@ -383,14 +365,14 @@ public class GameController : MonoBehaviour
         {
             for (int y = 0; y < 8; y++)
             {
-                enemyPiece = pieceTracker[x,y];
+                enemyPiece = onNeedPieceAtLocation?.Invoke(x,y);
                 if (enemyPiece != null && enemyPiece.CompareTag(enemyTag))
                 {
                     // Check for a valid move, skip invalid
                     // King Position Check
                     if ((enemyPiece.TakePiece(kingPosition) || enemyPiece.MovePiece(kingPosition)) && (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
                     {
-                        if(!IsPieceBlocking(enemyPiece, kingPosition))
+                        if(onCheckPieceBlocking?.Invoke(enemyPiece, kingPosition) == false)
                         {
                             //Debug.Log("Castle blocked by " + enemyPiece + " at x " + enemyPiece.transform.position.x + " y " + enemyPiece.transform.position.y);
                             return true;
@@ -401,7 +383,7 @@ public class GameController : MonoBehaviour
                         middlePosition = new Vector3 (targetPosition.x + 1, targetPosition.y, zIndex);
                         if ((enemyPiece.TakePiece(middlePosition) || enemyPiece.MovePiece(middlePosition)) && (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
                         {
-                            if(!IsPieceBlocking(enemyPiece, middlePosition)) 
+                            if(onCheckPieceBlocking?.Invoke(enemyPiece, middlePosition) == false) 
                             {
                                 //Debug.Log("Castle blocked by " + enemyPiece + " at x " + enemyPiece.transform.position.x + " y " + enemyPiece.transform.position.y);
                                 return true;
@@ -409,7 +391,7 @@ public class GameController : MonoBehaviour
                         }
                         if ((enemyPiece.TakePiece(targetPosition) || enemyPiece.MovePiece(targetPosition)) && (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
                         {
-                            if(!IsPieceBlocking(enemyPiece, targetPosition)) 
+                            if(onCheckPieceBlocking?.Invoke(enemyPiece, targetPosition) == false) 
                             {
                                 //Debug.Log("Castle blocked by " + enemyPiece + " at x " + enemyPiece.transform.position.x + " y " + enemyPiece.transform.position.y);
                                 return true;
@@ -421,7 +403,7 @@ public class GameController : MonoBehaviour
                         middlePosition = new Vector3 (targetPosition.x - 1, targetPosition.y, zIndex);
                         if ((enemyPiece.TakePiece(middlePosition) || enemyPiece.MovePiece(middlePosition)) && (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
                         {
-                            if(!IsPieceBlocking(enemyPiece, middlePosition)) 
+                            if(onCheckPieceBlocking?.Invoke(enemyPiece, middlePosition) == false) 
                             {
                                 //Debug.Log("Castle blocked by " + enemyPiece + " at x " + enemyPiece.transform.position.x + " y " + enemyPiece.transform.position.y);
                                 return true;
@@ -429,7 +411,7 @@ public class GameController : MonoBehaviour
                         }
                         if ((enemyPiece.TakePiece(targetPosition) || enemyPiece.MovePiece(targetPosition)) && (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
                         {
-                            if(!IsPieceBlocking(enemyPiece, targetPosition)) 
+                            if(onCheckPieceBlocking?.Invoke(enemyPiece, targetPosition) == false) 
                             {
                                 //Debug.Log("Castle blocked by " + enemyPiece + " at x " + enemyPiece.transform.position.x + " y " + enemyPiece.transform.position.y);
                                 return true;
@@ -446,10 +428,10 @@ public class GameController : MonoBehaviour
     private void TryCastle(Piece piece, Piece target)
     {
         King king = (King)piece;
-        Piece rookWhiteKSide = pieceTracker[7,0];
-        Piece rookBlackKSide = pieceTracker[7,7];
-        Piece rookWhiteQSide = pieceTracker[0,0];
-        Piece rookBlackQSide = pieceTracker[0,7];
+        Piece rookWhiteKSide = onNeedPieceAtLocation?.Invoke(7,0);
+        Piece rookBlackKSide = onNeedPieceAtLocation?.Invoke(7,7);
+        Piece rookWhiteQSide = onNeedPieceAtLocation?.Invoke(0,0);
+        Piece rookBlackQSide = onNeedPieceAtLocation?.Invoke(0,7);
         Vector3 rookTarget;
         int castleSide = king.Castle(target.transform.position);
         Vector3 targetPosition = new Vector3(target.transform.position.x, target.transform.position.y, zIndex);
@@ -489,26 +471,22 @@ public class GameController : MonoBehaviour
     // Change piece position in tracker and delete piece from old position
     private void ChangeTrackerPosition(Vector3 piecePosition, Vector3 targetPosition, bool saveTargetPiece)
     {
-        if (saveTargetPiece) savedPiece = pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
-        pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = pieceTracker[(int)piecePosition.x, (int)piecePosition.y];
-        pieceTracker[(int)piecePosition.x, (int)piecePosition.y] = null;
+        Piece piece = onNeedPieceAtLocation?.Invoke((int)piecePosition.x, (int)piecePosition.y);
+        if (saveTargetPiece) savedPiece = onNeedPieceAtLocation?.Invoke((int)targetPosition.x, (int)targetPosition.y);
+        onNeedSetPieceAtLocation?.Invoke(piece, (int)targetPosition.x, (int)targetPosition.y);
+        onNeedSetPieceAtLocation?.Invoke(null, (int)piecePosition.x, (int)piecePosition.y);
     }
 
     public void AddToTracker (Piece piece, int row, int col)
     {
-        pieceTracker[col,row] = piece;
+        onNeedSetPieceAtLocation?.Invoke(piece, col, row);
     }
 
-    private void ChangeTurn()
-    {
-        if (turn == 0) turn = 1;
-        else turn = 0;
-    }
+    
 
-    private bool IsYourTurn (Piece piece)
-    {
-        if (piece.tag == "PieceWhite" && turn == 0) return true;
-        else if (piece.tag == "PieceBlack" && turn == 1) return true;
-        else return false;
-    }
+    //
+    // ---------- Private Methods ----------
+    //
+
+    
 }

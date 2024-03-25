@@ -12,6 +12,8 @@ public class SetupController : MonoBehaviour
 
     private Vector3 bottomLeftBoard = new Vector3(0, 0, 0f);
     private const int zIndex = -1;
+    public delegate void OnPieceCreated (Piece piece, int x, int y);
+    public static event OnPieceCreated onPieceCreated;
 
     // Start is called before the first frame update
     void Start()
@@ -30,7 +32,7 @@ public class SetupController : MonoBehaviour
     {
         Vector3 pieceVector = new Vector3 (position.x, position.y, zIndex);
         Piece instantiatedPiece = Instantiate(piece, pieceVector, transform.rotation).GetComponent<Piece>();
-        gameController.AddToTracker(instantiatedPiece, (int)position.y, (int)position.x);
+        onPieceCreated?.Invoke(instantiatedPiece, (int)position.x, (int)position.y);
     }
 
     // Instantiate squares and place them in the array

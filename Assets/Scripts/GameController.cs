@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour
     public delegate void OnNeedSetPieceAtLocation(Piece piece, int x, int y);
     public static event OnNeedSetPieceAtLocation onNeedSetPieceAtLocation;
 
-    public GameObject circle;
+    
     public static GameController gameController { get; private set; }
 
     private int turn = 0; // 0 = White, 1 = Black
@@ -35,28 +35,11 @@ public class GameController : MonoBehaviour
         
     }
 
-    /*private float timer = 0;
-    private Vector3 circlePosition;*/
+    
     // Update is called once per frame
     void Update()
     {
-        /*timer += Time.deltaTime; // Decrease timer by time passed since last frame
-        if (timer >= 0.5f)
-        {
-            for (int x = 0; x < 8; x++)
-            {
-                for (int y = 0; y < 8; y++)
-                {
-                    if (pieceTracker[x,y] != null)
-                    {
-                        circlePosition = new Vector3 (x, y, -2);
-                        GameObject thisCircle = Instantiate(circle, circlePosition, transform.rotation);
-                        timer = 0f;
-                        Destroy(thisCircle, 0.4f);
-                    }
-                }
-            }
-        }*/
+        
     }
 
     //
@@ -476,17 +459,4 @@ public class GameController : MonoBehaviour
         onNeedSetPieceAtLocation?.Invoke(piece, (int)targetPosition.x, (int)targetPosition.y);
         onNeedSetPieceAtLocation?.Invoke(null, (int)piecePosition.x, (int)piecePosition.y);
     }
-
-    public void AddToTracker (Piece piece, int row, int col)
-    {
-        onNeedSetPieceAtLocation?.Invoke(piece, col, row);
-    }
-
-    
-
-    //
-    // ---------- Private Methods ----------
-    //
-
-    
 }

@@ -4,21 +4,41 @@ using UnityEngine;
 
 public class PieceTracker : MonoBehaviour
 {
+    public GameObject circle;
     private const int zIndex = -1;
     private Piece[,] pieceTracker = new Piece[8,8];
 
     // Start is called before the first frame update
     void Start()
     {
+        SetupController.onPieceCreated += AddToTracker;
         GameController.onCheckPieceBlocking += IsPieceBlocking;
-        GameController.onNeedPieceAtLocation += GetPiece;
-        GameController.onNeedSetPieceAtLocation += SetPiece;
+        GameController.onNeedPieceAtLocation += GetFromTracker;
+        GameController.onNeedSetPieceAtLocation += AddToTracker;
     }
 
+    private float timer = 0;
+    private Vector3 circlePosition;
     // Update is called once per frame
     void Update()
     {
-        
+        timer += Time.deltaTime; // Decrease timer by time passed since last frame
+        if (timer >= 0.5f)
+        {
+            for (int x = 0; x < 8; x++)
+            {
+                for (int y = 0; y < 8; y++)
+                {
+                    if (pieceTracker[x,y] != null)
+                    {
+                        circlePosition = new Vector3 (x, y, -2);
+                        GameObject thisCircle = Instantiate(circle, circlePosition, transform.rotation);
+                        timer = 0f;
+                        Destroy(thisCircle, 0.4f);
+                    }
+                }
+            }
+        }
     }
 
     private bool IsPieceBlocking(Piece piece, Vector3 target)
@@ -68,12 +88,12 @@ public class PieceTracker : MonoBehaviour
         return false;
     }
 
-    private Piece GetPiece(int x, int y)
+    private Piece GetFromTracker(int x, int y)
     {
         return pieceTracker[x,y];
     }
 
-    private void SetPiece(Piece piece, int x, int y)
+    private void AddToTracker(Piece piece, int x, int y)
     {
         pieceTracker[x,y] = piece;
     }

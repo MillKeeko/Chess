@@ -7,6 +7,7 @@ public class PieceTracker : MonoBehaviour
     public GameObject circle;
     private const int zIndex = -1;
     private Piece[,] pieceTracker = new Piece[8,8];
+    private Piece savedPiece = null;
 
     // Start is called before the first frame update
     void Start()
@@ -14,7 +15,6 @@ public class PieceTracker : MonoBehaviour
         SetupController.onPieceCreated += AddToTracker;
         GameController.onCheckPieceBlocking += IsPieceBlocking;
         GameController.onNeedPieceAtLocation += GetFromTracker;
-        GameController.onNeedSetPieceAtLocation += AddToTracker;
     }
 
     private float timer = 0;
@@ -96,5 +96,43 @@ public class PieceTracker : MonoBehaviour
     private void AddToTracker(Piece piece, int x, int y)
     {
         pieceTracker[x,y] = piece;
+    }
+
+    // Change piece position in tracker and delete piece from old position
+    private void ChangeTrackerPosition(Vector3 piecePosition, Vector3 targetPosition, bool saveTargetPiece)
+    {
+        if (saveTargetPiece) savedPiece = pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
+        pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = pieceTracker[(int)piecePosition.x, (int)piecePosition.y];
+        pieceTracker[(int)piecePosition.x, (int)piecePosition.y] = null;
+    }
+
+    private bool DoesMoveRemoveCheck(Piece piece, Vector3 target)
+    {
+        bool returnValue = false;
+        Vector3 kingPosition;
+        
+        if (piece is King)
+        {
+            //Debug.Log("Piece is King.");
+            kingPosition = target;
+        }
+        else kingPosition = FindKing();
+
+        //Debug.Log("Checking " + piece);
+        ChangeTrackerPosition(piece.transform.position, target, true); // Save piece
+        //Debug.Log("Changed tracker for move check");
+        if (!IsKingInCheck(kingPosition))
+        {
+            returnValue = true;
+        } 
+        ChangeTrackerPosition(target, piece.transform.position, false); 
+        if (savedPiece != null) 
+        {
+            pieceTracker[(int)target.x, (int)target.y] = savedPiece;
+            savedPiece = null;
+            //Debug.Log("Changed tracker back to normal");
+        }
+
+        return returnValue;
     }
 }

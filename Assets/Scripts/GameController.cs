@@ -16,14 +16,10 @@ public class GameController : MonoBehaviour
     public static event OnCheckPieceBlocking onCheckPieceBlocking;
     public delegate Piece OnNeedPieceAtLocation(int x, int y);
     public static event OnNeedPieceAtLocation onNeedPieceAtLocation;
-    public delegate void OnNeedSetPieceAtLocation(Piece piece, int x, int y);
-    public static event OnNeedSetPieceAtLocation onNeedSetPieceAtLocation;
 
-    
     public static GameController gameController { get; private set; }
 
     private int turn = 0; // 0 = White, 1 = Black
-    private Piece savedPiece = null;
 
     private const int zIndex = -1;
     private Vector2 pawnDouble; 
@@ -242,36 +238,6 @@ public class GameController : MonoBehaviour
         return false;
     }
 
-    private bool DoesMoveRemoveCheck(Piece piece, Vector3 target)
-    {
-        bool returnValue = false;
-        Vector3 kingPosition;
-        
-        if (piece is King)
-        {
-            //Debug.Log("Piece is King.");
-            kingPosition = target;
-        }
-        else kingPosition = FindKing();
-
-        //Debug.Log("Checking " + piece);
-        ChangeTrackerPosition(piece.transform.position, target, true); // Save piece
-        //Debug.Log("Changed tracker for move check");
-        if (!IsKingInCheck(kingPosition))
-        {
-            returnValue = true;
-        } 
-        ChangeTrackerPosition(target, piece.transform.position, false); 
-        if (savedPiece != null) 
-        {
-            onNeedSetPieceAtLocation?.Invoke(savedPiece, (int)target.x, (int)target.y);
-            savedPiece = null;
-            //Debug.Log("Changed tracker back to normal");
-        }
-
-        return returnValue;
-    }
-
      private Vector3 FindKing()
     {
         Piece kingSearch = null;
@@ -449,14 +415,5 @@ public class GameController : MonoBehaviour
                 ExecuteMove(rookBlackQSide, rookTarget, true);
             }
         }
-    }
-
-    // Change piece position in tracker and delete piece from old position
-    private void ChangeTrackerPosition(Vector3 piecePosition, Vector3 targetPosition, bool saveTargetPiece)
-    {
-        Piece piece = onNeedPieceAtLocation?.Invoke((int)piecePosition.x, (int)piecePosition.y);
-        if (saveTargetPiece) savedPiece = onNeedPieceAtLocation?.Invoke((int)targetPosition.x, (int)targetPosition.y);
-        onNeedSetPieceAtLocation?.Invoke(piece, (int)targetPosition.x, (int)targetPosition.y);
-        onNeedSetPieceAtLocation?.Invoke(null, (int)piecePosition.x, (int)piecePosition.y);
     }
 }

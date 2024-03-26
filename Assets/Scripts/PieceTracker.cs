@@ -445,6 +445,8 @@ public class PieceTracker : MonoBehaviour
         Piece rookBlackQSide = pieceTracker[0,7];
         Vector3 rookTarget;
         int castleSide = king.Castle(targetPosition);
+
+        IsCastleBlocked(piece, targetPosition, castleSide);
         
         Debug.Log("TryCastle - castleblocked? " + isCastleBlocked);
         if (castleSide == 0)

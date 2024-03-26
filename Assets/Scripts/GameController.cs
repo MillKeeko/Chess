@@ -26,7 +26,6 @@ public class GameController : MonoBehaviour
     public static event OnChangeTurn onChangeTurn;
     public static event OnAttemptCastle onAttemptCastle;
 
-
     // In place of Event Variables
     private bool isPieceBlocking = false;
     private bool isCastleBlocked = false;
@@ -133,7 +132,6 @@ public class GameController : MonoBehaviour
             {
                 // A little redundant to check for check on king in IsCastleBlocked() through TryCastle() because this already checked
                 onAttemptCastle!.Invoke(piece, targetPosition);
-                //TryCastle(piece, target);
             }
             // Check En Passant
             else if (piece is Pawn && IsEnPassant(piece, target.transform.position))

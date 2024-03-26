@@ -8,6 +8,9 @@ public class InputHandler : MonoBehaviour
 
     private Piece selectedPiece, square;
 
+    public delegate void OnAttemptMove(Piece piece, Vector3 targetPosition);
+    public static event OnAttemptMove onAttemptMove;
+
     void Update()
     {
         // Handle mouse click
@@ -29,12 +32,14 @@ public class InputHandler : MonoBehaviour
                         // Black attacking White
                         if (selectedPiece.tag == "PieceBlack" && hit.collider.CompareTag("PieceWhite"))
                         {
+                            onAttemptMove?.Invoke(selectedPiece, hit.collider.GetComponent<Piece>().transform.position);
                             gameController.TryToTakePiece(selectedPiece, hit.collider.GetComponent<Piece>());
                             selectedPiece = null;
                         }
                         // White attacking Black
                         else if (selectedPiece.tag == "PieceWhite" && hit.collider.CompareTag("PieceBlack"))
                         {
+                            onAttemptMove?.Invoke(selectedPiece, hit.collider.GetComponent<Piece>().transform.position);
                             gameController.TryToTakePiece(selectedPiece, hit.collider.GetComponent<Piece>());
                             selectedPiece = null;
                         }
@@ -46,6 +51,7 @@ public class InputHandler : MonoBehaviour
                 else if (hit.collider.CompareTag("Square") && selectedPiece != null)
                 {
                     square = hit.collider.GetComponent<Piece>();
+                    onAttemptMove?.Invoke(selectedPiece,square.transform.position);
                     gameController.TryToMovePiece(selectedPiece, square);
                     selectedPiece = null; 
                 }

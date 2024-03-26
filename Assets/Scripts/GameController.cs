@@ -49,9 +49,6 @@ public class GameController : MonoBehaviour
         PieceTracker.onCastleBlockedChange += SetIsCastleBlocked;
         PieceTracker.onCheckmate += SetIsCheckmate;
         PieceTracker.onCastleNeedsExecute += ExecuteMove;
-
-        PieceTracker.onNeedAllyTag += FindAllyTag;
-        PieceTracker.onNeedEnemyTag += FindEnemyTag;
     }
 
     // Update is called once per frame
@@ -196,22 +193,6 @@ public class GameController : MonoBehaviour
             }
             if (piece is King || piece is Rook || piece is Pawn) piece.SetFirstMove(false);
         }
-    }
-
-    private string FindEnemyTag()
-    {
-        string enemyTag = null;
-        if (turn == 0) enemyTag = "PieceBlack";
-        else if (turn == 1) enemyTag = "PieceWhite";
-        return enemyTag;
-    }
-
-    private string FindAllyTag()
-    {
-        string allyTag = null;
-        if (turn == 0) allyTag = "PieceWhite";
-        else if (turn == 1) allyTag = "PieceBlack";
-        return allyTag;
     }
 
     private void ChangeTurn()

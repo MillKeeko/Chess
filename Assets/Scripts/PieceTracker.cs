@@ -5,8 +5,6 @@ using UnityEngine;
 public class PieceTracker : MonoBehaviour
 {
     // Delegates
-    public delegate string OnNeedAllyTag();
-    public delegate string OnNeedEnemyTag();
     public delegate void OnPieceBlockingChange(bool blockStatus);
     public delegate void OnKingInCheckChange(bool checkStatus);
     public delegate void OnCastleBlockedChange(bool blockStatus);
@@ -14,8 +12,6 @@ public class PieceTracker : MonoBehaviour
     public delegate void OnCastleNeedsExecute(Piece piece, Vector3 targetPosition, bool changeTurn);
 
     // Events
-    public static event OnNeedAllyTag onNeedAllyTag;
-    public static event OnNeedEnemyTag onNeedEnemyTag;
     public static event OnPieceBlockingChange onPieceBlockingChange;
     public static event OnKingInCheckChange onKingInCheckChange;
     public static event OnCastleBlockedChange onCastleBlockedChange;
@@ -33,6 +29,7 @@ public class PieceTracker : MonoBehaviour
     private bool isPieceBlocking = false;
     private bool isCastleBlocked = false;
     private bool isKingInCheck = false;
+    private int turn = 0; // 0 = White, 1 = Black
 
     void Awake()
     {
@@ -48,6 +45,7 @@ public class PieceTracker : MonoBehaviour
         GameController.onAttemptCastle += TryCastle;
         GameController.onChangeTurn += IsKingInCheck;
         GameController.onChangeTurn += IsCheckmate;
+        GameController.onChangeTurn += UpdateTurn;
 
         onPieceBlockingChange += SetIsPieceBlocking;
         onKingInCheckChange += SetIsKingInCheck;
@@ -105,6 +103,31 @@ public class PieceTracker : MonoBehaviour
     {
         moveAttemptPiece = piece;
         moveAttemptTargetPosition = targetPosition;
+    }
+    //
+    // --------- General Methods ---------
+    //
+
+    private string FindEnemyTag()
+    {
+        string enemyTag = null;
+        if (turn == 0) enemyTag = "PieceBlack";
+        else if (turn == 1) enemyTag = "PieceWhite";
+        return enemyTag;
+    }
+
+    private string FindAllyTag()
+    {
+        string allyTag = null;
+        if (turn == 0) allyTag = "PieceWhite";
+        else if (turn == 1) allyTag = "PieceBlack";
+        return allyTag;
+    }
+
+    private void UpdateTurn()
+    {
+        if (turn == 0) turn = 1;
+        else turn = 0;
     }
 
 
@@ -213,7 +236,7 @@ public class PieceTracker : MonoBehaviour
                 {
                     
                     allyPiece = pieceTracker[x,y];
-                    if (allyPiece != null && !allyPiece.CompareTag(onNeedEnemyTag?.Invoke()))
+                    if (allyPiece != null && !allyPiece.CompareTag(FindEnemyTag()))
                     {
                         // Loop through all possible moves
                         for (int i = 0; i < 8; i++)
@@ -273,7 +296,7 @@ public class PieceTracker : MonoBehaviour
                 for (int y = 0; y < 8; y++)
                 {
                     kingSearch = pieceTracker[x,y];
-                    if (kingSearch != null && kingSearch.CompareTag(onNeedAllyTag?.Invoke()) && kingSearch is King)
+                    if (kingSearch != null && kingSearch.CompareTag(FindAllyTag()) && kingSearch is King)
                     {
                         kingPosition = new Vector3 (kingSearch.transform.position.x, kingSearch.transform.position.y, zIndex);
                         //Debug.Log("King Position x " + kingPosition.x + " y " + kingPosition.y);
@@ -299,7 +322,7 @@ public class PieceTracker : MonoBehaviour
             for (int y = 0; y < 8; y++)
             {
                 enemyPiece = pieceTracker[x,y];
-                if (enemyPiece != null && enemyPiece.CompareTag(onNeedEnemyTag?.Invoke()))
+                if (enemyPiece != null && enemyPiece.CompareTag(FindEnemyTag()))
                 {
                     if (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook)
                     {

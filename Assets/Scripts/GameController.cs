@@ -16,13 +16,13 @@ public class GameController : MonoBehaviour
 
     // Delegates
     public delegate bool OnCheckMoveRemovesCheck(Piece piece, Vector3 target);
-    public delegate void OnChangeTrackerPosition(Vector3 piecePosition, Vector3 targetPosition, bool saveTargetPiece);
+    public delegate void OnExecuteMove(Vector3 piecePosition, Vector3 targetPosition, bool saveTargetPiece);
     public delegate void OnChangeTurn();
     public delegate void OnAttemptCastle(Piece piece, Vector3 targetPosition);
 
     // Events
     public static event OnCheckMoveRemovesCheck onCheckMoveRemovesCheck;
-    public static event OnChangeTrackerPosition onChangeTrackerPosition;
+    public static event OnExecuteMove onExecuteMove;
     public static event OnChangeTurn onChangeTurn;
     public static event OnAttemptCastle onAttemptCastle;
 
@@ -67,7 +67,7 @@ public class GameController : MonoBehaviour
 
     private void SetIsCastleBlocked (bool blockStatus)
     {
-        Debug.Log("GameController - Setting castleblock is " + blockStatus);
+        //Debug.Log("GameController - Setting castleblock is " + blockStatus);
         isCastleBlocked = blockStatus;
     }
 
@@ -164,7 +164,7 @@ public class GameController : MonoBehaviour
     {
         int yDistance = Mathf.Abs((int)targetPosition.y - (int)piece.transform.position.y);
 
-        onChangeTrackerPosition?.Invoke(piece.transform.position, targetPosition, false);
+        onExecuteMove?.Invoke(piece.transform.position, targetPosition, false);
         piece.transform.position = new Vector3(targetPosition.x, targetPosition.y, zIndex);
         
         if (changeTurn) 

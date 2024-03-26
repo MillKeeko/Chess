@@ -43,6 +43,7 @@ public class PieceTracker : MonoBehaviour
         InputHandler.onAttemptMove += DoesMoveRemoveCheck;
 
         GameController.onAttemptCastle += TryCastle;
+        GameController.onExecuteMove += ChangeTrackerPosition;
         GameController.onChangeTurn += IsKingInCheck;
         GameController.onChangeTurn += IsCheckmate;
         GameController.onChangeTurn += UpdateTurn;
@@ -52,7 +53,6 @@ public class PieceTracker : MonoBehaviour
         onCastleBlockedChange += SetIsCastleBlocked;
 
         GameController.onNeedPieceAtLocation += GetFromTracker;
-        GameController.onChangeTrackerPosition += ChangeTrackerPosition;
     }
 
     private float timer = 0;
@@ -90,7 +90,7 @@ public class PieceTracker : MonoBehaviour
 
     private void SetIsCastleBlocked (bool blockStatus)
     {
-        Debug.Log("PieceTracker - Setting castleblock is " + blockStatus);
+        //Debug.Log("PieceTracker - Setting castleblock is " + blockStatus);
         isCastleBlocked = blockStatus;
     }
 
@@ -134,17 +134,17 @@ public class PieceTracker : MonoBehaviour
     private void IsPieceBlocking(Piece piece, Vector3 target)
     {
         bool blockingBool = false;
-
-        // Find the distance the piece is moving
+         // Find the distance the piece is moving
         int distanceX = (int)target.x - (int)piece.transform.position.x;
         int distanceY = (int)target.y - (int)piece.transform.position.y;
         int distance = 0;
+
         if (Mathf.Abs(distanceX) > Mathf.Abs(distanceY)) distance = Mathf.Abs(distanceX);
         else distance = Mathf.Abs(distanceY);
 
         // Create unitary vector of the target relative to the piece
         Vector3 moveVector = new Vector3((int)target.x - (int)piece.transform.position.x,
-                                         (int)target.y - (int)piece.transform.position.y, zIndex);
+                                        (int)target.y - (int)piece.transform.position.y, zIndex);
         Vector3 unitMoveVector = moveVector.normalized;
 
         // Simplify unit vector
@@ -155,23 +155,28 @@ public class PieceTracker : MonoBehaviour
         if (unitMoveVector.y > 0) y = 1;
         else if (unitMoveVector.y < 0) y = -1;
         else y = 0;
+        //Debug.Log("Unit vector x " + x + " y " + y);
 
-        // Check if any pieces are in the way
-        //Debug.Log("Distance " + distance);
-        //Debug.Log("Target x " + target.x + " y " + target.y);
-        for (int i = 1; i < Mathf.Abs(distance); i++)
+        if (piece is Bishop || piece is Rook || piece is Queen)
         {
-            Vector3 checkPosition = new Vector3(piece.transform.position.x + (x * i), piece.transform.position.y + (y * i), zIndex);
-            // Debug.Log("IsPieceBlocking() checking " + piece + " at x " + piece.transform.position.x + " y " + piece.transform.position.y);
-            if (pieceTracker[(int)checkPosition.x,(int)checkPosition.y] != null) 
+            // Check if any pieces are in the way
+            //Debug.Log("Distance " + distance);
+            //Debug.Log("Target x " + target.x + " y " + target.y);
+            for (int i = 1; i < Mathf.Abs(distance); i++)
             {
-                blockingBool = true;
+                Vector3 checkPosition = new Vector3((piece.transform.position.x + (x * i)), (piece.transform.position.y + (y * i)), zIndex);
+                //Debug.Log("x * i " + (x * i));
+                //Debug.Log("y * i " + (y * i));
+                //Debug.Log("IsPieceBlocking() checking " + piece + " at x " + (int)checkPosition.x + " y " + (int)checkPosition.y);
+                if (pieceTracker[(int)checkPosition.x,(int)checkPosition.y] != null) 
+                {
+                    blockingBool = true;
+                }
+                //Debug.Log("No piece in the way at x " + (int)checkPosition.x + " and y " + (int)checkPosition.y);
             }
-            //Debug.Log("No piece in the way at x " + (int)checkPosition.x + " and y " + (int)checkPosition.y);
         }
-
         // If piece is king check 1 move
-        if (piece is King)
+        else if (piece is King)
         {
             Vector3 checkPosition = new Vector3(piece.transform.position.x + x, piece.transform.position.y + y, zIndex);
             if (pieceTracker[(int)checkPosition.x,(int)checkPosition.y] != null) 
@@ -355,7 +360,7 @@ public class PieceTracker : MonoBehaviour
 
     private void IsCastleBlocked(Piece piece, Vector3 targetPosition, int castleSide)
     {
-        Debug.Log("Trying is castle blocked.");
+        //Debug.Log("Trying is castle blocked.");
         string enemyTag = null;
         Piece enemyPiece = null;
         Vector3 kingPosition = new Vector3 (piece.transform.position.x, piece.transform.position.y, zIndex);
@@ -437,7 +442,7 @@ public class PieceTracker : MonoBehaviour
 
      private void TryCastle(Piece piece, Vector3 targetPosition)
     {
-        Debug.Log("Trying Castle.");
+        //Debug.Log("Trying Castle.");
         King king = (King)piece;
         Piece rookWhiteKSide = pieceTracker[7,0];
         Piece rookBlackKSide = pieceTracker[7,7];
@@ -448,12 +453,11 @@ public class PieceTracker : MonoBehaviour
 
         IsCastleBlocked(piece, targetPosition, castleSide);
         
-        Debug.Log("TryCastle - castleblocked? " + isCastleBlocked);
+        //Debug.Log("TryCastle - castleblocked? " + isCastleBlocked);
         if (castleSide == 0)
         {
             if (piece.tag == "PieceWhite" && rookWhiteKSide != null && rookWhiteKSide.GetFirstMove() && isCastleBlocked == false)
             {   
-                Debug.Log("Attempt at white kingside castle.");
                 rookTarget = new Vector3(targetPosition.x - 1, targetPosition.y, zIndex);
                 onCastleNeedsExecute.Invoke(king, targetPosition, false);
                 onCastleNeedsExecute.Invoke(rookWhiteKSide, rookTarget, true);

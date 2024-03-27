@@ -6,17 +6,6 @@ using UnityEngine;
 //  Handles all write access to the tempPieceTracker array
 public class TrackingHandler : MonoBehaviour
 {
-    private Piece[,] pieceTracker;
-    private Piece[,] tempPieceTracker;
-
-    public delegate void OnUpdatePieceTracker(Piece[,] updatedPieceTracker);
-    public static event OnUpdatePieceTracker onUpdatePieceTracker;
-
-    void Awake()
-    {
-        pieceTracker = new Piece[8,8];
-        tempPieceTracker = new Piece[8,8];
-    }
     // Start is called before the first frame update
     void Start()
     {
@@ -29,10 +18,13 @@ public class TrackingHandler : MonoBehaviour
         
     }
 
-    private void AnalyzeBoard()
+    private void RemoveFromTracker(int x, int y)
     {
-        //  Read the entire board and add to piece tracker
-        //  Trigger onUpdatePieceTracker event once
-        onUpdatePieceTracker!.Invoke(pieceTracker);
+        
+    }
+
+    private void AddToTracker(Piece piece, int x, int y)
+    {
+        
     }
 }

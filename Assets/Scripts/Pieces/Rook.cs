@@ -18,4 +18,9 @@ public class Rook : Piece
     {
         
     }
+    
+    public override void MoveValidator()
+    {
+        
+    }
 }

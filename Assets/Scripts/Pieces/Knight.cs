@@ -17,4 +17,9 @@ public class Knight : Piece
     {
         
     }
+    
+    public override void MoveValidator()
+    {
+        
+    }
 }

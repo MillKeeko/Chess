@@ -20,4 +20,9 @@ public class Pawn : Piece
     {
         
     }
+
+    public override void MoveValidator()
+    {
+        
+    }
 }

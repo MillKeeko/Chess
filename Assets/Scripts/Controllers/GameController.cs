@@ -8,6 +8,17 @@ using UnityEngine;
 //  Controls game end
 public class GameController : MonoBehaviour
 {
+    
+
+    void Awake()
+    {
+        //  Randomize which side player and bot are on Black or White
+        //      int playerTurn = 
+        //      int botTurn =  
+        //  Setup board so that player is looking at the correct side
+        //  Trigger GameStart Event
+    }
+
     // Start is called before the first frame update
     void Start()
     {

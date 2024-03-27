@@ -17,4 +17,9 @@ public class Bishop : Piece
     {
         
     }
+    
+    public override void MoveValidator()
+    {
+        
+    }
 }

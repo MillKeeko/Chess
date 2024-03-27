@@ -18,4 +18,9 @@ public class King : Piece
     {
         
     }
+    
+    public override void MoveValidator()
+    {
+        
+    }
 }

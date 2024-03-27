@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Square : Piece
+//  Handles all write access to the pieceTracker array
+//  Handles all write access to the tempPieceTracker array
+public class TrackingHandler : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()

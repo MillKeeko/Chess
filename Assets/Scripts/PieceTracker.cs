@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Controls the read and write access to the PieceTracker array
+
 public class PieceTracker : MonoBehaviour
 {
     // Delegates
@@ -24,6 +26,7 @@ public class PieceTracker : MonoBehaviour
     private Piece savedPiece = null;
 
     // In place of Event variables
+    private Piece hypotheticalMoveAttemptPiece = null;
     private Piece moveAttemptPiece = null;
     private Vector3 moveAttemptTargetPosition;
     private bool isPieceBlocking = false;
@@ -39,14 +42,18 @@ public class PieceTracker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        InputHandler.onAttemptMove += SetMoveAttempt;
         InputHandler.onAttemptMove += IsPieceBlocking;
         InputHandler.onAttemptMove += DoesMoveRemoveCheck;
-
+        
         GameController.onAttemptCastle += TryCastle;
+
         GameController.onExecuteMove += ChangeTrackerPosition;
+
+        GameController.onChangeTurn += UpdateTurn;
         GameController.onChangeTurn += IsKingInCheck;
         GameController.onChangeTurn += IsCheckmate;
-        GameController.onChangeTurn += UpdateTurn;
+        
 
         onPieceBlockingChange += SetIsPieceBlocking;
         onKingInCheckChange += SetIsKingInCheck;
@@ -104,6 +111,7 @@ public class PieceTracker : MonoBehaviour
         moveAttemptPiece = piece;
         moveAttemptTargetPosition = targetPosition;
     }
+
     //
     // --------- General Methods ---------
     //
@@ -164,7 +172,8 @@ public class PieceTracker : MonoBehaviour
             //Debug.Log("Target x " + target.x + " y " + target.y);
             for (int i = 1; i < Mathf.Abs(distance); i++)
             {
-                Vector3 checkPosition = new Vector3((piece.transform.position.x + (x * i)), (piece.transform.position.y + (y * i)), zIndex);
+                Vector3 checkPosition = new Vector3((piece.transform.position.x + (x * i)), 
+                                                    (piece.transform.position.y + (y * i)), zIndex);
                 //Debug.Log("x * i " + (x * i));
                 //Debug.Log("y * i " + (y * i));
                 //Debug.Log("IsPieceBlocking() checking " + piece + " at x " + (int)checkPosition.x + " y " + (int)checkPosition.y);
@@ -181,6 +190,7 @@ public class PieceTracker : MonoBehaviour
             Vector3 checkPosition = new Vector3(piece.transform.position.x + x, piece.transform.position.y + y, zIndex);
             if (pieceTracker[(int)checkPosition.x,(int)checkPosition.y] != null) 
             {
+                Debug.Log("King move blocked at x " + (int)checkPosition.x + " y " + (int)checkPosition.y);
                 blockingBool = true;
             }
         }
@@ -209,14 +219,11 @@ public class PieceTracker : MonoBehaviour
     // Need to fix how king position is dynamic in this function. I do not want IsKingInCheck to take an argument
     private void DoesMoveRemoveCheck(Piece piece, Vector3 target)
     {
+        hypotheticalMoveAttemptPiece = piece;
         //Debug.Log("Checking " + piece);
         ChangeTrackerPosition(piece.transform.position, target, true); // Save piece
         //Debug.Log("Changed tracker for move check");
         IsKingInCheck();
-        if (isKingInCheck == false)
-        {
-            onKingInCheckChange?.Invoke(false);
-        } 
         ChangeTrackerPosition(target, piece.transform.position, false); 
         if (savedPiece != null) 
         {
@@ -224,6 +231,7 @@ public class PieceTracker : MonoBehaviour
             savedPiece = null;
             //Debug.Log("Changed tracker back to normal");
         }
+        hypotheticalMoveAttemptPiece = null;
     }
 
      private void IsCheckmate()
@@ -231,7 +239,10 @@ public class PieceTracker : MonoBehaviour
         Piece allyPiece = null;
         Piece targetPiece = null;
         Vector3 move;
-        bool checkmateBool = false;
+        bool checkmateBool = true;
+        //Debug.Log("IsCheckmate() Start.");
+        IsKingInCheck();
+        //Debug.Log("Is King in check? " + isKingInCheck);
         if (isKingInCheck)
         {
             // Loop through all possible pieces
@@ -241,7 +252,8 @@ public class PieceTracker : MonoBehaviour
                 {
                     
                     allyPiece = pieceTracker[x,y];
-                    if (allyPiece != null && !allyPiece.CompareTag(FindEnemyTag()))
+                    //Debug.Log("Is Checkmate check - " + FindAllyTag());
+                    if (allyPiece != null && allyPiece.CompareTag(FindAllyTag())) 
                     {
                         // Loop through all possible moves
                         for (int i = 0; i < 8; i++)
@@ -250,7 +262,8 @@ public class PieceTracker : MonoBehaviour
                             {
                                 move = new Vector3 (i, j, zIndex);
                                 // Check for a valid move, skip invalid
-                                if ((allyPiece.TakePiece(move) || allyPiece.MovePiece(move)) && (allyPiece is Bishop || allyPiece is Rook || allyPiece is Queen || allyPiece is King))
+                                if ((allyPiece.TakePiece(move) || allyPiece.MovePiece(move)) && 
+                                    (allyPiece is Bishop || allyPiece is Rook || allyPiece is Queen || allyPiece is King))
                                 {
                                     IsPieceBlocking(allyPiece, move);
                                     if (isPieceBlocking == true) continue;
@@ -259,16 +272,20 @@ public class PieceTracker : MonoBehaviour
                                 {
                                     targetPiece = pieceTracker[(int)move.x,(int)move.y];
                                     if ((allyPiece.TakePiece(move) && targetPiece == null) ||
-                                        (allyPiece.MovePiece(move) && targetPiece != null)) continue;
+                                        (allyPiece.MovePiece(move) && targetPiece != null)) 
+                                    {
+                                        //Debug.Log("Pawn move not valid from x " + allyPiece.transform.position.x + " y " + allyPiece.transform.position.y + " to x " + move.x + " y " + move.y);
+                                        continue;
+                                    }
                                 }
                                 // Check if the valid move does remove the check
                                 if (allyPiece.TakePiece(move) || allyPiece.MovePiece(move))
                                 {
                                     DoesMoveRemoveCheck(allyPiece, move);
-                                    if(isKingInCheck == true) 
+                                    if(isKingInCheck == false) 
                                     {
-                                        //Debug.Log(allyPiece + " from x " + allyPiece.transform.position.x + " y " + allyPiece.transform.position.y + " to x " + move.x + " y " + move.y);
-                                        checkmateBool = true;
+                                        Debug.Log(allyPiece + " from x " + allyPiece.transform.position.x + " y " + allyPiece.transform.position.y + " to x " + move.x + " y " + move.y);
+                                        checkmateBool = false;
                                     }
                                 }
                             }
@@ -277,12 +294,16 @@ public class PieceTracker : MonoBehaviour
                 }
             }
         }
+        else checkmateBool = false;
+        
+        //Debug.Log("Checked whether " + FindAllyTag() + " is in Checkmate.");
         
         if (checkmateBool == true)
         {
             Debug.Log("Checkmate!");
             onCheckmate?.Invoke();
         }
+        else IsKingInCheck(); // Reset from calls that were looped in DoesMoveRemoveCheck()
     }
 
     private Vector3 FindKing()
@@ -290,7 +311,8 @@ public class PieceTracker : MonoBehaviour
         Piece kingSearch = null;
         Vector3 kingPosition = new Vector3 (-1, -1, -1);
 
-        if (moveAttemptPiece is King)
+        //Debug.Log("Move attempt piece is " + moveAttemptPiece);
+        if (moveAttemptPiece is King || hypotheticalMoveAttemptPiece is King)
         {
             kingPosition = moveAttemptTargetPosition;
         }
@@ -301,6 +323,7 @@ public class PieceTracker : MonoBehaviour
                 for (int y = 0; y < 8; y++)
                 {
                     kingSearch = pieceTracker[x,y];
+                    //Debug.Log("Ally King - " + FindAllyTag());
                     if (kingSearch != null && kingSearch.CompareTag(FindAllyTag()) && kingSearch is King)
                     {
                         kingPosition = new Vector3 (kingSearch.transform.position.x, kingSearch.transform.position.y, zIndex);
@@ -310,8 +333,6 @@ public class PieceTracker : MonoBehaviour
                 }
             }
         }
-        
-        
 
         return kingPosition;
     }
@@ -322,6 +343,7 @@ public class PieceTracker : MonoBehaviour
         Piece enemyPiece = null;
         bool checkBool = false;
 
+        //Debug.Log("Checking king in check at x " + kingPosition.x + " y " + kingPosition.y);
         for (int x = 0; x < 8; x++)
         {
             for (int y = 0; y < 8; y++)
@@ -380,7 +402,8 @@ public class PieceTracker : MonoBehaviour
                 {
                     // Check for a valid move, skip invalid
                     // King Position Check
-                    if ((enemyPiece.TakePiece(kingPosition) || enemyPiece.MovePiece(kingPosition)) && (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
+                    if ((enemyPiece.TakePiece(kingPosition) || enemyPiece.MovePiece(kingPosition)) && 
+                        (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
                     {
                         IsPieceBlocking(enemyPiece, kingPosition);
                         if (isPieceBlocking == false)
@@ -392,7 +415,8 @@ public class PieceTracker : MonoBehaviour
                     else if (castleSide == 0)
                     {
                         middlePosition = new Vector3 (targetPosition.x + 1, targetPosition.y, zIndex);
-                        if ((enemyPiece.TakePiece(middlePosition) || enemyPiece.MovePiece(middlePosition)) && (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
+                        if ((enemyPiece.TakePiece(middlePosition) || enemyPiece.MovePiece(middlePosition)) && 
+                            (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
                         {
                             IsPieceBlocking(enemyPiece, middlePosition);
                             if (isPieceBlocking == false)
@@ -401,7 +425,8 @@ public class PieceTracker : MonoBehaviour
                                 blockedBool = true;
                             }
                         }
-                        if ((enemyPiece.TakePiece(targetPosition) || enemyPiece.MovePiece(targetPosition)) && (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
+                        if ((enemyPiece.TakePiece(targetPosition) || enemyPiece.MovePiece(targetPosition)) && 
+                            (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
                         {
                             IsPieceBlocking(enemyPiece, targetPosition);
                             if(isPieceBlocking == false) 
@@ -414,7 +439,8 @@ public class PieceTracker : MonoBehaviour
                     else if (castleSide == 1)
                     {
                         middlePosition = new Vector3 (targetPosition.x - 1, targetPosition.y, zIndex);
-                        if ((enemyPiece.TakePiece(middlePosition) || enemyPiece.MovePiece(middlePosition)) && (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
+                        if ((enemyPiece.TakePiece(middlePosition) || enemyPiece.MovePiece(middlePosition)) && 
+                            (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
                         {
                             IsPieceBlocking(enemyPiece, middlePosition);
                             if(isPieceBlocking == false) 
@@ -423,7 +449,8 @@ public class PieceTracker : MonoBehaviour
                                 blockedBool = true;
                             }
                         }
-                        if ((enemyPiece.TakePiece(targetPosition) || enemyPiece.MovePiece(targetPosition)) && (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
+                        if ((enemyPiece.TakePiece(targetPosition) || enemyPiece.MovePiece(targetPosition)) && 
+                            (enemyPiece is Bishop || enemyPiece is Queen || enemyPiece is Rook))
                         {
                             IsPieceBlocking(enemyPiece, targetPosition);
                             if(isPieceBlocking == false) 

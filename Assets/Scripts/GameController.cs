@@ -91,7 +91,7 @@ public class GameController : MonoBehaviour
         if (IsYourTurn(piece) && piece.TakePiece(target.transform.position) == true)
         {
             // Only try to move piece if King isn't in check, or it is but the move removes check
-            if (isKingInCheck == false || onCheckMoveRemovesCheck?.Invoke(piece, target.transform.position) == true)
+            if (isKingInCheck == false)
             {
                 // Bishops, Rooks, and Queens need to ensure nothing blocks their move
                 if (piece is Bishop || piece is Rook || piece is Queen)
@@ -116,7 +116,7 @@ public class GameController : MonoBehaviour
             if (piece.MovePiece(target.transform.position) == true)
             {
                 // Only try to move piece if King isn't in check, or it is but the move removes check
-                if (isKingInCheck == false || onCheckMoveRemovesCheck?.Invoke(piece, target.transform.position) == true)
+                if (isKingInCheck == false)
                 {
                     // Bishops, Rooks, and Queens need to ensure nothing blocks their move
                     if (piece is Bishop || piece is Rook || piece is Queen)
@@ -163,7 +163,7 @@ public class GameController : MonoBehaviour
     private void ExecuteMove(Piece piece, Vector3 targetPosition, bool changeTurn)
     {
         int yDistance = Mathf.Abs((int)targetPosition.y - (int)piece.transform.position.y);
-
+        
         onExecuteMove?.Invoke(piece.transform.position, targetPosition, false);
         piece.transform.position = new Vector3(targetPosition.x, targetPosition.y, zIndex);
         

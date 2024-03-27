@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8959145417210310095}
   - component: {fileID: 4047195571502487361}
   - component: {fileID: 8843840178169041032}
-  - component: {fileID: 2353843859607444095}
   - component: {fileID: -3313792126034719718}
   m_Layer: 0
   m_Name: PawnWhite
@@ -132,18 +131,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.2, y: 0.2}
   m_EdgeRadius: 0
---- !u!114 &2353843859607444095
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8969731290301256490}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c3cd3cf13df97a4a827ddc26f886778, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!61 &-3313792126034719718
 BoxCollider2D:
   m_ObjectHideFlags: 0

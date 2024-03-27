@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-//  Controls start screen
-//  Controls restart screen
-//  Controls score count
-public class UIController : MonoBehaviour
+public class MainMenu : MonoBehaviour
 {
+    public void PlayGame()
+    {
+        SceneManager.LoadSceneAsync("GameScene");
+    }
+
     // Start is called before the first frame update
     void Start()
     {

@@ -7,6 +7,8 @@ using UnityEngine;
 //  DestroyInstance which destroys the piece and can't be overridden
 public class Piece : MonoBehaviour
 {
+    protected bool firstMove;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -19,18 +21,37 @@ public class Piece : MonoBehaviour
         
     }
 
-    public virtual void MoveValidator()
+    public virtual void MoveValidator(Vector3 targetPosition)
     {
         
     }
 
-    public void DestroyInstance()
+    protected void DestroyInstance()
     {
         Destroy(gameObject);
     }
 
-    protected void MoveExecutor(Piece piece, Vector3 targetPosition)
+    protected void MoveExecutor(Vector3 targetPosition)
     {
-        
+        Debug.Log("MoveExecutor Start.");
+        this.transform.position = targetPosition;
+    }
+
+    //
+    // Accessors
+    //
+
+    protected bool GetFirstMove()
+    {
+        return firstMove;
+    }
+
+    //
+    // Mutators
+    //
+
+    protected void SetFirstMove(bool firstMoveSetter)
+    {
+        firstMove = firstMoveSetter;
     }
 }

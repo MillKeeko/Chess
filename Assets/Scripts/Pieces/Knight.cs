@@ -18,8 +18,9 @@ public class Knight : Piece
         
     }
     
-    public override void MoveValidator()
+    public override void MoveValidator(Vector3 targetPosition)
     {
-        
+        Debug.Log("MoveValidator Start.");
+        MoveExecutor(targetPosition);
     }
 }

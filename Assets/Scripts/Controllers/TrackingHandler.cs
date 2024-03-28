@@ -6,10 +6,17 @@ using UnityEngine;
 //  Handles all write access to the tempPieceTracker array
 public class TrackingHandler : MonoBehaviour
 {
+    private static Piece[,] pieceTracker;
+
+    void Awake()
+    {
+        pieceTracker = new Piece [8,8];
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        GameController.onPieceCreated += AddToTracker;
     }
 
     // Update is called once per frame

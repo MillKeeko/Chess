@@ -11,16 +11,18 @@ public class GameController : MonoBehaviour
     public GameObject SquareBlack, SquareWhite;
     public GameObject PawnWhite, RookWhite, KnightWhite, BishopWhite, QueenWhite, KingWhite;
     public GameObject PawnBlack, RookBlack, KnightBlack, BishopBlack, QueenBlack, KingBlack;
+    public static string playerTag;
+    public static string botTag;
 
     public delegate void OnPieceCreated (Piece piece, int x, int y);
     public static event OnPieceCreated onPieceCreated;
-    
+
 
     // Start is called before the first frame update
     void Start()
     {
-        int playerSide = Randomizer.RandomSide();
-        SetupBoard(playerSide);
+        RandomTeams();
+        SetupBoard();
         //  Trigger GameStart Event
     }
 
@@ -30,8 +32,23 @@ public class GameController : MonoBehaviour
         
     }
 
+    private void RandomTeams()
+    {
+        int playerSide = Randomizer.RandomSide();
+        if (playerSide == 0) 
+        {   
+            playerTag = Constants.WHITE_TAG;
+            botTag = Constants.BLACK_TAG;
+        }
+        else if (playerSide == 1) 
+        {
+            playerTag = Constants.BLACK_TAG;
+            botTag = Constants.WHITE_TAG;
+        }
+    }
+
     // Create board and place pieces, done at the beginning of the game
-    private void SetupBoard(int playerSide)
+    private void SetupBoard()
     {
         Vector3 bottomLeftBoard = new Vector3 (0,0,0);
         Vector3 currentBoardPosition = bottomLeftBoard;
@@ -43,7 +60,7 @@ public class GameController : MonoBehaviour
         int queenCol;
         int kingCol;
 
-        if (playerSide == Constants.WHITE_TURN) 
+        if (playerTag == Constants.WHITE_TAG)
         {
             blackPawnRow = 6;
             blackPieceRow = 7;

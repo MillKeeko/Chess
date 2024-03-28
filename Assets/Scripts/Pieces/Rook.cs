@@ -18,10 +18,15 @@ public class Rook : Piece
     {
         
     }
-    
-    public override void MoveValidator(Vector3 targetPosition)
+
+    public override List<General.PossibleMove> GeneratePossibleMoves()
     {
-        Debug.Log("MoveValidator Start.");
+        return possiblePieceMovesList;
+    }
+    
+    public override void MoveAttempt(Vector3 targetPosition)
+    {
+        Debug.Log("MoveAttempt Start.");
         MoveExecutor(targetPosition);
     }
 }

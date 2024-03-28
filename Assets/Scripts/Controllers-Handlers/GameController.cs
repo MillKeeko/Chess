@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//  Git Comments
+//      Piece moves are updated in pieceTracker
+//      Bot moves first move it checks
+//      Can take turns moving invalid moves against bot
+//      MoveExecutor destroys target piece and pieceTracker is updated
+
 //  Controls game start
 //  Controls board setup
 //  Controls changing turns
@@ -11,30 +17,67 @@ public class GameController : MonoBehaviour
     public GameObject SquareBlack, SquareWhite;
     public GameObject PawnWhite, RookWhite, KnightWhite, BishopWhite, QueenWhite, KingWhite;
     public GameObject PawnBlack, RookBlack, KnightBlack, BishopBlack, QueenBlack, KingBlack;
+
+    //  Static Variables
     public static string playerTag;
     public static string botTag;
+    public static string turn;
 
+    //  Delegates
     public delegate void OnPieceCreated (Piece piece, int x, int y);
-    public static event OnPieceCreated onPieceCreated;
+    public delegate void OnBotTurn ();
 
+    //  Events
+    public static event OnPieceCreated onPieceCreated;
+    public static event OnBotTurn onBotTurn;
+
+    void Awake()
+    {
+        turn = Constants.WHITE_TAG;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
+        Piece.onMoveExecuted += ChangeTurn;
+
         RandomTeams();
         SetupBoard();
-        //  Trigger GameStart Event
+        CheckBotFirstTurn();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        triggerBotMove();
+    }
+
+    private void triggerBotMove()
+    {
+        if (turn == botTag) 
+        {
+            onBotTurn?.Invoke();
+        }
+    }
+
+    private void CheckBotFirstTurn()
+    {
+        if (turn == botTag)
+        {
+            //Debug.Log("Bot goes first.");
+            onBotTurn?.Invoke();
+        } 
+    }
+
+    private void ChangeTurn()
+    {
+        if (turn == Constants.WHITE_TAG) turn = Constants.BLACK_TAG;
+        else turn = Constants.WHITE_TAG;
     }
 
     private void RandomTeams()
     {
-        int playerSide = Randomizer.RandomSide();
+        int playerSide = General.RandomSide();
         if (playerSide == 0) 
         {   
             playerTag = Constants.WHITE_TAG;
@@ -53,13 +96,9 @@ public class GameController : MonoBehaviour
         Vector3 bottomLeftBoard = new Vector3 (0,0,0);
         Vector3 currentBoardPosition = bottomLeftBoard;
 
-        int blackPawnRow;
-        int blackPieceRow;
-        int whitePawnRow;
-        int whitePieceRow;
-        int queenCol;
-        int kingCol;
+        int blackPawnRow, blackPieceRow, whitePawnRow, whitePieceRow, queenCol, kingCol;
 
+        // Set which side the pieces are on
         if (playerTag == Constants.WHITE_TAG)
         {
             blackPawnRow = 6;
@@ -132,6 +171,7 @@ public class GameController : MonoBehaviour
         }
     }
 
+    // Instantiate piece and trigger event to be added to pieceTracker
     private void MakeChessPiece(GameObject piece, Vector3 position)
     {
         Vector3 pieceVector = new Vector3 (position.x, position.y, Constants.PIECE_Z_INDEX);

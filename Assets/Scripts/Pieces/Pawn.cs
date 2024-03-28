@@ -31,7 +31,7 @@ public class Pawn : Piece
     public override void MoveAttempt(Vector3 targetPosition)
     {
         //Debug.Log("MoveAttempt Start.");
-        if (IsValidNormalMove(targetPosition) || 
+        if (IsValidNormalPawnMove(targetPosition) || 
             IsValidDiagonalAttack(targetPosition) || 
             IsValidFirstMoveDouble(targetPosition))
         {
@@ -48,7 +48,7 @@ public class Pawn : Piece
             for (int y = 0; y < 8; y++)
             {
                 targetPosition = new Vector3(x, y, Constants.PIECE_Z_INDEX);
-                if (IsValidNormalMove(targetPosition) || 
+                if (IsValidNormalPawnMove(targetPosition) || 
                     IsValidDiagonalAttack(targetPosition) || 
                     IsValidFirstMoveDouble(targetPosition))
                 {
@@ -82,7 +82,7 @@ public class Pawn : Piece
         return returnBool;
     }
 
-    private bool IsValidNormalMove(Vector3 targetPosition)
+    private bool IsValidNormalPawnMove(Vector3 targetPosition)
     {
         bool returnBool = false;
 

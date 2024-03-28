@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //  Git Comments
-//      Piece moves are updated in pieceTracker
-//      Bot moves first move it checks
-//      Can take turns moving invalid moves against bot
-//      MoveExecutor destroys target piece and pieceTracker is updated
 
 //  Controls game start
 //  Controls board setup
@@ -49,7 +45,7 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        triggerBotMove();
+        triggerBotMove(); // Would bug out after 6 or so moves when in ChangeTurn()
     }
 
     private void triggerBotMove()

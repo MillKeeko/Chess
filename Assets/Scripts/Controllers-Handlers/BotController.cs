@@ -78,36 +78,3 @@ public class BotController : MonoBehaviour
         //Debug.Log(pieceList.Count);
     } 
 }
-
-/*private Piece FirstPiece()
-    {
-        Piece piece;
-        for (int x = 0; x < 8; x++)
-        {
-            for (int y = 0; y < 8; y++)
-            {
-                piece = TrackingHandler.pieceTracker[x,y];
-                if (piece != null && piece.CompareTag(GameController.botTag))
-                {
-                    return piece;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private Vector3 FirstMove()
-    {
-        for (int x = 0; x < 8; x++)
-        {
-            for (int y = 0; y < 8; y++)
-            {
-                if (TrackingHandler.pieceTracker[x,y] == null)
-                {
-                    return new Vector3 (x, y, Constants.PIECE_Z_INDEX);
-                }
-            }
-        }
-        return new Vector3 (-1,-1,-1); // Need to not have this
-    }*/

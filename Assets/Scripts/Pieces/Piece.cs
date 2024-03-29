@@ -91,7 +91,7 @@ public class Piece : MonoBehaviour
                                                 (this.transform.position.y + (moveUnitVector.y * i)));
             //Debug.Log("x * i " + (x * i));
             //Debug.Log("y * i " + (y * i));
-            Debug.Log("IsPieceBlocking() checking " + this + " at x " + (int)checkPosition.x + " y " + (int)checkPosition.y);
+            //Debug.Log("IsPieceBlocking() checking " + this + " at x " + (int)checkPosition.x + " y " + (int)checkPosition.y);
             if (TrackingHandler.pieceTracker[(int)checkPosition.x,(int)checkPosition.y] != null) 
             {
                 blockingBool = true;

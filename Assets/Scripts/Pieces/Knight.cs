@@ -21,7 +21,7 @@ public class Knight : Piece
     public override void MoveAttempt(Vector3 targetPosition)
     {
         //Debug.Log("MoveAttempt Start.");
-        if (IsValidNormalKnightMove(targetPosition))
+        if (IsValidKnightMove(targetPosition))
         {
             MoveExecutor(targetPosition);
         }  
@@ -36,7 +36,7 @@ public class Knight : Piece
             for (int y = 0; y < 8; y++)
             {
                 targetPosition = new Vector3(x, y, Constants.PIECE_Z_INDEX);
-                if (IsValidNormalKnightMove(targetPosition))
+                if (IsValidKnightMove(targetPosition))
                 {
                     General.PossibleMove possibleMove = new General.PossibleMove(x, y, this);
                     possiblePieceMovesList.Add(possibleMove);
@@ -49,15 +49,20 @@ public class Knight : Piece
         return possiblePieceMovesList;
     }
 
-    private bool IsValidNormalKnightMove(Vector3 target)
+    private bool IsValidKnightMove(Vector3 targetPosition)
     {
         bool returnBool = false;
         int pieceX = (int)transform.position.x;
         int pieceY = (int)transform.position.y;
-        int targetX = (int)target.x;
-        int targetY = (int)target.y;
+        int targetX = (int)targetPosition.x;
+        int targetY = (int)targetPosition.y;
+        Piece target = TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
 
-        if (targetX == pieceX - 2 || targetX == pieceX + 2)
+        if (target != null)
+        {
+            if (target.CompareTag(this.tag)) returnBool = false;
+        }
+        else if (targetX == pieceX - 2 || targetX == pieceX + 2)
         {
             if (targetY == pieceY + 1 || targetY == pieceY - 1) returnBool = true;
         }

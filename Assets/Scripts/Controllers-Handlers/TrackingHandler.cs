@@ -22,12 +22,12 @@ public class TrackingHandler : MonoBehaviour
         Piece.onPieceDestroyed += RemoveFromTracker;
     }
 
-    private float timer = 0;
-    private Vector3 circlePosition;
+    //private float timer = 0;
+    //private Vector3 circlePosition;
     // Update is called once per frame
     void Update()
     {
-        timer += Time.deltaTime; // Decrease timer by time passed since last frame
+        /*timer += Time.deltaTime; // Decrease timer by time passed since last frame
         if (timer >= 0.5f)
         {
             for (int x = 0; x < 8; x++)
@@ -43,7 +43,7 @@ public class TrackingHandler : MonoBehaviour
                     }
                 }
             }
-        }
+        }*/
     }
 
     private void PieceMovedPosition(Piece piece, int oldX, int oldY)

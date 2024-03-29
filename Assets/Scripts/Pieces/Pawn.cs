@@ -37,6 +37,7 @@ public class Pawn : Piece
         {
             MoveExecutor(targetPosition);
         }
+        EmptyMovesList();
     }
 
     public override List<General.PossibleMove> GeneratePossibleMoves()

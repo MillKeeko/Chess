@@ -25,6 +25,7 @@ public class Knight : Piece
         {
             MoveExecutor(targetPosition);
         }  
+        EmptyMovesList();
     }
 
     public override List<General.PossibleMove> GeneratePossibleMoves()
@@ -58,9 +59,9 @@ public class Knight : Piece
         int targetY = (int)targetPosition.y;
         Piece target = TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
 
-        if (target != null)
+        if (target != null && target.CompareTag(this.tag)) 
         {
-            if (target.CompareTag(this.tag)) returnBool = false;
+            returnBool = false;
         }
         else if (targetX == pieceX - 2 || targetX == pieceX + 2)
         {

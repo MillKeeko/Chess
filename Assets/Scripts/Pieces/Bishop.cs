@@ -44,6 +44,7 @@ public class Bishop : Piece
     {
         Debug.Log("MoveAttempt Start.");
         if (IsValidBishopMove(targetPosition)) MoveExecutor(targetPosition);
+        EmptyMovesList();
     }
 
     private bool IsValidBishopMove(Vector3 targetPosition)

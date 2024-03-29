@@ -49,6 +49,12 @@ public class Piece : MonoBehaviour
         
     }
 
+    protected void EmptyMovesList()
+    {
+        possiblePieceMovesList.Clear();
+    }
+
+
     protected void DestroyInstance()
     {
         //Debug.Log("Destroy " + this);

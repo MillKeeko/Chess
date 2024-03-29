@@ -40,6 +40,8 @@ public class BotController : MonoBehaviour
     {
         pieceList.Clear(); // Can probably create an event for destroyed pieces
         possibleBotMovesList.Clear(); 
+
+        Debug.Log("Total possible bot moves after clear " + possibleBotMovesList.Count);
     }
 
     private void MakeRandomMove()
@@ -60,7 +62,7 @@ public class BotController : MonoBehaviour
         {
             possibleBotMovesList.AddRange(piece.GeneratePossibleMoves());
         }
-        //Debug.Log("Total possible bot moves " + possibleBotMovesList.Count);
+        Debug.Log("Total possible bot moves " + possibleBotMovesList.Count);
     }
 
     private void FillPieceList()

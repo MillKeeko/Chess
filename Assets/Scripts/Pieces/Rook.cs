@@ -45,6 +45,7 @@ public class Rook : Piece
     {
         //Debug.Log("MoveAttempt Start.");
         if (IsValidRookMove(targetPosition)) MoveExecutor(targetPosition);
+        EmptyMovesList();
     }
 
     private bool IsValidRookMove(Vector3 targetPosition)

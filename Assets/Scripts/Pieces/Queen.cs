@@ -44,6 +44,7 @@ public class Queen : Piece
     {
         //Debug.Log("MoveAttempt Start.");
         if (IsValidQuuenMove(targetPosition)) MoveExecutor(targetPosition);
+        EmptyMovesList();
     }
 
     private bool IsValidQuuenMove(Vector3 targetPosition)

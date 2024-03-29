@@ -27,12 +27,15 @@ public class Rook : Piece
         {
             for (int y = 0; y < 8; y++)
             {
-                targetPosition = new Vector3(x, y, Constants.PIECE_Z_INDEX);
-                if (IsValidRookMove(targetPosition))
+                if (!CheckHandler.isKingInCheck)
                 {
-                    General.PossibleMove possibleMove = new General.PossibleMove(x, y, this);
-                    possiblePieceMovesList.Add(possibleMove);
-                    //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
+                    targetPosition = new Vector3(x, y, Constants.PIECE_Z_INDEX);
+                    if (IsValidRookMove(targetPosition))
+                    {
+                        General.PossibleMove possibleMove = new General.PossibleMove(x, y, this);
+                        possiblePieceMovesList.Add(possibleMove);
+                        //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
+                    }
                 }
             }
         }
@@ -43,9 +46,12 @@ public class Rook : Piece
     
     public override void MoveAttempt(Vector3 targetPosition)
     {
-        //Debug.Log("MoveAttempt Start.");
-        if (IsValidRookMove(targetPosition)) MoveExecutor(targetPosition);
-        EmptyMovesList();
+        if (!CheckHandler.isKingInCheck)
+        {
+            //Debug.Log("MoveAttempt Start.");
+            if (IsValidRookMove(targetPosition)) MoveExecutor(targetPosition);
+            EmptyMovesList();
+        }
     }
 
     private bool IsValidRookMove(Vector3 targetPosition)

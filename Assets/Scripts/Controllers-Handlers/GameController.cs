@@ -69,6 +69,7 @@ public class GameController : MonoBehaviour
     {
         if (turn == Constants.WHITE_TAG) turn = Constants.BLACK_TAG;
         else turn = Constants.WHITE_TAG;
+        CheckHandler.IsKingInCheck();
     }
 
     private void RandomTeams()

@@ -228,6 +228,7 @@ GameObject:
   - component: {fileID: 1792388797}
   - component: {fileID: 1792388796}
   - component: {fileID: 1792388795}
+  - component: {fileID: 1792388799}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -314,6 +315,18 @@ MonoBehaviour:
   BishopBlack: {fileID: 4904495234089930680, guid: 6f674fff672fc194db04f5c16b666e56, type: 3}
   QueenBlack: {fileID: 3022293851960606644, guid: 892e19ae803d8304bab2d7faf7081b3e, type: 3}
   KingBlack: {fileID: 3925175075176475427, guid: ed146a45c82da294aa48d88d187f1c56, type: 3}
+--- !u!114 &1792388799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1792388793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f5fe1488f42f08468176cead6639396, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

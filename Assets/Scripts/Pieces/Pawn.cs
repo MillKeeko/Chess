@@ -19,7 +19,7 @@ public class Pawn : Piece
     // Start is called before the first frame update
     void Start()
     {
-        GeneratePossibleMoves();
+        
     }
 
     // Update is called once per frame
@@ -30,14 +30,17 @@ public class Pawn : Piece
 
     public override void MoveAttempt(Vector3 targetPosition)
     {
-        //Debug.Log("MoveAttempt Start.");
-        if (IsValidPawnMove(targetPosition) || 
-            IsValidDiagonalAttack(targetPosition) || 
-            IsValidFirstMoveDouble(targetPosition))
+        if (!CheckHandler.isKingInCheck)
         {
-            MoveExecutor(targetPosition);
+            //Debug.Log("MoveAttempt Start.");
+            if (IsValidPawnMove(targetPosition) || 
+                IsValidDiagonalAttack(targetPosition) || 
+                IsValidFirstMoveDouble(targetPosition))
+            {
+                MoveExecutor(targetPosition);
+            }
+            EmptyMovesList();
         }
-        EmptyMovesList();
     }
 
     public override List<General.PossibleMove> GeneratePossibleMoves()
@@ -49,13 +52,16 @@ public class Pawn : Piece
             for (int y = 0; y < 8; y++)
             {
                 targetPosition = new Vector3(x, y, Constants.PIECE_Z_INDEX);
-                if (IsValidPawnMove(targetPosition) || 
-                    IsValidDiagonalAttack(targetPosition) || 
-                    IsValidFirstMoveDouble(targetPosition))
+                if (!CheckHandler.isKingInCheck)
                 {
-                    General.PossibleMove possibleMove = new General.PossibleMove(x, y, this);
-                    possiblePieceMovesList.Add(possibleMove);
-                    //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
+                    if (IsValidPawnMove(targetPosition) || 
+                        IsValidDiagonalAttack(targetPosition) || 
+                        IsValidFirstMoveDouble(targetPosition))
+                    {
+                        General.PossibleMove possibleMove = new General.PossibleMove(x, y, this);
+                        possiblePieceMovesList.Add(possibleMove);
+                        //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
+                    }
                 }
             }
         }

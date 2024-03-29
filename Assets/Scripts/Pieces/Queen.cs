@@ -26,12 +26,15 @@ public class Queen : Piece
         {
             for (int y = 0; y < 8; y++)
             {
-                targetPosition = new Vector3(x, y, Constants.PIECE_Z_INDEX);
-                if (IsValidQuuenMove(targetPosition))
+                if (!CheckHandler.isKingInCheck)
                 {
-                    General.PossibleMove possibleMove = new General.PossibleMove(x, y, this);
-                    possiblePieceMovesList.Add(possibleMove);
-                    //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
+                    targetPosition = new Vector3(x, y, Constants.PIECE_Z_INDEX);
+                    if (IsValidQuuenMove(targetPosition))
+                    {
+                        General.PossibleMove possibleMove = new General.PossibleMove(x, y, this);
+                        possiblePieceMovesList.Add(possibleMove);
+                        //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
+                    }
                 }
             }
         }
@@ -42,9 +45,12 @@ public class Queen : Piece
     
     public override void MoveAttempt(Vector3 targetPosition)
     {
-        //Debug.Log("MoveAttempt Start.");
-        if (IsValidQuuenMove(targetPosition)) MoveExecutor(targetPosition);
-        EmptyMovesList();
+        if (!CheckHandler.isKingInCheck)
+        {
+            //Debug.Log("MoveAttempt Start.");
+            if (IsValidQuuenMove(targetPosition)) MoveExecutor(targetPosition);
+            EmptyMovesList();
+        }
     }
 
     private bool IsValidQuuenMove(Vector3 targetPosition)

@@ -72,7 +72,7 @@ public class Piece : MonoBehaviour
         int oldX = (int)this.transform.position.x;
         int oldY = (int)this.transform.position.y;
         Piece targetPiece = TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
-
+        
         if (GetFirstMove() == true) SetFirstMoveFalse();
 
         if (targetPiece != null)

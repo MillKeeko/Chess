@@ -51,6 +51,7 @@ public class Knight : Piece
 
     private bool IsValidNormalKnightMove(Vector3 target)
     {
+        bool returnBool = false;
         int pieceX = (int)transform.position.x;
         int pieceY = (int)transform.position.y;
         int targetX = (int)target.x;
@@ -58,13 +59,13 @@ public class Knight : Piece
 
         if (targetX == pieceX - 2 || targetX == pieceX + 2)
         {
-            if (targetY == pieceY + 1 || targetY == pieceY - 1) return true;
+            if (targetY == pieceY + 1 || targetY == pieceY - 1) returnBool = true;
         }
         else if (targetY == pieceY - 2 || targetY == pieceY + 2)
         { 
-            if (targetX == pieceX + 1 || targetX == pieceX - 1) return true;
+            if (targetX == pieceX + 1 || targetX == pieceX - 1) returnBool = true;
         }
 
-        return false;
+        return returnBool;
     }
 }

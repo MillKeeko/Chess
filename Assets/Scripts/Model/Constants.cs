@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Model
+
 public static class Constants
 {
     public const int PIECE_Z_INDEX = -1;

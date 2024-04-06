@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//  Git Comments
+//  Model
 
 //  Controls game start
 //  Controls board setup
@@ -19,13 +19,18 @@ public class GameController : MonoBehaviour
     public static string botTag;
     public static string turn;
 
+
     //  Delegates
-    public delegate void OnPieceCreated (Piece piece, int x, int y);
+    public delegate void  OnPieceCreated (Piece piece, int x, int y);
     public delegate void OnBotTurn ();
+    public delegate void OnChangeTurn(string tag);
+    public delegate void OnGameStart ();
 
     //  Events
     public static event OnPieceCreated onPieceCreated;
     public static event OnBotTurn onBotTurn;
+    public static event OnChangeTurn onChangeTurn;
+    public static event OnGameStart onGameStart;
 
     void Awake()
     {
@@ -39,21 +44,16 @@ public class GameController : MonoBehaviour
 
         RandomTeams();
         SetupBoard();
+
+        onGameStart?.Invoke();
+
         CheckBotFirstTurn();
     }
 
     // Update is called once per frame
     void Update()
     {
-        triggerBotMove(); // Would bug out after 6 or so moves when in ChangeTurn()
-    }
-
-    private void triggerBotMove()
-    {
-        if (turn == botTag) 
-        {
-            onBotTurn?.Invoke();
-        }
+        
     }
 
     private void CheckBotFirstTurn()
@@ -69,6 +69,11 @@ public class GameController : MonoBehaviour
     {
         if (turn == Constants.WHITE_TAG) turn = Constants.BLACK_TAG;
         else turn = Constants.WHITE_TAG;
+        onChangeTurn?.Invoke(turn);
+        if (turn == botTag) 
+        {
+            onBotTurn?.Invoke();
+        }
     }
 
     private void RandomTeams()
@@ -86,6 +91,7 @@ public class GameController : MonoBehaviour
         }
     }
 
+    // Needs to move to view
     // Create board and place pieces, done at the beginning of the game
     private void SetupBoard()
     {
@@ -167,6 +173,7 @@ public class GameController : MonoBehaviour
         }
     }
 
+    // Needs to move to view
     // Instantiate piece and trigger event to be added to pieceTracker
     private void MakeChessPiece(GameObject piece, Vector3 position)
     {
@@ -175,6 +182,7 @@ public class GameController : MonoBehaviour
         onPieceCreated?.Invoke(instantiatedPiece, (int)position.x, (int)position.y);
     }
 
+    // Needs to move to view
     // Instantiate squares and place them in the array
     private void MakeSquare(GameObject square, Vector3 position)
     {

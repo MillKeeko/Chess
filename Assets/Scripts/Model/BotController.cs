@@ -2,17 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
+// Model
 
 //  Controls all bot move decision making
 public class BotController : MonoBehaviour
 {
     private List<Piece> pieceList;
-    private List<General.PossibleMove> possibleBotMovesList = new List<General.PossibleMove>();
+    private List<General.PossibleMove> possibleBotMovesList;
 
     void Awake()
     {
         pieceList = new List<Piece>();
+        possibleBotMovesList = new List<General.PossibleMove>();
     }
 
     // Start is called before the first frame update
@@ -30,8 +31,8 @@ public class BotController : MonoBehaviour
     private void MakeMove()
     {
         //Debug.Log("MakeMove start");
-        FillPieceList();
-        GenerateAllPossibleMoves();
+        pieceList = General.GeneratePieceList(GameController.botTag);
+        possibleBotMovesList = General.CompilePossibleMoves(pieceList);
         MakeRandomMove();
         EmptyLists();
     }
@@ -40,8 +41,6 @@ public class BotController : MonoBehaviour
     {
         pieceList.Clear(); // Can probably create an event for destroyed pieces
         possibleBotMovesList.Clear(); 
-
-        Debug.Log("Total possible bot moves after clear " + possibleBotMovesList.Count);
     }
 
     private void MakeRandomMove()
@@ -54,29 +53,4 @@ public class BotController : MonoBehaviour
 
         piece.MoveAttempt(targetPosition);
     }
-
-    // Method to generate a list of possible moves
-    private void GenerateAllPossibleMoves()
-    {
-        foreach (Piece piece in pieceList)
-        {
-            possibleBotMovesList.AddRange(piece.GeneratePossibleMoves());
-        }
-        Debug.Log("Total possible bot moves " + possibleBotMovesList.Count);
-    }
-
-    private void FillPieceList()
-    {
-        Piece[] pieceArray = GameObject.FindObjectsOfType<Piece>();
-
-        foreach (Piece piece in pieceArray)
-        {
-            if (piece.CompareTag(GameController.botTag))
-            {
-                pieceList.Add(piece);
-                //Debug.Log(piece);
-            }
-        }
-        //Debug.Log(pieceList.Count);
-    } 
 }

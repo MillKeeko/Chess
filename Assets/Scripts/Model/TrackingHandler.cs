@@ -2,10 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Model
+
 //  Handles all write access to the pieceTracker array
 //  Handles all write access to the tempPieceTracker array
 public class TrackingHandler : MonoBehaviour
 {
+    public GameObject PawnBlack, RookBlack, KnightBlack, BishopBlack, QueenBlack, KingBlack;
     public GameObject circle;
     public static Piece[,] pieceTracker;
 
@@ -53,6 +56,20 @@ public class TrackingHandler : MonoBehaviour
 
         RemoveFromTracker(oldX, oldY);
         AddToTracker(piece, newX, newY);
+    }
+
+    private void SetupTracker(string turn)
+    {
+        int blackPawnRow, blackPieceRow, whitePawnRow, whitePieceRow, queenCol, kingCol;
+
+        if (turn == Constants.WHITE_TAG)
+        {
+
+        }
+        else
+        {
+
+        }
     }
 
     private void RemoveFromTracker(int x, int y)

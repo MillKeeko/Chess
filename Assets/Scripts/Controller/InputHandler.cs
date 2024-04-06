@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Controller
+
 //  Handles all piece movement input from player
 //  Handles all UI input from player
 public class InputHandler : MonoBehaviour

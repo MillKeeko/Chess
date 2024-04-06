@@ -10,7 +10,7 @@ using UnityEngine;
 public class Piece : MonoBehaviour
 {
     protected bool firstMove = true; // For some reason when this was in Awake() it was false in Pawn Start() call
-    protected List<General.PossibleMove> possiblePieceMovesList = new List<General.PossibleMove>(); // Also broke when initialized in Awake()
+    public List<General.PossibleMove> possiblePieceMovesList = new List<General.PossibleMove>(); // Also broke when initialized in Awake()
 
     //  Delegates
     public delegate void OnPieceMoved (Piece piece, int oldX, int oldY);
@@ -24,7 +24,9 @@ public class Piece : MonoBehaviour
 
     void Awake()
     {
-
+        GameController.onGameStart += GeneratePossibleMoves;
+        onMoveExecuted += GeneratePossibleMoves;
+        CheckHandler.onDoesMoveRemoveCheck += GeneratePossibleMoves;
     }
 
     // Start is called before the first frame update
@@ -39,9 +41,9 @@ public class Piece : MonoBehaviour
         
     }
 
-    public virtual List<General.PossibleMove> GeneratePossibleMoves()
+    public virtual void GeneratePossibleMoves()
     {
-        return possiblePieceMovesList;
+        
     }
 
     public virtual void MoveAttempt(Vector3 targetPosition)

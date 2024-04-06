@@ -19,9 +19,11 @@ public class King : Piece
         
     }
 
-    public override List<General.PossibleMove> GeneratePossibleMoves()
+    public override void GeneratePossibleMoves()
     {
         Vector3 targetPosition;
+        EmptyMovesList();
+        Debug.Log("Generating moves for " + this.tag);
 
         for (int x = 0; x < 8; x++)
         {
@@ -31,21 +33,21 @@ public class King : Piece
                 if (IsValidKingMove(targetPosition))
                 {
                     General.PossibleMove possibleMove = new General.PossibleMove(x, y, this);
-                    possiblePieceMovesList.Add(possibleMove);
-                    //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
+                    if (!CheckHandler.isKingInCheck || CheckHandler.DoesMoveRemoveCheck(possibleMove))
+                    {
+                        possiblePieceMovesList.Add(possibleMove);
+                        //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
+                    }
                 }
             }
         }
-
         //Debug.Log(this + " has " + possiblePieceMovesList.Count + " possible moves.");
-        return possiblePieceMovesList;
     }
     
     public override void MoveAttempt(Vector3 targetPosition)
     {
         //Debug.Log("MoveAttempt Start.");
         if (IsValidKingMove(targetPosition)) MoveExecutor(targetPosition);
-        EmptyMovesList();
     }
 
     private bool IsValidKingMove(Vector3 targetPosition)

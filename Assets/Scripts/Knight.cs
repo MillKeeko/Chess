@@ -25,12 +25,13 @@ public class Knight : Piece
         {
             MoveExecutor(targetPosition);
         }  
-        EmptyMovesList();
+        
     }
 
-    public override List<General.PossibleMove> GeneratePossibleMoves()
+    public override void GeneratePossibleMoves()
     {
         Vector3 targetPosition;
+        EmptyMovesList();
 
         for (int x = 0; x < 8; x++)
         {
@@ -40,14 +41,15 @@ public class Knight : Piece
                 if (IsValidKnightMove(targetPosition))
                 {
                     General.PossibleMove possibleMove = new General.PossibleMove(x, y, this);
-                    possiblePieceMovesList.Add(possibleMove);
-                    //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
+                    if (!CheckHandler.isKingInCheck || CheckHandler.DoesMoveRemoveCheck(possibleMove))
+                    {
+                        possiblePieceMovesList.Add(possibleMove);
+                        //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
+                    }
                 }
             }
         }
-
         //Debug.Log(this + " has " + possiblePieceMovesList.Count + " possible moves.");
-        return possiblePieceMovesList;
     }
 
     private bool IsValidKnightMove(Vector3 targetPosition)

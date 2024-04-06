@@ -10,6 +10,8 @@ public class Piece : MonoBehaviour
 
     protected bool FirstMove = true;
 
+    
+
     void Awake()
     {
         
@@ -18,7 +20,7 @@ public class Piece : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        GeneratePossibleMoves();
     }
 
     // Update is called once per frame
@@ -27,6 +29,26 @@ public class Piece : MonoBehaviour
         
     }
 
+    //
+    //  Public Methods
+    //
+
+    //  Loop through possible moves to see if move attempt is valid
+    public void MoveAttempt(Vector2 targetPosition)
+    {
+        foreach (General.PossibleMove move in PossibleMovesList)
+        {
+            if (targetPosition == move.TargetPosition)
+            {
+                Debug.Log("Valid Move.");
+            }
+        }
+    }
+
+    //
+    //  Virtual Methods
+    //
+
     //  Evaluates all 64 tiles and determines which are possible moves for this piece
     //  Adds each move to the possibleMovesList
     public virtual void GeneratePossibleMoves()
@@ -34,14 +56,9 @@ public class Piece : MonoBehaviour
         
     }
 
-    //  
-    public virtual void MoveAttempt(Vector2 targetPosition)
-    {
-        foreach (General.PossibleMove move in PossibleMovesList)
-        {
-            
-        }
-    }
+    //
+    //  Protected Methods
+    //
 
     protected void EmptyMovesList()
     {
@@ -60,22 +77,22 @@ public class Piece : MonoBehaviour
     {
         bool blockingBool = false;
 
-        /*Vector2 moveUnitVector = CalculateMoveUnitVector(targetPosition);
+        Vector2 moveUnitVector = CalculateMoveUnitVector(targetPosition);
         int distance = CalculateMoveDistance(targetPosition);
 
         for (int i = 1; i < Mathf.Abs(distance); i++)
         {
-            Vector2 checkPosition = new Vector2((this.transform.position.x + (moveUnitVector.x * i)), 
-                                                (this.transform.position.y + (moveUnitVector.y * i)));
+            Vector2 blockPosition = new Vector2((Position.x + (moveUnitVector.x * i)), 
+                                                (Position.y + (moveUnitVector.y * i)));
             //Debug.Log("x * i " + (x * i));
             //Debug.Log("y * i " + (y * i));
-            //Debug.Log("IsPieceBlocking() checking " + this + " at x " + (int)checkPosition.x + " y " + (int)checkPosition.y);
-            if (TrackingHandler.pieceTracker[(int)checkPosition.x,(int)checkPosition.y] != null) 
+            //Debug.Log("IsPieceBlocking() checking " + this + " at x " + (int)blockPosition.x + " y " + (int)blockPosition.y);
+            if (TrackingHandler.pieceTracker[(int)blockPosition.x,(int)blockPosition.y] != null) 
             {
                 blockingBool = true;
             }
-            //Debug.Log("No piece in the way at x " + (int)checkPosition.x + " and y " + (int)checkPosition.y);
-        }*/
+            //Debug.Log("No piece in the way at x " + (int)blockPosition.x + " and y " + (int)blockPosition.y);
+        }
 
         return blockingBool;
     }
@@ -84,8 +101,8 @@ public class Piece : MonoBehaviour
     protected Vector2 CalculateMoveUnitVector(Vector2 targetPosition)
     {
         // Create unitary vector of the target relative to the piece
-        Vector2 moveVector = new Vector2((int)targetPosition.x - (int)this.transform.position.x,
-                                         (int)targetPosition.y - (int)this.transform.position.y);
+        Vector2 moveVector = new Vector2((int)targetPosition.x - (int)Position.x,
+                                         (int)targetPosition.y - (int)Position.y);
         Vector2 unitMoveVector = moveVector.normalized;
 
         // Simplify unit vector
@@ -104,8 +121,8 @@ public class Piece : MonoBehaviour
     protected int CalculateMoveDistance(Vector3 targetPosition)
     {
         // Find the distance the piece is moving
-        int distanceX = (int)targetPosition.x - (int)this.transform.position.x;
-        int distanceY = (int)targetPosition.y - (int)this.transform.position.y;
+        int distanceX = (int)targetPosition.x - (int)Position.x;
+        int distanceY = (int)targetPosition.y - (int)Position.y;
         int distance = 0;
 
         if (Mathf.Abs(distanceX) > Mathf.Abs(distanceY)) distance = Mathf.Abs(distanceX);

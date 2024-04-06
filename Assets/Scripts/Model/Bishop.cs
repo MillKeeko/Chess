@@ -18,6 +18,10 @@ public class Bishop : Piece
         
     }
 
+    //
+    //  Override Methods
+    //
+
     public override void GeneratePossibleMoves()
     {
         Vector2 targetPosition;
@@ -38,11 +42,10 @@ public class Bishop : Piece
         }
         //Debug.Log(this + " has " + possiblePieceMovesList.Count + " possible moves.");
     }
-    
-    public override void MoveAttempt(Vector2 targetPosition)
-    {
-        if (IsValidBishopMove(targetPosition)) MoveExecutor(targetPosition);
-    }
+
+    //
+    //  Private Methods
+    //
 
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules

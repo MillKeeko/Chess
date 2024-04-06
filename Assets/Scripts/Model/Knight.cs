@@ -18,16 +18,9 @@ public class Knight : Piece
         
     }
 
-    public override void MoveAttempt(Vector2 targetPosition)
-    {
-        //Debug.Log("MoveAttempt Start.");
-        if (IsValidKnightMove(targetPosition))
-        {
-            MoveExecutor(targetPosition);
-        }  
-        
-    }
-
+    //
+    //  Override Methods
+    //
     public override void GeneratePossibleMoves()
     {
         Vector2 targetPosition;
@@ -48,6 +41,10 @@ public class Knight : Piece
         }
         //Debug.Log(this + " has " + possiblePieceMovesList.Count + " possible moves.");
     }
+
+    //
+    //  Private Methods
+    //
 
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules

@@ -29,16 +29,6 @@ public class Pawn : Piece
     //  Override methods
     //
 
-    public override void MoveAttempt(Vector2 targetPosition)
-    {
-        if (IsValidForwardMove(targetPosition) || 
-            IsValidDiagonalAttack(targetPosition) || 
-            IsValidFirstMoveDouble(targetPosition))
-        {
-            MoveExecutor(targetPosition);
-        }   
-    }
-
     public override void GeneratePossibleMoves()
     {
         Vector2 targetPosition;

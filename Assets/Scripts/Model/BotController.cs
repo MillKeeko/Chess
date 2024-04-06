@@ -19,7 +19,7 @@ public class BotController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameController.onBotTurn += MakeMove;
+        //GameController.OnBotMoveEvent += MakeMove;
     }
 
     // Update is called once per frame
@@ -31,7 +31,7 @@ public class BotController : MonoBehaviour
     private void MakeMove()
     {
         //Debug.Log("MakeMove start");
-        pieceList = General.GeneratePieceList(GameController.botTag);
+        pieceList = General.GeneratePieceList(GameController.BotTag);
         possibleBotMovesList = General.CompilePossibleMoves(pieceList);
         MakeRandomMove();
         EmptyLists();

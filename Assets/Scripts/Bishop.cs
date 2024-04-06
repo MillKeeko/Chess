@@ -31,18 +31,15 @@ public class Bishop : Piece
                 if (IsValidBishopMove(targetPosition))
                 {
                     General.PossibleMove possibleMove = new General.PossibleMove(x, y, this);
-                    if (!CheckHandler.isKingInCheck || CheckHandler.DoesMoveRemoveCheck(possibleMove))
-                    {
-                        possiblePieceMovesList.Add(possibleMove);
-                        //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
-                    }
+                    PossibleMovesList.Add(possibleMove);
+                    //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
                 }
             }
         }
         //Debug.Log(this + " has " + possiblePieceMovesList.Count + " possible moves.");
     }
     
-    public override void MoveAttempt(Vector3 targetPosition)
+    public override void MoveAttempt(Vector2 targetPosition)
     {
         Debug.Log("MoveAttempt Start.");
         if (IsValidBishopMove(targetPosition)) MoveExecutor(targetPosition);

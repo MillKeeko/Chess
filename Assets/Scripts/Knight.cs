@@ -18,7 +18,7 @@ public class Knight : Piece
         
     }
 
-    public override void MoveAttempt(Vector3 targetPosition)
+    public override void MoveAttempt(Vector2 targetPosition)
     {
         //Debug.Log("MoveAttempt Start.");
         if (IsValidKnightMove(targetPosition))
@@ -41,18 +41,15 @@ public class Knight : Piece
                 if (IsValidKnightMove(targetPosition))
                 {
                     General.PossibleMove possibleMove = new General.PossibleMove(x, y, this);
-                    if (!CheckHandler.isKingInCheck || CheckHandler.DoesMoveRemoveCheck(possibleMove))
-                    {
-                        possiblePieceMovesList.Add(possibleMove);
-                        //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
-                    }
+                    PossibleMovesList.Add(possibleMove);
+                    //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);  
                 }
             }
         }
         //Debug.Log(this + " has " + possiblePieceMovesList.Count + " possible moves.");
     }
 
-    private bool IsValidKnightMove(Vector3 targetPosition)
+    private bool IsValidKnightMove(Vector2 targetPosition)
     {
         bool returnBool = false;
         int pieceX = (int)transform.position.x;

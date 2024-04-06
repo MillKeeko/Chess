@@ -228,7 +228,7 @@ GameObject:
   - component: {fileID: 1792388797}
   - component: {fileID: 1792388796}
   - component: {fileID: 1792388795}
-  - component: {fileID: 1792388799}
+  - component: {fileID: 1792388800}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -301,6 +301,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1b3c4fbb588f7442a08ab14b17eb2da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1792388800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1792388793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5537fe985f365984a8dcdc4f149e37d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   SquareBlack: {fileID: 7937485521606770488, guid: 783894dab1b5fd046829ff2aabd0b610, type: 3}
   SquareWhite: {fileID: 7686801826164668419, guid: 6b2518e2bd5ab5b41b4e66a538875cd8, type: 3}
   PawnWhite: {fileID: 8969731290301256490, guid: 501dbab9bdc8b4f4b959aebb749aeb39, type: 3}
@@ -315,18 +327,6 @@ MonoBehaviour:
   BishopBlack: {fileID: 4904495234089930680, guid: 6f674fff672fc194db04f5c16b666e56, type: 3}
   QueenBlack: {fileID: 3022293851960606644, guid: 892e19ae803d8304bab2d7faf7081b3e, type: 3}
   KingBlack: {fileID: 3925175075176475427, guid: ed146a45c82da294aa48d88d187f1c56, type: 3}
---- !u!114 &1792388799
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1792388793}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aff6f1203e005d643989d91467995d48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -3,14 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Controller
-
-//  Handles all piece movement input from player
-//  Handles all UI input from player
+//  ---------- Can I take the transform logic out of the targetPosition???????
 public class InputHandler : MonoBehaviour
 {
-    public GameController gameController;
+    public static InputHandler instance { get; private set; }
 
-    private Piece selectedPiece, square;
+    private Piece _selectedPiece;
+    private Piece _targetPiece;
+    private Square _targetSquare;
+
+    void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            instance = this;
+        }
+    }
 
     void Update()
     {
@@ -19,36 +31,45 @@ public class InputHandler : MonoBehaviour
 
     private void HandleMouseClick()
     {
-        Vector3 targetPosition;
+        Vector2 targetPosition;
 
          // Handle mouse click when it's the player's turn
-        if (GameController.turn == GameController.playerTag && Input.GetMouseButtonDown(0))
+        if (GameController.Turn == GameController.PlayerTag && Input.GetMouseButtonDown(0))
         {
             Vector2 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(clickPosition, Vector2.zero);
 
             if (hit.collider != null)
             {
-                // Check player selecting their piece
-                if (hit.collider.CompareTag(GameController.playerTag) && selectedPiece == null)
+                //  Check player is selecting their piece
+                if (hit.collider.CompareTag(GameController.PlayerTag) && _selectedPiece == null)
                 {
-                    selectedPiece = hit.collider.GetComponent<Piece>();
-                    //Debug.Log("Piece selected " + selectedPiece);
+                    _selectedPiece = hit.collider.GetComponent<Piece>();
+                    Debug.Log("Piece selected " + _selectedPiece);
                 }
-                // Check player making a move
-                else if ((hit.collider.CompareTag(GameController.botTag) && selectedPiece != null) ||
-                         (hit.collider.CompareTag(Constants.SQUARE_TAG) && selectedPiece != null))
+                //  Check player is trying to take a piece
+                else if (hit.collider.CompareTag(GameController.BotTag) && _selectedPiece != null)
                 {
-                    //Debug.Log("Move Attempted.");
-                    targetPosition = new Vector3 (hit.collider.transform.position.x, hit.collider.transform.position.y, Constants.PIECE_Z_INDEX);
-                    selectedPiece.MoveAttempt(targetPosition);
-                    selectedPiece = null; // reset selected piece
+                    Debug.Log("Move Attempted.");
+                    _targetPiece = hit.collider.GetComponent<Piece>();
+                    targetPosition = new Vector2 (_targetPiece.Position.x, _targetPiece.Position.y);
+                    _selectedPiece.MoveAttempt(targetPosition);
+                    _selectedPiece = null; // reset selected piece
+                }
+                //  Check player is trying to move a piece
+                else if (hit.collider.CompareTag(Constants.SQUARE_TAG) && _selectedPiece != null)
+                {
+                    Debug.Log("Move Attempted.");
+                    _targetSquare = hit.collider.GetComponent<Square>();
+                    targetPosition = new Vector2 (_targetSquare.Position.x, _targetSquare.Position.y);
+                    _selectedPiece.MoveAttempt(targetPosition);
+                    _selectedPiece = null; // reset selected piece
                 }
                 // Else player not selecting or moving anything
                 else 
                 {
-                    //Debug.Log("Nothing Selected.");
-                    selectedPiece = null; // reset selected piece
+                    Debug.Log("Nothing Selected.");
+                    _selectedPiece = null; // reset selected piece
                 }
             }
         }

@@ -2,31 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//  I don't like how I need a separate OnMoveExecuted event right now
 
-//  Virtual MoveValidator for child classes to override
-//  MoveExecutor moves the piece and can't be overridden
-//  DestroyInstance which destroys the piece and can't be overridden
 public class Piece : MonoBehaviour
 {
-    protected bool firstMove = true; // For some reason when this was in Awake() it was false in Pawn Start() call
-    public List<General.PossibleMove> possiblePieceMovesList = new List<General.PossibleMove>(); // Also broke when initialized in Awake()
+    public Vector2 Position;
+    public List<General.PossibleMove> PossibleMovesList = new List<General.PossibleMove>();
 
-    //  Delegates
-    public delegate void OnPieceMoved (Piece piece, int oldX, int oldY);
-    public delegate void OnPieceDestroyed (int x, int y);
-    public delegate void OnMoveExecuted ();
-
-    //  Events
-    public static event OnPieceMoved onPieceMoved;
-    public static event OnPieceDestroyed onPieceDestroyed;
-    public static event OnMoveExecuted onMoveExecuted; // Wish I didn't have to use this
+    protected bool FirstMove = true;
 
     void Awake()
     {
-        GameController.onGameStart += GeneratePossibleMoves;
-        onMoveExecuted += GeneratePossibleMoves;
-        CheckHandler.onDoesMoveRemoveCheck += GeneratePossibleMoves;
+        
     }
 
     // Start is called before the first frame update
@@ -41,56 +27,37 @@ public class Piece : MonoBehaviour
         
     }
 
+    //  Evaluates all 64 tiles and determines which are possible moves for this piece
+    //  Adds each move to the possibleMovesList
     public virtual void GeneratePossibleMoves()
     {
         
     }
 
-    public virtual void MoveAttempt(Vector3 targetPosition)
+    //  
+    public virtual void MoveAttempt(Vector2 targetPosition)
     {
         
     }
 
     protected void EmptyMovesList()
     {
-        possiblePieceMovesList.Clear();
-    }
-
-
-    protected void DestroyInstance()
-    {
-        //Debug.Log("Destroy " + this);
-        int x = (int)this.transform.position.x;
-        int y = (int)this.transform.position.y;
-
-        onPieceDestroyed?.Invoke(x, y);
-        Destroy(gameObject);
+        PossibleMovesList.Clear();
     }
 
     // Destroy target piece and move selected piece
-    protected void MoveExecutor(Vector3 targetPosition)
+    protected void MoveExecutor(Vector2 targetPosition)
     {
-        //Debug.Log("MoveExecutor Start.");
-        int oldX = (int)this.transform.position.x;
-        int oldY = (int)this.transform.position.y;
-        Piece targetPiece = TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
-
-        if (GetFirstMove() == true) SetFirstMoveFalse();
-
-        if (targetPiece != null)
-        {
-            targetPiece.DestroyInstance();
-        }
-
-        this.transform.position = targetPosition;
-        onPieceMoved?.Invoke(this, oldX, oldY);
-        onMoveExecuted?.Invoke();
+        //  Set first move to false if true
+        //  Destroy target piece (nooooooo)
+        //  Move piece (noooooooo)
     }
 
-    protected bool IsRangeMoveBlocked(Vector3 targetPosition)
+    protected bool IsRangeMoveBlocked(Vector2 targetPosition)
     {
         bool blockingBool = false;
-        Vector2 moveUnitVector = CalculateMoveUnitVector(targetPosition);
+
+        /*Vector2 moveUnitVector = CalculateMoveUnitVector(targetPosition);
         int distance = CalculateMoveDistance(targetPosition);
 
         for (int i = 1; i < Mathf.Abs(distance); i++)
@@ -105,12 +72,13 @@ public class Piece : MonoBehaviour
                 blockingBool = true;
             }
             //Debug.Log("No piece in the way at x " + (int)checkPosition.x + " and y " + (int)checkPosition.y);
-        }
+        }*/
 
         return blockingBool;
     }
 
-    protected Vector2 CalculateMoveUnitVector(Vector3 targetPosition)
+    //  
+    protected Vector2 CalculateMoveUnitVector(Vector2 targetPosition)
     {
         // Create unitary vector of the target relative to the piece
         Vector2 moveVector = new Vector2((int)targetPosition.x - (int)this.transform.position.x,
@@ -149,7 +117,7 @@ public class Piece : MonoBehaviour
 
     protected bool GetFirstMove()
     {
-        return firstMove;
+        return FirstMove;
     }
 
     //
@@ -159,6 +127,6 @@ public class Piece : MonoBehaviour
     protected void SetFirstMoveFalse()
     {
         //Debug.Log("Setting first move false.");
-        firstMove = false;
+        FirstMove = false;
     }
 }

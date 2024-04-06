@@ -21,18 +21,13 @@ public class General
         }
     };
 
-    public static int RandomSide() 
-    {
-        return Random.Range(0,2); 
-    }
-
     public static List<PossibleMove> CompilePossibleMoves(List<Piece> pieceList)
     {
         List<PossibleMove> possibleMoveList = new List<PossibleMove>();
 
         foreach (Piece piece in pieceList)
         {
-            possibleMoveList.AddRange(piece.possiblePieceMovesList);
+            possibleMoveList.AddRange(piece.PossibleMovesList);
         }
         return possibleMoveList;
     }
@@ -56,7 +51,7 @@ public class General
     {
         string enemyTag = null;
 
-        if (GameController.turn == Constants.WHITE_TAG) enemyTag = Constants.BLACK_TAG;
+        if (GameController.Turn == Constants.WHITE_TAG) enemyTag = Constants.BLACK_TAG;
         else enemyTag = Constants.WHITE_TAG;
 
         return enemyTag;    

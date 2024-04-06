@@ -2,27 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Model
+//  Model
+//  Singleton
 
-//  Handles all write access to the pieceTracker array
-//  Handles all write access to the tempPieceTracker array
 public class TrackingHandler : MonoBehaviour
 {
-    public GameObject PawnBlack, RookBlack, KnightBlack, BishopBlack, QueenBlack, KingBlack;
+    public static TrackingHandler instance { get; private set; }
+
     public GameObject circle;
     public static Piece[,] pieceTracker;
 
+    
     void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            instance = this;
+        }
+
         pieceTracker = new Piece [8,8];
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        GameController.onPieceCreated += AddToTracker;
-        Piece.onPieceMoved += PieceMovedPosition;
-        Piece.onPieceDestroyed += RemoveFromTracker;
+        //GameController.onPieceCreated += AddToTracker;
+        //Piece.onPieceMoved += PieceMovedPosition;
+        //Piece.onPieceDestroyed += RemoveFromTracker;
     }
 
     //private float timer = 0;
@@ -60,8 +70,6 @@ public class TrackingHandler : MonoBehaviour
 
     private void SetupTracker(string turn)
     {
-        int blackPawnRow, blackPieceRow, whitePawnRow, whitePieceRow, queenCol, kingCol;
-
         if (turn == Constants.WHITE_TAG)
         {
 

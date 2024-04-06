@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //  MoveValidator
-//      IsCastle
-//      IsNormalRookMove
-public class Rook : Piece
+//      IsNormalBishopMove
+public class Bishop : Piece
 {
     // Start is called before the first frame update
     void Start()
@@ -29,7 +28,7 @@ public class Rook : Piece
             for (int y = 0; y < 8; y++)
             {
                 targetPosition = new Vector2(x, y);
-                if (IsValidRookMove(targetPosition))
+                if (IsValidBishopMove(targetPosition))
                 {
                     General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
                     PossibleMovesList.Add(possibleMove);
@@ -42,24 +41,25 @@ public class Rook : Piece
     
     public override void MoveAttempt(Vector2 targetPosition)
     {
-        //Debug.Log("MoveAttempt Start.");
-        if (IsValidRookMove(targetPosition)) MoveExecutor(targetPosition);
-        
+        if (IsValidBishopMove(targetPosition)) MoveExecutor(targetPosition);
     }
 
-    private bool IsValidRookMove(Vector2 targetPosition)
+    //  Take vector2 representing move target location in TrackingHandler.pieceTracker
+    //  Returns bool if given position of piece, the move follows the rules
+    private bool IsValidBishopMove(Vector2 targetPosition)
     {
         bool returnBool = false;
         Piece target = TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
-        
+
         // if the difference between the x == the difference between the y, or the negative of that difference
-        if ((targetPosition.x == transform.position.x  || targetPosition.y == transform.position.y) &&
+        if ((targetPosition.x - transform.position.x == targetPosition.y - transform.position.y ||
+            targetPosition.x - transform.position.x == -1 * (targetPosition.y - transform.position.y)) &&
             (target == null || !target.CompareTag(this.tag)) &&
             !IsRangeMoveBlocked(targetPosition))
         {
             returnBool = true;
         }
-
+        
         return returnBool;
     }
 }

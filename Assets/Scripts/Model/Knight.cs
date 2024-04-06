@@ -49,6 +49,8 @@ public class Knight : Piece
         //Debug.Log(this + " has " + possiblePieceMovesList.Count + " possible moves.");
     }
 
+    //  Take vector2 representing move target location in TrackingHandler.pieceTracker
+    //  Returns bool if given position of piece, the move follows the rules
     private bool IsValidKnightMove(Vector2 targetPosition)
     {
         bool returnBool = false;

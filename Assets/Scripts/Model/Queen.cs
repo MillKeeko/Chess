@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //  MoveValidator
-//      IsNormalBishopMove
-public class Bishop : Piece
+//      IsNormalQueenMove
+public class Queen : Piece
 {
     // Start is called before the first frame update
     void Start()
@@ -28,8 +28,8 @@ public class Bishop : Piece
             for (int y = 0; y < 8; y++)
             {
                 targetPosition = new Vector2(x, y);
-                if (IsValidBishopMove(targetPosition))
-                {
+                if (IsValidQueenMove(targetPosition))
+                { 
                     General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
                     PossibleMovesList.Add(possibleMove);
                     //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
@@ -41,23 +41,28 @@ public class Bishop : Piece
     
     public override void MoveAttempt(Vector2 targetPosition)
     {
-        if (IsValidBishopMove(targetPosition)) MoveExecutor(targetPosition);
+        //Debug.Log("MoveAttempt Start.");
+        if (IsValidQueenMove(targetPosition)) MoveExecutor(targetPosition);
     }
 
-    private bool IsValidBishopMove(Vector2 targetPosition)
+    //  Take vector2 representing move target location in TrackingHandler.pieceTracker
+    //  Returns bool if given position of piece, the move follows the rules
+    private bool IsValidQueenMove(Vector2 targetPosition)
     {
         bool returnBool = false;
         Piece target = TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
-
-        // if the difference between the x == the difference between the y, or the negative of that difference
+        
+        // Combined logic for Rook and Bishop
         if ((targetPosition.x - transform.position.x == targetPosition.y - transform.position.y ||
-            targetPosition.x - transform.position.x == -1 * (targetPosition.y - transform.position.y)) &&
+            targetPosition.x - transform.position.x == -1 * (targetPosition.y - transform.position.y) ||
+            targetPosition.x == transform.position.x  || 
+            targetPosition.y == transform.position.y) &&
             (target == null || !target.CompareTag(this.tag)) &&
             !IsRangeMoveBlocked(targetPosition))
         {
             returnBool = true;
         }
-        
+
         return returnBool;
     }
 }

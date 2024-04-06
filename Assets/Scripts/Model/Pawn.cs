@@ -66,7 +66,6 @@ public class Pawn : Piece
     //  Private Methods
     //
 
-    //  ----------// Maybe this should also accept piecePosition?
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules
     private bool IsValidDiagonalAttack(Vector2 targetPosition)
@@ -79,11 +78,20 @@ public class Pawn : Piece
         //              target tile has a piece                 AND
         //              that piece is the opposite colour
         //      THEN    return true
+        if (targetPosition.x == Position.x + 1 || targetPosition.x == Position.x - 1)
+        {
+            if (targetPosition.y == (Position.y + _forwardMove) &&
+                TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y] != null &&
+                !TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y].CompareTag(this.tag))
+            {
+                //Debug.Log("See diagonal move");
+                returnBool = true;
+            }
+        }
 
         return returnBool;
     }
 
-    //  ----------// Maybe this should also accept piecePosition?
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules
     private bool IsValidForwardMove(Vector2 targetPosition)
@@ -95,11 +103,19 @@ public class Pawn : Piece
         //              target is on same file              AND
         //              No piece on target tile
         //      THEN    return true
+        if (targetPosition.x == Position.x)
+        {
+            if (targetPosition.y == (Position.y + _forwardMove) &&
+                TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y] == null)
+            {
+                //Debug.Log("See normal move");
+                returnBool = true;
+            }
+        }
 
         return returnBool;
     }
 
-    //  ----------// Maybe this should also accept piecePosition?
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules
     private bool IsValidFirstMoveDouble(Vector2 targetPosition) 
@@ -112,6 +128,14 @@ public class Pawn : Piece
         //              target is on same file              AND
         //              No piece in either 2 ranks forward
         //      THEN    return true
+        if (GetFirstMove() && 
+            (targetPosition.y == (Position.y + (2 * _forwardMove))) &&
+            targetPosition.x == Position.x &&
+            TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y] == null)
+        {
+            //Debug.Log("See double move");
+            returnBool = true;
+        }
 
         return returnBool;
     }

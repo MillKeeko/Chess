@@ -46,6 +46,8 @@ public class King : Piece
         if (IsValidKingMove(targetPosition)) MoveExecutor(targetPosition);
     }
 
+    //  Take vector2 representing move target location in TrackingHandler.pieceTracker
+    //  Returns bool if given position of piece, the move follows the rules
     private bool IsValidKingMove(Vector2 targetPosition)
     {
         bool returnBool = false;

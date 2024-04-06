@@ -54,7 +54,7 @@ public class Pawn : Piece
                     IsValidDiagonalAttack(targetPosition) || 
                     IsValidFirstMoveDouble(targetPosition))
                 {
-                    General.PossibleMove possibleMove = new General.PossibleMove(x, y, this);
+                    General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
                     PossibleMovesList.Add(possibleMove);
                 }
             }

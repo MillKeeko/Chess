@@ -8,16 +8,14 @@ public class General
 {
     public struct PossibleMove
     {
-        public int X;
-        public int Y;
-        public Piece MovePiece;
+        public Vector2 TargetPosition;
+        public Piece SelectedPiece;
 
         // Constructor
-        public PossibleMove (int x, int y, Piece movePiece)
+        public PossibleMove (Vector2 targetPosition, Piece selectedPiece)
         {
-            X = x;
-            Y = y;
-            MovePiece = movePiece;
+            TargetPosition = targetPosition;
+            SelectedPiece = selectedPiece;
         }
     };
 

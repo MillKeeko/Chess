@@ -37,7 +37,10 @@ public class Piece : MonoBehaviour
     //  
     public virtual void MoveAttempt(Vector2 targetPosition)
     {
-        
+        foreach (General.PossibleMove move in PossibleMovesList)
+        {
+            
+        }
     }
 
     protected void EmptyMovesList()

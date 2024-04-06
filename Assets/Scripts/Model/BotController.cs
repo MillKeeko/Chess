@@ -48,8 +48,8 @@ public class BotController : MonoBehaviour
         int randomIndex = Random.Range(0, possibleBotMovesList.Count);
         General.PossibleMove move = possibleBotMovesList[randomIndex];
 
-        Piece piece = move.MovePiece;
-        Vector3 targetPosition = new Vector3(move.X, move.Y, Constants.PIECE_Z_INDEX);
+        Piece piece = move.SelectedPiece;
+        Vector3 targetPosition = new Vector3(move.TargetPosition.x, move.TargetPosition.y, Constants.PIECE_Z_INDEX);
 
         piece.MoveAttempt(targetPosition);
     }

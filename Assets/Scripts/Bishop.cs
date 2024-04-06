@@ -20,17 +20,17 @@ public class Bishop : Piece
 
     public override void GeneratePossibleMoves()
     {
-        Vector3 targetPosition;
+        Vector2 targetPosition;
         EmptyMovesList();
 
         for (int x = 0; x < 8; x++)
         {
             for (int y = 0; y < 8; y++)
             {
-                targetPosition = new Vector3(x, y, Constants.PIECE_Z_INDEX);
+                targetPosition = new Vector2(x, y);
                 if (IsValidBishopMove(targetPosition))
                 {
-                    General.PossibleMove possibleMove = new General.PossibleMove(x, y, this);
+                    General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
                     PossibleMovesList.Add(possibleMove);
                     //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
                 }
@@ -41,11 +41,10 @@ public class Bishop : Piece
     
     public override void MoveAttempt(Vector2 targetPosition)
     {
-        Debug.Log("MoveAttempt Start.");
         if (IsValidBishopMove(targetPosition)) MoveExecutor(targetPosition);
     }
 
-    private bool IsValidBishopMove(Vector3 targetPosition)
+    private bool IsValidBishopMove(Vector2 targetPosition)
     {
         bool returnBool = false;
         Piece target = TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y];

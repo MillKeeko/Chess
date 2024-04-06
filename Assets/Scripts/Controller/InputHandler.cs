@@ -45,12 +45,10 @@ public class InputHandler : MonoBehaviour
                 if (hit.collider.CompareTag(GameController.PlayerTag) && _selectedPiece == null)
                 {
                     _selectedPiece = hit.collider.GetComponent<Piece>();
-                    Debug.Log("Piece selected " + _selectedPiece);
                 }
                 //  Check player is trying to take a piece
                 else if (hit.collider.CompareTag(GameController.BotTag) && _selectedPiece != null)
                 {
-                    Debug.Log("Move Attempted.");
                     _targetPiece = hit.collider.GetComponent<Piece>();
                     targetPosition = new Vector2 (_targetPiece.Position.x, _targetPiece.Position.y);
                     _selectedPiece.MoveAttempt(targetPosition);
@@ -59,7 +57,6 @@ public class InputHandler : MonoBehaviour
                 //  Check player is trying to move a piece
                 else if (hit.collider.CompareTag(Constants.SQUARE_TAG) && _selectedPiece != null)
                 {
-                    Debug.Log("Move Attempted.");
                     _targetSquare = hit.collider.GetComponent<Square>();
                     targetPosition = new Vector2 (_targetSquare.Position.x, _targetSquare.Position.y);
                     _selectedPiece.MoveAttempt(targetPosition);
@@ -68,7 +65,6 @@ public class InputHandler : MonoBehaviour
                 // Else player not selecting or moving anything
                 else 
                 {
-                    Debug.Log("Nothing Selected.");
                     _selectedPiece = null; // reset selected piece
                 }
             }

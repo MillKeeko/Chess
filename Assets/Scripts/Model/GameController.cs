@@ -19,6 +19,8 @@ public class GameController : MonoBehaviour
     //  
     //  Events & Delegates
     //  
+    public delegate void OnGameStart();
+    public static event OnGameStart OnGameStartEvent;
     public delegate void OnBotMove();
     public static event OnBotMove OnBotMoveEvent;
     public delegate void OnChangeTurn(string turn);
@@ -33,6 +35,7 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        OnGameStartEvent?.Invoke();
         CheckBotFirstTurn();
     }
 

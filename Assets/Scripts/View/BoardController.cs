@@ -22,11 +22,13 @@ public class BoardController : MonoBehaviour
         {
             instance = this;
         }
+
+        SetupBoard();
     }
 
     void Start()
     {
-        SetupBoard();
+        
     }
 
     void Update()
@@ -137,7 +139,11 @@ public class BoardController : MonoBehaviour
                 }
                 
                 //  Send rank and file to the instantiated piece (separated from transform)
-                instantiatedPiece.Position = currentBoardPosition;
+                if (instantiatedPiece != null) 
+                {
+                    instantiatedPiece.Position = currentBoardPosition;
+                    instantiatedPiece = null;
+                }
             }
         }
     }

@@ -118,7 +118,7 @@ public class Pawn : Piece
         //              target is on same file              AND
         //              No piece in either 2 ranks forward
         //      THEN    return true
-        if (GetFirstMove() && 
+        if (FirstMove && 
             (targetPosition.y == (Position.y + (2 * _forwardMove))) &&
             targetPosition.x == Position.x &&
             TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y] == null)

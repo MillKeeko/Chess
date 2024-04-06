@@ -10,8 +10,6 @@ public class Piece : MonoBehaviour
 
     protected bool FirstMove = true;
 
-    
-
     void Awake()
     {
         
@@ -118,7 +116,8 @@ public class Piece : MonoBehaviour
         return simplifiedUnitVector;
     }
 
-    protected int CalculateMoveDistance(Vector3 targetPosition)
+    //  
+    protected int CalculateMoveDistance(Vector2 targetPosition)
     {
         // Find the distance the piece is moving
         int distanceX = (int)targetPosition.x - (int)Position.x;
@@ -129,24 +128,5 @@ public class Piece : MonoBehaviour
         else distance = Mathf.Abs(distanceY);
 
         return distance;
-    }
-
-    //
-    //  Accessors
-    //
-
-    protected bool GetFirstMove()
-    {
-        return FirstMove;
-    }
-
-    //
-    //  Mutators
-    //
-
-    protected void SetFirstMoveFalse()
-    {
-        //Debug.Log("Setting first move false.");
-        FirstMove = false;
     }
 }

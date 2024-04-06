@@ -17,7 +17,7 @@ public class TrackingHandler : MonoBehaviour
     {
         if (instance != null && instance != this)
         {
-            Destroy(this);
+            enabled = false;
         }
         else
         {
@@ -25,22 +25,23 @@ public class TrackingHandler : MonoBehaviour
         }
 
         pieceTracker = new Piece [8,8];
+        
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        //GameController.onPieceCreated += AddToTracker;
+        GameController.OnGameStartEvent += UpdateTracker;
         //Piece.onPieceMoved += PieceMovedPosition;
         //Piece.onPieceDestroyed += RemoveFromTracker;
     }
 
-    //private float timer = 0;
-    //private Vector3 circlePosition;
+    private float timer = 0;
+    private Vector3 circlePosition;
     // Update is called once per frame
     void Update()
     {
-        /*timer += Time.deltaTime; // Decrease timer by time passed since last frame
+        timer += Time.deltaTime; // Decrease timer by time passed since last frame
         if (timer >= 0.5f)
         {
             for (int x = 0; x < 8; x++)
@@ -56,37 +57,36 @@ public class TrackingHandler : MonoBehaviour
                     }
                 }
             }
-        }*/
-    }
-
-    private void PieceMovedPosition(Piece piece, int oldX, int oldY)
-    {
-        int newX = (int)piece.transform.position.x;
-        int newY = (int)piece.transform.position.y;
-
-        RemoveFromTracker(oldX, oldY);
-        AddToTracker(piece, newX, newY);
-    }
-
-    private void SetupTracker(string turn)
-    {
-        if (turn == Constants.WHITE_TAG)
-        {
-
-        }
-        else
-        {
-
         }
     }
 
-    private void RemoveFromTracker(int x, int y)
+    private void UpdateTracker()
     {
-        pieceTracker[x,y] = null;
+        PurgeTracker();
+        AddToTracker();
     }
 
-    private void AddToTracker(Piece piece, int x, int y)
+    private void PurgeTracker()
     {
-        pieceTracker[x,y] = piece;
+        for (int rank = 0; rank < 8; rank++)
+        {
+            for (int file = 0; file < 8; file++)
+            {
+                pieceTracker[rank, file] = null;
+            }
+        }
+    }
+
+    private void AddToTracker()
+    {
+        Piece[] pieceArray = GameObject.FindObjectsOfType<Piece>();
+
+        Debug.Log(pieceArray.Length);
+
+        foreach (Piece piece in pieceArray)
+        {
+            pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = piece;
+            Debug.Log(piece + " added to pieceTracker at x " + (int)piece.Position.x + " y " + (int)piece.Position.y);
+        }   
     }
 }

@@ -35,6 +35,8 @@ public class General
         Piece[] pieceArray = GameObject.FindObjectsOfType<Piece>();
         List<Piece> pieceList = new List<Piece>();
 
+        Debug.Log("Generating Piece list length " + pieceArray.Length);
+
         foreach (Piece piece in pieceArray)
         {
             if (piece.CompareTag(tag))

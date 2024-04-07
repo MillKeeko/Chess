@@ -2,17 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//  MoveValidator
-//      IsNormalBishopMove
+//  Model
+
 public class Bishop : Piece
 {
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     //
     //  Override Methods
     //
@@ -35,7 +28,8 @@ public class Bishop : Piece
                 }
             }
         }
-        Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
+        //Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
+        TriggerSetupComplete();
     }
 
     //

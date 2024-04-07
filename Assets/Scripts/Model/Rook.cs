@@ -2,17 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//  MoveValidator
-//      IsCastle
-//      IsNormalRookMove
+//  Model
+
 public class Rook : Piece
 {
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     //
     //  Override Methods
     //
@@ -35,7 +28,8 @@ public class Rook : Piece
                 }
             }
         }
-        Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
+        //Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
+        TriggerSetupComplete();
     }
 
     //

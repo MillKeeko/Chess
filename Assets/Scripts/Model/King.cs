@@ -2,17 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//  MoveValidator
-//      IsNormalKingMove
-//      IsCastle
+//  Model
+
 public class King : Piece
 {
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     //
     //  Override Methods
     //
@@ -35,7 +28,8 @@ public class King : Piece
                 }
             }
         }
-        Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
+        //Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
+        TriggerSetupComplete();
     }
 
     //

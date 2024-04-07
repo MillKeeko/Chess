@@ -2,16 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//  MoveValidator
-//      IsNormalQueenMove
+//  Model
+
 public class Queen : Piece
 {
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     //
     //  Override Methods
     //
@@ -34,7 +28,8 @@ public class Queen : Piece
                 }
             }
         }
-        Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
+        //Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
+        TriggerSetupComplete();
     }
     
     //

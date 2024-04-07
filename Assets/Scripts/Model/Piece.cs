@@ -12,18 +12,19 @@ public class Piece : MonoBehaviour
 
     public delegate void OnPieceCreated(Piece piece);
     public static event OnPieceCreated OnPieceCreatedEvent;
+    public delegate void OnPieceSetupComplete();
+    public static event OnPieceSetupComplete OnPieceSetupCompleteEvent;
     public delegate void OnValidMove(Piece piece, Vector2 targetPosition);
     public static event OnValidMove OnValidMoveEvent;
 
     void Awake()
     {
-        
+        GameController.OnTurnStartEvent += GeneratePossibleMoves;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        GeneratePossibleMoves();
         OnPieceCreatedEvent?.Invoke(this);
     }
 
@@ -40,13 +41,18 @@ public class Piece : MonoBehaviour
     //  Loop through possible moves to see if move attempt is valid
     public void MoveAttempt(Vector2 targetPosition)
     {
+        bool validMove = false;
+        Debug.Log("MoveAttempt PossibleMovesList length " + PossibleMovesList.Count);
         foreach (General.PossibleMove move in PossibleMovesList)
         {
             if (targetPosition == move.TargetPosition)
             {
-                OnValidMoveEvent?.Invoke(this, targetPosition);
+                BoardController.ExecuteMove(this, targetPosition);
+                validMove = true;
+                break; // To avoid list changing while executing - it would return after events finish and error
             }
         }
+        if (validMove) OnValidMoveEvent?.Invoke(this, targetPosition); // Trigger event here instead (I AM A GENIUS)
     }
 
     //
@@ -64,17 +70,14 @@ public class Piece : MonoBehaviour
     //  Protected Methods
     //
 
+    protected void TriggerSetupComplete()
+    {
+        OnPieceSetupCompleteEvent?.Invoke();
+    }
+
     protected void EmptyMovesList()
     {
         PossibleMovesList.Clear();
-    }
-
-    //  Destroy target piece and move selected piece
-    protected void MoveExecutor(Vector2 targetPosition)
-    {
-        //  Set first move to false if true
-        //  Destroy target piece (nooooooo)
-        //  Move piece (noooooooo)
     }
 
     protected bool IsRangeMoveBlocked(Vector2 targetPosition)
@@ -88,9 +91,8 @@ public class Piece : MonoBehaviour
         {
             Vector2 blockPosition = new Vector2((Position.x + (moveUnitVector.x * i)), 
                                                 (Position.y + (moveUnitVector.y * i)));
-            //Debug.Log("x * i " + (x * i));
-            //Debug.Log("y * i " + (y * i));
-            //Debug.Log("IsPieceBlocking() checking " + this + " at x " + (int)blockPosition.x + " y " + (int)blockPosition.y);
+            //Debug.Log("Position x " + Position.x + " y " + Position.y);
+            //Debug.Log("IsRangeMoveBlocked() checking " + this + " at x " + (int)blockPosition.x + " y " + (int)blockPosition.y);
             if (TrackingHandler.pieceTracker[(int)blockPosition.x,(int)blockPosition.y] != null) 
             {
                 blockingBool = true;
@@ -135,4 +137,17 @@ public class Piece : MonoBehaviour
 
         return distance;
     }
+
+    //
+    //  Private Methods
+    //
+
+    /*private void GenerateFirstMoves()
+    {
+        if (!_generatedFirstPossibleMoves)
+        {
+            GeneratePossibleMoves();
+            _generatedFirstPossibleMoves = true;
+        }
+    }*/
 }

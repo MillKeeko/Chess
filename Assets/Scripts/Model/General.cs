@@ -34,18 +34,22 @@ public class General
 
     public static List<Piece> GeneratePieceList(string tag)
     {
-        Piece[] pieceArray = GameObject.FindObjectsOfType<Piece>();
+        Piece piece = null;
         List<Piece> pieceList = new List<Piece>();
 
-        Debug.Log("Generating Piece list length " + pieceArray.Length);
-
-        foreach (Piece piece in pieceArray)
+        for (int rank = 0; rank < 8; rank++)
         {
-            if (piece.CompareTag(tag))
+            for (int file = 0; file < 8; file++)
             {
-                pieceList.Add(piece);
+                piece = TrackingHandler.pieceTracker[rank, file];
+                if (piece != null && piece.CompareTag(tag))
+                {
+                    pieceList.Add(piece);
+                }
+
             }
         }
+        Debug.Log("Bot piece list length = " + pieceList.Count);
         return pieceList;
     } 
 

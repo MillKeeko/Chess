@@ -2,16 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//  MoveValidator
-//      IsNormalKnightMove
+//  Model
+
 public class Knight : Piece
 {
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     //
     //  Override Methods
     //
@@ -33,7 +27,8 @@ public class Knight : Piece
                 }
             }
         }
-        //Debug.Log(this + " has " + possiblePieceMovesList.Count + " possible moves.");
+        //Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
+        TriggerSetupComplete();
     }
 
     //

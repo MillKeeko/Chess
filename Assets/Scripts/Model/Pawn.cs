@@ -11,12 +11,7 @@ public class Pawn : Piece
     void Awake()
     {
         SetForwardMove();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        GameController.OnTurnStartEvent += GeneratePossibleMoves; // Because I've overridden Piece.Awake()
     }
 
     //
@@ -44,6 +39,7 @@ public class Pawn : Piece
             }
         }
         //Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
+        TriggerSetupComplete();
     }
 
     //

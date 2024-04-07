@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //  Model
-//  Singleton
 
 public class TrackingHandler : MonoBehaviour
 {
@@ -12,7 +11,13 @@ public class TrackingHandler : MonoBehaviour
     public GameObject circle;
     public static Piece[,] pieceTracker;
 
-    
+    private int _trackerCount = 0;
+
+    public delegate void OnTrackerUpdated();
+    public static event OnTrackerUpdated OnTrackerUpdatedEvent;
+    public delegate void OnTrackerReady();
+    public static event OnTrackerReady OnTrackerReadyEvent;
+
     void Awake()
     {
         if (instance != null && instance != this)
@@ -27,15 +32,13 @@ public class TrackingHandler : MonoBehaviour
         pieceTracker = new Piece [8,8];
         Piece.OnPieceCreatedEvent += AddToTracker;
         Piece.OnValidMoveEvent += UpdateTracker;
+        BotController.OnValidBotMoveEvent += UpdateTracker;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
-        //GameController.OnGameStartEvent += UpdateTracker;
-        //Piece.onPieceMoved += PieceMovedPosition;
-        //Piece.onPieceDestroyed += RemoveFromTracker;
+   
     }
 
     private float timer = 0;
@@ -66,11 +69,20 @@ public class TrackingHandler : MonoBehaviour
     {
         pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = null;
         pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = piece;
+        piece.Position = targetPosition;
+        OnTrackerUpdatedEvent?.Invoke();
     }
 
+    // _trackerCount only useful on initialization. I forsee this being redone for game restart.
     private void AddToTracker (Piece piece)
     {
         pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = piece;
+        _trackerCount++;
+        if (_trackerCount >=32)
+        {
+            OnTrackerReadyEvent?.Invoke();
+            _trackerCount = 0;
+        }
     }
 
     //  Could be useful on game restart?

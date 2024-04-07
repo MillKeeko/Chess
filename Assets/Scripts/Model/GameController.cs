@@ -4,39 +4,51 @@ using UnityEngine;
 
 //  Model
 
-//  Controls game start
-//  Controls board setup
-//  Controls changing turns
-//  Controls game end
 public class GameController : MonoBehaviour
 {
-    //  Static Variables
+    public static GameController instance { get; private set; }
+
     public static string PlayerTag { get; private set; }
     public static string BotTag { get; private set; }
     public static string Turn { get; private set; }
 
+    private int _pieceSetupCount = 0;
+    private int _turnCount = 0;
 
     //  
     //  Events & Delegates
     //  
-    public delegate void OnGameStart();
-    public static event OnGameStart OnGameStartEvent;
+    public delegate void OnTurnStart();
+    public static event OnTurnStart OnTurnStartEvent;
     public delegate void OnBotMove();
     public static event OnBotMove OnBotMoveEvent;
-    public delegate void OnChangeTurn(string turn);
-    public static event OnChangeTurn OnChangeTurnEvent;
+    //public delegate void OnChangeTurn(string turn);
+    //public static event OnChangeTurn OnChangeTurnEvent;
 
     void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            instance = this;
+        }
+
         Turn = Constants.WHITE_TAG;
         RandomTeams();
+        
+        TrackingHandler.OnTrackerReadyEvent += TriggerPieceSetup;
+        TrackingHandler.OnTrackerUpdatedEvent += TriggerPieceSetup;
+
+        Piece.OnPieceSetupCompleteEvent += UpdatePieceSetupCount;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        OnGameStartEvent?.Invoke();
-        CheckBotFirstTurn();
+        
     }
 
     // Update is called once per frame
@@ -45,8 +57,31 @@ public class GameController : MonoBehaviour
         
     }
 
+    private void TriggerPieceSetup()
+    {
+        OnTurnStartEvent?.Invoke();
+    }
+
+    private void UpdatePieceSetupCount()
+    {
+        _pieceSetupCount++;
+        //Debug.Log("Piece setup count " + _pieceSetupCount);
+        //Debug.Log("Turn Count " + _turnCount);
+        if (_pieceSetupCount >= 32)
+        {
+            _pieceSetupCount = 0;
+            if (_turnCount == 0) 
+            {
+                _turnCount++;
+                CheckBotFirstTurn();
+            }
+            else ChangeTurn();
+        }
+    }
+
     private void CheckBotFirstTurn()
     {
+        //Debug.Log("Gamecontroller checking bot first move.");
         if (Turn == BotTag)
         {
             //Debug.Log("Bot goes first.");
@@ -56,9 +91,12 @@ public class GameController : MonoBehaviour
 
     private void ChangeTurn()
     {
+        //Debug.Log("Changing Turn");
         if (Turn == Constants.WHITE_TAG) Turn = Constants.BLACK_TAG;
         else Turn = Constants.WHITE_TAG;
-        OnChangeTurnEvent?.Invoke(Turn);
+        //Debug.Log("Turn is " + Turn);
+        _turnCount++;
+        //OnChangeTurnEvent?.Invoke(Turn);
         if (Turn == BotTag) 
         {
             OnBotMoveEvent?.Invoke();

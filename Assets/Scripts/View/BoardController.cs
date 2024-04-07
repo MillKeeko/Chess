@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//  View
+
 public class BoardController : MonoBehaviour
 {
     public static BoardController instance { get; private set; }
@@ -24,6 +26,8 @@ public class BoardController : MonoBehaviour
         }
 
         SetupBoard();
+        //Piece.OnValidMoveEvent += ExecuteMove;
+        //BotController.OnValidBotMoveEvent += ExecuteMove;
     }
 
     void Start()
@@ -40,15 +44,16 @@ public class BoardController : MonoBehaviour
     //  Public Methods
     //
 
-    //
-    //  Private Methods
-    //
-
-    private void ExecuteMove(Piece piece, Vector2 targetPosition)
+    public static void ExecuteMove(Piece piece, Vector2 targetPosition)
     {
         Vector3 realTarget = new Vector3 (targetPosition.x, targetPosition.y, Constants.PIECE_Z_INDEX);
         piece.transform.position = realTarget;
+        //Debug.Log("Piece moved in view");
     }
+
+    //
+    //  Private Methods
+    //
 
     // Create board and place pieces
     private void SetupBoard()

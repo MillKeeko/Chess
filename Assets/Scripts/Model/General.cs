@@ -28,7 +28,7 @@ public class General
             possibleMoveList.AddRange(piece.PossibleMovesList);
         }
 
-        Debug.Log("Possible bot move list length " + possibleMoveList.Count);
+        //Debug.Log("Possible bot move list length " + possibleMoveList.Count);
         return possibleMoveList;
     }
 
@@ -49,7 +49,7 @@ public class General
 
             }
         }
-        Debug.Log("Bot piece list length = " + pieceList.Count);
+        //Debug.Log("Bot piece list length = " + pieceList.Count);
         return pieceList;
     } 
 

@@ -51,6 +51,7 @@ public class InputHandler : MonoBehaviour
                 {
                     _targetPiece = hit.collider.GetComponent<Piece>();
                     targetPosition = new Vector2 (_targetPiece.Position.x, _targetPiece.Position.y);
+                    //Debug.Log("Trying to take piece.");
                     _selectedPiece.MoveAttempt(targetPosition);
                     _selectedPiece = null; // reset selected piece
                 }
@@ -59,6 +60,7 @@ public class InputHandler : MonoBehaviour
                 {
                     _targetSquare = hit.collider.GetComponent<Square>();
                     targetPosition = new Vector2 (_targetSquare.Position.x, _targetSquare.Position.y);
+                    //Debug.Log("Trying to move piece.");
                     _selectedPiece.MoveAttempt(targetPosition);
                     _selectedPiece = null; // reset selected piece
                 }

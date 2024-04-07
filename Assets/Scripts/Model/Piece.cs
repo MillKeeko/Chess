@@ -41,7 +41,7 @@ public class Piece : MonoBehaviour
     public void MoveAttempt(Vector2 targetPosition)
     {
         bool validMove = false;
-        Debug.Log("MoveAttempt PossibleMovesList length " + PossibleMovesList.Count);
+        //Debug.Log("MoveAttempt PossibleMovesList length " + PossibleMovesList.Count);
         foreach (General.PossibleMove move in PossibleMovesList)
         {
             if (targetPosition == move.TargetPosition)
@@ -53,6 +53,12 @@ public class Piece : MonoBehaviour
             }
         }
         if (validMove) OnValidMoveEvent?.Invoke(this, targetPosition); // Trigger event here instead (I AM A GENIUS)
+    }
+
+    public void DestroyPiece()
+    {
+        GameController.OnTurnStartEvent -= GeneratePossibleMoves;
+        Destroy(gameObject);
     }
 
     //

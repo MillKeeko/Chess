@@ -64,10 +64,13 @@ public class GameController : MonoBehaviour
 
     private void UpdatePieceSetupCount()
     {
+        Piece[] PieceArray = GameObject.FindObjectsOfType<Piece>();
+        int totalPieces = PieceArray.Length;
+
         _pieceSetupCount++;
         //Debug.Log("Piece setup count " + _pieceSetupCount);
         //Debug.Log("Turn Count " + _turnCount);
-        if (_pieceSetupCount >= 32)
+        if (_pieceSetupCount >= totalPieces)
         {
             _pieceSetupCount = 0;
             if (_turnCount == 0) 
@@ -94,7 +97,7 @@ public class GameController : MonoBehaviour
         //Debug.Log("Changing Turn");
         if (Turn == Constants.WHITE_TAG) Turn = Constants.BLACK_TAG;
         else Turn = Constants.WHITE_TAG;
-        //Debug.Log("Turn is " + Turn);
+        Debug.Log("Turn is " + Turn);
         _turnCount++;
         //OnChangeTurnEvent?.Invoke(Turn);
         if (Turn == BotTag) 

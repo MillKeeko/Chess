@@ -68,6 +68,7 @@ public class TrackingHandler : MonoBehaviour
     private void UpdateTracker(Piece piece, Vector2 targetPosition)
     {
         pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = null;
+        pieceTracker[(int)targetPosition.x, (int)targetPosition.y]?.DestroyPiece();
         pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = piece;
         piece.Position = targetPosition;
         if (piece.FirstMove) piece.FirstMove = false;

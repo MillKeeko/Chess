@@ -7,8 +7,7 @@ public class Piece : MonoBehaviour
 {
     public Vector2 Position;
     public List<General.PossibleMove> PossibleMovesList = new List<General.PossibleMove>();
-
-    protected bool FirstMove = true;
+    public bool FirstMove = true;
 
     public delegate void OnPieceCreated(Piece piece);
     public static event OnPieceCreated OnPieceCreatedEvent;
@@ -49,6 +48,7 @@ public class Piece : MonoBehaviour
             {
                 BoardController.ExecuteMove(this, targetPosition);
                 validMove = true;
+                if (FirstMove) FirstMove = false;
                 break; // To avoid list changing while executing - it would return after events finish and error
             }
         }

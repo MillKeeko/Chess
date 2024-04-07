@@ -70,6 +70,7 @@ public class TrackingHandler : MonoBehaviour
         pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = null;
         pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = piece;
         piece.Position = targetPosition;
+        if (piece.FirstMove) piece.FirstMove = false;
         OnTrackerUpdatedEvent?.Invoke();
     }
 

@@ -40,11 +40,15 @@ public class BoardController : MonoBehaviour
     //  Public Methods
     //
 
-    
-
     //
     //  Private Methods
     //
+
+    private void ExecuteMove(Piece piece, Vector2 targetPosition)
+    {
+        Vector3 realTarget = new Vector3 (targetPosition.x, targetPosition.y, Constants.PIECE_Z_INDEX);
+        piece.transform.position = realTarget;
+    }
 
     // Create board and place pieces
     private void SetupBoard()

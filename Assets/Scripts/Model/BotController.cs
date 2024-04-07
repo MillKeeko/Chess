@@ -19,7 +19,7 @@ public class BotController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //GameController.OnBotMoveEvent += MakeMove;
+        GameController.OnBotMoveEvent += MakeMove;
     }
 
     // Update is called once per frame

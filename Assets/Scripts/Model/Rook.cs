@@ -7,12 +7,6 @@ using UnityEngine;
 //      IsNormalRookMove
 public class Rook : Piece
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -41,7 +35,7 @@ public class Rook : Piece
                 }
             }
         }
-        //Debug.Log(this + " has " + possiblePieceMovesList.Count + " possible moves.");
+        Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
     }
 
     //

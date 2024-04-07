@@ -27,6 +27,8 @@ public class General
         {
             possibleMoveList.AddRange(piece.PossibleMovesList);
         }
+
+        Debug.Log("Possible bot move list length " + possibleMoveList.Count);
         return possibleMoveList;
     }
 

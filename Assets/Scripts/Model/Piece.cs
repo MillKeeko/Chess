@@ -10,6 +10,11 @@ public class Piece : MonoBehaviour
 
     protected bool FirstMove = true;
 
+    public delegate void OnPieceCreated(Piece piece);
+    public static event OnPieceCreated OnPieceCreatedEvent;
+    public delegate void OnValidMove(Piece piece, Vector2 targetPosition);
+    public static event OnValidMove OnValidMoveEvent;
+
     void Awake()
     {
         
@@ -19,6 +24,7 @@ public class Piece : MonoBehaviour
     void Start()
     {
         GeneratePossibleMoves();
+        OnPieceCreatedEvent?.Invoke(this);
     }
 
     // Update is called once per frame
@@ -38,7 +44,7 @@ public class Piece : MonoBehaviour
         {
             if (targetPosition == move.TargetPosition)
             {
-                Debug.Log("Valid Move.");
+                OnValidMoveEvent?.Invoke(this, targetPosition);
             }
         }
     }
@@ -63,7 +69,7 @@ public class Piece : MonoBehaviour
         PossibleMovesList.Clear();
     }
 
-    // Destroy target piece and move selected piece
+    //  Destroy target piece and move selected piece
     protected void MoveExecutor(Vector2 targetPosition)
     {
         //  Set first move to false if true

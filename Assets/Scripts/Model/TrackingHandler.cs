@@ -25,13 +25,15 @@ public class TrackingHandler : MonoBehaviour
         }
 
         pieceTracker = new Piece [8,8];
-        
+        Piece.OnPieceCreatedEvent += AddToTracker;
+        Piece.OnValidMoveEvent += UpdateTracker;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        GameController.OnGameStartEvent += UpdateTracker;
+        
+        //GameController.OnGameStartEvent += UpdateTracker;
         //Piece.onPieceMoved += PieceMovedPosition;
         //Piece.onPieceDestroyed += RemoveFromTracker;
     }
@@ -60,12 +62,18 @@ public class TrackingHandler : MonoBehaviour
         }
     }
 
-    private void UpdateTracker()
+    private void UpdateTracker(Piece piece, Vector2 targetPosition)
     {
-        PurgeTracker();
-        AddToTracker();
+        pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = null;
+        pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = piece;
     }
 
+    private void AddToTracker (Piece piece)
+    {
+        pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = piece;
+    }
+
+    //  Could be useful on game restart?
     private void PurgeTracker()
     {
         for (int rank = 0; rank < 8; rank++)
@@ -75,18 +83,5 @@ public class TrackingHandler : MonoBehaviour
                 pieceTracker[rank, file] = null;
             }
         }
-    }
-
-    private void AddToTracker()
-    {
-        Piece[] pieceArray = GameObject.FindObjectsOfType<Piece>();
-
-        Debug.Log(pieceArray.Length);
-
-        foreach (Piece piece in pieceArray)
-        {
-            pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = piece;
-            Debug.Log(piece + " added to pieceTracker at x " + (int)piece.Position.x + " y " + (int)piece.Position.y);
-        }   
     }
 }

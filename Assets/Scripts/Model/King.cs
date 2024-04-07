@@ -7,12 +7,6 @@ using UnityEngine;
 //      IsCastle
 public class King : Piece
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -41,7 +35,7 @@ public class King : Piece
                 }
             }
         }
-        //Debug.Log(this + " has " + possiblePieceMovesList.Count + " possible moves.");
+        Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
     }
 
     //

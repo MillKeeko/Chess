@@ -56,5 +56,6 @@ public class BotController : MonoBehaviour
 
         BoardController.ExecuteMove(piece, targetPosition);
         OnValidBotMoveEvent?.Invoke(piece, targetPosition);
+        //Debug.Log("Bot MakeRandomMove End");
     }
 }

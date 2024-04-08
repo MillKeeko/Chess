@@ -62,16 +62,20 @@ public class GameController : MonoBehaviour
         OnTurnStartEvent?.Invoke();
     }
 
+    // THE BUG IS HERE
+    // SETUP COUNT STOPPED AT 14 WHEN TOTALPIECES WAS 15
+    // WHYYYYYYYYYYY
     private void UpdatePieceSetupCount()
-    {
-        Piece[] PieceArray = GameObject.FindObjectsOfType<Piece>();
-        int totalPieces = PieceArray.Length;
+    {   
+        int totalPieces = TrackingHandler.TrackerCount;
 
         _pieceSetupCount++;
+        //Debug.Log(totalPieces);
         //Debug.Log("Piece setup count " + _pieceSetupCount);
         //Debug.Log("Turn Count " + _turnCount);
         if (_pieceSetupCount >= totalPieces)
         {
+            //Debug.Log("Updated all pieces");
             _pieceSetupCount = 0;
             if (_turnCount == 0) 
             {
@@ -95,6 +99,7 @@ public class GameController : MonoBehaviour
     private void ChangeTurn()
     {
         //Debug.Log("Changing Turn");
+        Debug.Log("Turn was " + Turn);
         if (Turn == Constants.WHITE_TAG) Turn = Constants.BLACK_TAG;
         else Turn = Constants.WHITE_TAG;
         Debug.Log("Turn is " + Turn);

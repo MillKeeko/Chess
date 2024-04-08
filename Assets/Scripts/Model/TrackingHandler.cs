@@ -10,8 +10,7 @@ public class TrackingHandler : MonoBehaviour
 
     public GameObject circle;
     public static Piece[,] pieceTracker;
-
-    private int _trackerCount = 0;
+    public static int TrackerCount = 0;
 
     public delegate void OnTrackerUpdated();
     public static event OnTrackerUpdated OnTrackerUpdatedEvent;
@@ -68,7 +67,11 @@ public class TrackingHandler : MonoBehaviour
     private void UpdateTracker(Piece piece, Vector2 targetPosition)
     {
         pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = null;
-        pieceTracker[(int)targetPosition.x, (int)targetPosition.y]?.DestroyPiece();
+        if (pieceTracker[(int)targetPosition.x, (int)targetPosition.y] != null)
+        {
+            TrackerCount--;
+            pieceTracker[(int)targetPosition.x, (int)targetPosition.y].DestroyPiece();
+        }
         pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = piece;
         piece.Position = targetPosition;
         if (piece.FirstMove) piece.FirstMove = false;
@@ -79,11 +82,10 @@ public class TrackingHandler : MonoBehaviour
     private void AddToTracker (Piece piece)
     {
         pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = piece;
-        _trackerCount++;
-        if (_trackerCount >=32)
+        TrackerCount++;
+        if (TrackerCount >=32)
         {
             OnTrackerReadyEvent?.Invoke();
-            _trackerCount = 0;
         }
     }
 

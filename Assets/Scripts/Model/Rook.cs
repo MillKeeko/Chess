@@ -10,26 +10,14 @@ public class Rook : Piece
     //  Override Methods
     //
 
-    public override void GeneratePossibleMoves()
+    public override bool IsBasicMoveValid(Vector2 targetPosition)
     {
-        Vector2 targetPosition;
-        EmptyMovesList();
-
-        for (int x = 0; x < 8; x++)
+        bool returnBool = false;
+        if (IsValidRookMove(targetPosition))
         {
-            for (int y = 0; y < 8; y++)
-            {
-                targetPosition = new Vector2(x, y);
-                if (IsValidRookMove(targetPosition))
-                {
-                    General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
-                    PossibleMovesList.Add(possibleMove);
-                    //Debug.Log(this + " from x " + this.transform.position.x + " y " + this.transform.position.y + " to x " + targetPosition.x + " y " + targetPosition.y);
-                }
-            }
+            returnBool = true;
         }
-        //Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
-        TriggerSetupComplete();
+        return returnBool;
     }
 
     //

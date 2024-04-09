@@ -18,28 +18,16 @@ public class Pawn : Piece
     //  Override methods
     //
 
-    public override void GeneratePossibleMoves()
+    public override bool IsBasicMoveValid(Vector2 targetPosition)
     {
-        Vector2 targetPosition;
-        EmptyMovesList();
-
-        for (int x = 0; x < 8; x++)
+        bool returnBool = false;
+        if (IsValidDiagonalAttack(targetPosition) || 
+            IsValidFirstMoveDouble(targetPosition) || 
+            IsValidForwardMove(targetPosition))
         {
-            for (int y = 0; y < 8; y++)
-            {
-                targetPosition = new Vector2(x, y);
-                
-                if (IsValidForwardMove(targetPosition) || 
-                    IsValidDiagonalAttack(targetPosition) || 
-                    IsValidFirstMoveDouble(targetPosition))
-                {
-                    General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
-                    PossibleMovesList.Add(possibleMove);
-                }
-            }
+            returnBool = true;
         }
-        //Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
-        TriggerSetupComplete();
+        return returnBool;
     }
 
     //

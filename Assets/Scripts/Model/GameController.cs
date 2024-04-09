@@ -99,10 +99,10 @@ public class GameController : MonoBehaviour
     private void ChangeTurn()
     {
         //Debug.Log("Changing Turn");
-        Debug.Log("Turn was " + Turn);
+        //Debug.Log("Turn was " + Turn);
         if (Turn == Constants.WHITE_TAG) Turn = Constants.BLACK_TAG;
         else Turn = Constants.WHITE_TAG;
-        Debug.Log("Turn is " + Turn);
+        //Debug.Log("Turn is " + Turn);
         _turnCount++;
         //OnChangeTurnEvent?.Invoke(Turn);
         if (Turn == BotTag) 

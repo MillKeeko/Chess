@@ -55,6 +55,30 @@ public class Piece : MonoBehaviour
         if (validMove) OnValidMoveEvent?.Invoke(this, targetPosition); // Trigger event here instead (I AM A GENIUS)
     }
 
+    //  Evaluates all 64 tiles and determines which are possible moves for this piece
+    //  Adds each move to the possibleMovesList
+    public virtual void GeneratePossibleMoves()
+    {
+        Vector2 targetPosition;
+        EmptyMovesList();
+
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                targetPosition = new Vector2(x, y);
+                
+                if (IsBasicMoveValid(targetPosition))
+                {
+                    General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
+                    PossibleMovesList.Add(possibleMove);
+                }
+            }
+        }
+        //Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
+        TriggerSetupComplete();
+    }
+
     public void DestroyPiece()
     {
         GameController.OnTurnStartEvent -= GeneratePossibleMoves;
@@ -65,12 +89,13 @@ public class Piece : MonoBehaviour
     //  Virtual Methods
     //
 
-    //  Evaluates all 64 tiles and determines which are possible moves for this piece
-    //  Adds each move to the possibleMovesList
-    public virtual void GeneratePossibleMoves()
+    public virtual bool IsBasicMoveValid(Vector2 targetPosition)
     {
-        
+        return false;
     }
+
+    
+    
 
     //
     //  Protected Methods

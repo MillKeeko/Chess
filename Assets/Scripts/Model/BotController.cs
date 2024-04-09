@@ -34,8 +34,8 @@ public class BotController : MonoBehaviour
     private void MakeMove()
     {
         //Debug.Log("Bot MakeMove start");
-        pieceList = General.GeneratePieceList(GameController.BotTag);
-        possibleBotMovesList = General.CompilePossibleMoves(pieceList);
+        pieceList = GeneratePieceList(GameController.BotTag);
+        possibleBotMovesList = CompilePossibleMoves(pieceList);
         MakeRandomMove();
         EmptyLists();
     }
@@ -58,4 +58,38 @@ public class BotController : MonoBehaviour
         OnValidBotMoveEvent?.Invoke(piece, targetPosition);
         //Debug.Log("Bot MakeRandomMove End");
     }
+
+    private List<General.PossibleMove> CompilePossibleMoves(List<Piece> pieceList)
+    {
+        List<General.PossibleMove> possibleMoveList = new List<General.PossibleMove>();
+
+        foreach (Piece piece in pieceList)
+        {
+            possibleMoveList.AddRange(piece.PossibleMovesList);
+        }
+
+        //Debug.Log("Possible bot move list length " + possibleMoveList.Count);
+        return possibleMoveList;
+    }
+
+    private List<Piece> GeneratePieceList(string tag)
+    {
+        Piece piece = null;
+        List<Piece> pieceList = new List<Piece>();
+
+        for (int rank = 0; rank < 8; rank++)
+        {
+            for (int file = 0; file < 8; file++)
+            {
+                piece = TrackingHandler.pieceTracker[rank, file];
+                if (piece != null && piece.CompareTag(tag))
+                {
+                    pieceList.Add(piece);
+                }
+
+            }
+        }
+        //Debug.Log("Bot piece list length = " + pieceList.Count);
+        return pieceList;
+    } 
 }

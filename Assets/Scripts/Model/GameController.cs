@@ -12,18 +12,21 @@ public class GameController : MonoBehaviour
     public static string BotTag { get; private set; }
     public static string Turn { get; private set; }
 
+    public static List<General.PossibleMove> PossibleBotMovesList;
+    public static List<General.PossibleMove> PossiblePlayerMovesList;
+
     private int _pieceSetupCount = 0;
     private int _turnCount = 0;
 
     //  
     //  Events & Delegates
     //  
-    public delegate void OnTurnStart();
-    public static event OnTurnStart OnTurnStartEvent;
     public delegate void OnBotMove();
     public static event OnBotMove OnBotMoveEvent;
-    //public delegate void OnChangeTurn(string turn);
-    //public static event OnChangeTurn OnChangeTurnEvent;
+    public delegate void OnTurnSetup();
+    public static event OnTurnSetup OnTurnSetupEvent;
+    public delegate void OnSetIsInCheck();
+    public static event OnSetIsInCheck OnSetIsInCheckEvent;
 
     void Awake()
     {
@@ -38,11 +41,10 @@ public class GameController : MonoBehaviour
 
         Turn = Constants.WHITE_TAG;
         RandomTeams();
-        
-        TrackingHandler.OnTrackerReadyEvent += TriggerPieceSetup;
-        TrackingHandler.OnTrackerUpdatedEvent += TriggerPieceSetup;
-
-        Piece.OnPieceSetupCompleteEvent += UpdatePieceSetupCount;
+        PossibleBotMovesList = new List<General.PossibleMove>();
+        PossiblePlayerMovesList = new List<General.PossibleMove>();
+        TrackingHandler.OnTrackerReadyEvent += StartTurn;
+        TrackingHandler.OnTrackerUpdatedEvent += ChangeTurn;
     }
 
     // Start is called before the first frame update
@@ -57,58 +59,71 @@ public class GameController : MonoBehaviour
         
     }
 
-    private void TriggerPieceSetup()
+    private void ChangeTurn()
     {
-        OnTurnStartEvent?.Invoke();
+        if (Turn == Constants.WHITE_TAG) 
+        {
+            //Debug.Log("Starting Black Turn");
+            Turn = Constants.BLACK_TAG;
+        }
+        else 
+        {
+            Turn = Constants.WHITE_TAG;
+            //Debug.Log("Starting White Turn");
+        }
+        StartTurn();
     }
 
-    // THE BUG IS HERE
-    // SETUP COUNT STOPPED AT 14 WHEN TOTALPIECES WAS 15
-    // WHYYYYYYYYYYY
-    private void UpdatePieceSetupCount()
-    {   
-        int totalPieces = TrackingHandler.TrackerCount;
-
-        _pieceSetupCount++;
-        //Debug.Log(totalPieces);
-        //Debug.Log("Piece setup count " + _pieceSetupCount);
-        //Debug.Log("Turn Count " + _turnCount);
-        if (_pieceSetupCount >= totalPieces)
+    public static void GenerateEnemyTestMovesList()
+    {
+        if (Turn == BotTag) 
         {
-            //Debug.Log("Updated all pieces");
-            _pieceSetupCount = 0;
-            if (_turnCount == 0) 
-            {
-                _turnCount++;
-                CheckBotFirstTurn();
-            }
-            else ChangeTurn();
+            PossiblePlayerMovesList.Clear();
+            PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
+        }
+        else 
+        {
+            PossibleBotMovesList.Clear();
+            PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
         }
     }
 
-    private void CheckBotFirstTurn()
+    private void StartTurn()
     {
-        //Debug.Log("Gamecontroller checking bot first move.");
-        if (Turn == BotTag)
-        {
-            //Debug.Log("Bot goes first.");
-            OnBotMoveEvent?.Invoke();
-        } 
-    }
+        //  Generate moves for turn's pieces
+        EmptyLists();
+        CheckHandler.SetIsInCheck();
+        PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
+        PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
+        CheckHandler.SetIsInCheck();
 
-    private void ChangeTurn()
-    {
-        //Debug.Log("Changing Turn");
-        //Debug.Log("Turn was " + Turn);
-        if (Turn == Constants.WHITE_TAG) Turn = Constants.BLACK_TAG;
-        else Turn = Constants.WHITE_TAG;
-        //Debug.Log("Turn is " + Turn);
-        _turnCount++;
-        //OnChangeTurnEvent?.Invoke(Turn);
+        if (CheckHandler.IsInCheck)
+        {
+            if (Turn == BotTag) 
+            {
+                PossibleBotMovesList.Clear();
+                PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
+                //Debug.Log(BotTag + " has " + PossibleBotMovesList.Count + " possible moves after check.");
+            }
+            else 
+            {
+                PossiblePlayerMovesList.Clear();
+                PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
+                //Debug.Log(BotTag + " has " + PossiblePlayerMovesList.Count + " possible moves after check.");
+            }
+        }
+        
+        //  Trigger bot move if bot's turn
         if (Turn == BotTag) 
         {
             OnBotMoveEvent?.Invoke();
         }
+    }
+
+    private void EmptyLists()
+    {   
+        PossibleBotMovesList.Clear();
+        PossiblePlayerMovesList.Clear();
     }
 
     private void RandomTeams()

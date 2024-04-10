@@ -9,10 +9,10 @@ public class Knight : Piece
     //
     //  Override Methods
     //
-    public override bool IsBasicMoveValid(Vector2 targetPosition)
+    public override bool IsBasicMoveValid(Vector2 targetPosition, Piece[,] pieceArray)
     {
         bool returnBool = false;
-        if (IsValidKnightMove(targetPosition))
+        if (IsValidKnightMove(targetPosition, pieceArray))
         {
             returnBool = true;
         }
@@ -25,12 +25,12 @@ public class Knight : Piece
 
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules
-    private bool IsValidKnightMove(Vector2 targetPosition)
+    private bool IsValidKnightMove(Vector2 targetPosition, Piece[,] pieceArray)
     {
         bool returnBool = false;
         int targetX = (int)targetPosition.x;
         int targetY = (int)targetPosition.y;
-        Piece target = TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
+        Piece target = pieceArray[(int)targetPosition.x, (int)targetPosition.y];
 
         if (target != null && target.CompareTag(this.tag)) 
         {

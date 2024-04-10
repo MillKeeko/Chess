@@ -17,6 +17,8 @@ public class TrackingHandler : MonoBehaviour
     public delegate void OnTrackerReady();
     public static event OnTrackerReady OnTrackerReadyEvent;
 
+    private Piece _pieceRemovedTestCheck;
+
     void Awake()
     {
         if (instance != null && instance != this)
@@ -29,9 +31,15 @@ public class TrackingHandler : MonoBehaviour
         }
 
         pieceTracker = new Piece [8,8];
+        _pieceRemovedTestCheck = null;
+        
         Piece.OnPieceCreatedEvent += AddToTracker;
+
         Piece.OnValidMoveEvent += UpdateTracker;
         BotController.OnValidBotMoveEvent += UpdateTracker;
+
+        CheckHandler.OnTestRemoveCheckEvent += TestRemoveCheck;
+        CheckHandler.OnRevertTestRemoveCheckEvent += RevertTestRemoveCheck;
     }
 
     // Start is called before the first frame update
@@ -40,12 +48,12 @@ public class TrackingHandler : MonoBehaviour
    
     }
 
-    private float timer = 0;
-    private Vector3 circlePosition;
+    //private float timer = 0;
+    //private Vector3 circlePosition;
     // Update is called once per frame
     void Update()
     {
-        timer += Time.deltaTime; // Decrease timer by time passed since last frame
+        /*timer += Time.deltaTime; // Decrease timer by time passed since last frame
         if (timer >= 0.5f)
         {
             for (int x = 0; x < 8; x++)
@@ -61,7 +69,19 @@ public class TrackingHandler : MonoBehaviour
                     }
                 }
             }
-        }
+        }*/
+    }
+
+    private void RevertTestRemoveCheck(Piece piece, Vector2 targetPosition)
+    {
+        pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = _pieceRemovedTestCheck;
+        pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = piece;
+    }
+
+    private void TestRemoveCheck(Piece piece, Vector2 targetPosition)
+    {
+        _pieceRemovedTestCheck = pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
+        pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = piece;
     }
 
     private void UpdateTracker(Piece piece, Vector2 targetPosition)

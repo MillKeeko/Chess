@@ -10,10 +10,10 @@ public class Queen : Piece
     //  Override Methods
     //
 
-    public override bool IsBasicMoveValid(Vector2 targetPosition)
+    public override bool IsBasicMoveValid(Vector2 targetPosition, Piece[,] pieceArray)
     {
         bool returnBool = false;
-        if (IsValidQueenMove(targetPosition))
+        if (IsValidQueenMove(targetPosition, pieceArray))
         {
             returnBool = true;
         }
@@ -26,10 +26,10 @@ public class Queen : Piece
 
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules
-    private bool IsValidQueenMove(Vector2 targetPosition)
+    private bool IsValidQueenMove(Vector2 targetPosition, Piece[,] pieceArray)
     {
         bool returnBool = false;
-        Piece target = TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
+        Piece target = pieceArray[(int)targetPosition.x, (int)targetPosition.y];
         
         // Combined logic for Rook and Bishop
         if ((targetPosition.x - transform.position.x == targetPosition.y - transform.position.y ||
@@ -39,6 +39,7 @@ public class Queen : Piece
             (target == null || !target.CompareTag(this.tag)) &&
             !IsRangeMoveBlocked(targetPosition))
         {
+            //Debug.Log("Valid " + this.tag + " Queen move to x " + targetPosition.x + " to y " + targetPosition.y);
             returnBool = true;
         }
 

@@ -7,6 +7,7 @@ public class Piece : MonoBehaviour
 {
     public Vector2 Position;
     public List<General.PossibleMove> PossibleMovesList = new List<General.PossibleMove>();
+    public List<General.PossibleMove> PossibleRemoveCheckMovesList = new List<General.PossibleMove>();
     public bool FirstMove = true;
 
     public delegate void OnPieceCreated(Piece piece);
@@ -18,7 +19,7 @@ public class Piece : MonoBehaviour
 
     void Awake()
     {
-        GameController.OnTurnStartEvent += GeneratePossibleMoves;
+        
     }
 
     // Start is called before the first frame update
@@ -57,21 +58,33 @@ public class Piece : MonoBehaviour
 
     //  Evaluates all 64 tiles and determines which are possible moves for this piece
     //  Adds each move to the possibleMovesList
-    public virtual void GeneratePossibleMoves()
+    public void GeneratePossibleMoves()
     {
         Vector2 targetPosition;
-        EmptyMovesList();
+        PossibleMovesList.Clear();
 
         for (int x = 0; x < 8; x++)
         {
             for (int y = 0; y < 8; y++)
             {
                 targetPosition = new Vector2(x, y);
-                
-                if (IsBasicMoveValid(targetPosition))
+                if (IsBasicMoveValid(targetPosition, TrackingHandler.pieceTracker))
                 {
-                    General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
-                    PossibleMovesList.Add(possibleMove);
+                    if (this.CompareTag(GameController.Turn) && CheckHandler.IsInCheck)
+                    {
+                        if (CheckHandler.DoesMoveRemoveCheck(this, targetPosition))
+                        {
+                            General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
+                            PossibleMovesList.Add(possibleMove);
+                            Debug.Log("In Check, but " + this + " to x " + targetPosition.x + " y " + targetPosition.y + " is valid.");
+                        }
+                    }
+                    else
+                    {
+                        //Debug.Log("Generating moves and not in check lol get owned.");
+                        General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
+                        PossibleMovesList.Add(possibleMove);
+                    }
                 }
             }
         }
@@ -79,9 +92,28 @@ public class Piece : MonoBehaviour
         TriggerSetupComplete();
     }
 
+    /*public void GeneratePossibleRemoveCheckMoves()
+    {
+        Vector2 targetPosition;
+        PossibleRemoveCheckMovesList.Clear();
+
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                targetPosition = new Vector2(x, y);
+
+                if (IsBasicMoveValid(targetPosition, CheckHandler.RemoveCheckTracker))
+                {
+                    General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
+                    PossibleRemoveCheckMovesList.Add(possibleMove);
+                }
+            }
+        }
+    }*/
+
     public void DestroyPiece()
     {
-        GameController.OnTurnStartEvent -= GeneratePossibleMoves;
         Destroy(gameObject);
     }
 
@@ -89,7 +121,7 @@ public class Piece : MonoBehaviour
     //  Virtual Methods
     //
 
-    public virtual bool IsBasicMoveValid(Vector2 targetPosition)
+    public virtual bool IsBasicMoveValid(Vector2 targetPosition, Piece[,] pieceArray)
     {
         return false;
     }
@@ -104,11 +136,6 @@ public class Piece : MonoBehaviour
     protected void TriggerSetupComplete()
     {
         OnPieceSetupCompleteEvent?.Invoke();
-    }
-
-    protected void EmptyMovesList()
-    {
-        PossibleMovesList.Clear();
     }
 
     protected bool IsRangeMoveBlocked(Vector2 targetPosition)

@@ -11,19 +11,18 @@ public class Pawn : Piece
     void Awake()
     {
         SetForwardMove();
-        GameController.OnTurnStartEvent += GeneratePossibleMoves; // Because I've overridden Piece.Awake()
     }
 
     //
     //  Override methods
     //
 
-    public override bool IsBasicMoveValid(Vector2 targetPosition)
+    public override bool IsBasicMoveValid(Vector2 targetPosition, Piece[,] pieceArray)
     {
         bool returnBool = false;
-        if (IsValidDiagonalAttack(targetPosition) || 
-            IsValidFirstMoveDouble(targetPosition) || 
-            IsValidForwardMove(targetPosition))
+        if (IsValidDiagonalAttack(targetPosition, pieceArray) || 
+            IsValidFirstMoveDouble(targetPosition, pieceArray) || 
+            IsValidForwardMove(targetPosition, pieceArray))
         {
             returnBool = true;
         }
@@ -36,7 +35,7 @@ public class Pawn : Piece
 
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules
-    private bool IsValidDiagonalAttack(Vector2 targetPosition)
+    private bool IsValidDiagonalAttack(Vector2 targetPosition, Piece[,] pieceArray)
     {
         bool returnBool = false;
 
@@ -49,8 +48,8 @@ public class Pawn : Piece
         if (targetPosition.x == Position.x + 1 || targetPosition.x == Position.x - 1)
         {
             if (targetPosition.y == (Position.y + _forwardMove) &&
-                TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y] != null &&
-                !TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y].CompareTag(this.tag))
+                pieceArray[(int)targetPosition.x, (int)targetPosition.y] != null &&
+                !pieceArray[(int)targetPosition.x, (int)targetPosition.y].CompareTag(this.tag))
             {
                 //Debug.Log("See diagonal move");
                 returnBool = true;
@@ -62,7 +61,7 @@ public class Pawn : Piece
 
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules
-    private bool IsValidForwardMove(Vector2 targetPosition)
+    private bool IsValidForwardMove(Vector2 targetPosition, Piece[,] pieceArray)
     {
         bool returnBool = false;
 
@@ -74,7 +73,7 @@ public class Pawn : Piece
         if (targetPosition.x == Position.x)
         {
             if (targetPosition.y == (Position.y + _forwardMove) &&
-                TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y] == null)
+                pieceArray[(int)targetPosition.x, (int)targetPosition.y] == null)
             {
                 //Debug.Log("See normal move");
                 returnBool = true;
@@ -86,7 +85,7 @@ public class Pawn : Piece
 
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules
-    private bool IsValidFirstMoveDouble(Vector2 targetPosition) 
+    private bool IsValidFirstMoveDouble(Vector2 targetPosition, Piece[,] pieceArray)
     {
         bool returnBool = false;
 
@@ -99,7 +98,7 @@ public class Pawn : Piece
         if (FirstMove && 
             (targetPosition.y == (Position.y + (2 * _forwardMove))) &&
             targetPosition.x == Position.x &&
-            TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y] == null)
+            pieceArray[(int)targetPosition.x, (int)targetPosition.y] == null)
         {
             //Debug.Log("See double move");
             returnBool = true;

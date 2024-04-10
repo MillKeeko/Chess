@@ -26,8 +26,6 @@ public class BoardController : MonoBehaviour
         }
 
         SetupBoard();
-        //Piece.OnValidMoveEvent += ExecuteMove;
-        //BotController.OnValidBotMoveEvent += ExecuteMove;
     }
 
     void Start()
@@ -43,12 +41,10 @@ public class BoardController : MonoBehaviour
     //
     //  Public Methods
     //
-
     public static void ExecuteMove(Piece piece, Vector2 targetPosition)
     {
         Vector3 realTarget = new Vector3 (targetPosition.x, targetPosition.y, Constants.PIECE_Z_INDEX);
         piece.transform.position = realTarget;
-        //Debug.Log("Piece moved in view");
     }
 
     //
@@ -84,12 +80,10 @@ public class BoardController : MonoBehaviour
                     {
                         if (rank == _whitePieceRank) 
                         {
-                            //Debug.Log("Making Rook");
                             instantiatedPiece = MakeChessPiece(RookWhite, currentBoardPosition);
                         }
                         if (rank == _blackPieceRank) 
                         {
-                            //Debug.Log("Making Rook");
                             instantiatedPiece = MakeChessPiece(RookBlack, currentBoardPosition);
                         }
                     }
@@ -196,7 +190,11 @@ public class BoardController : MonoBehaviour
                 }
 
                 //  Send rank and file to the instantiated square (separated from transform)
-                instantiatedSquare.Position = currentBoardPosition;
+                if (instantiatedSquare != null) 
+                {
+                    instantiatedSquare.Position = currentBoardPosition;
+                    instantiatedSquare = null;
+                }
             }
         }
     }

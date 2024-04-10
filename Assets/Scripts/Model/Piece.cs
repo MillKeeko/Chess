@@ -92,26 +92,6 @@ public class Piece : MonoBehaviour
         TriggerSetupComplete();
     }
 
-    /*public void GeneratePossibleRemoveCheckMoves()
-    {
-        Vector2 targetPosition;
-        PossibleRemoveCheckMovesList.Clear();
-
-        for (int x = 0; x < 8; x++)
-        {
-            for (int y = 0; y < 8; y++)
-            {
-                targetPosition = new Vector2(x, y);
-
-                if (IsBasicMoveValid(targetPosition, CheckHandler.RemoveCheckTracker))
-                {
-                    General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
-                    PossibleRemoveCheckMovesList.Add(possibleMove);
-                }
-            }
-        }
-    }*/
-
     public void DestroyPiece()
     {
         Destroy(gameObject);
@@ -125,9 +105,6 @@ public class Piece : MonoBehaviour
     {
         return false;
     }
-
-    
-    
 
     //
     //  Protected Methods
@@ -195,17 +172,4 @@ public class Piece : MonoBehaviour
 
         return distance;
     }
-
-    //
-    //  Private Methods
-    //
-
-    /*private void GenerateFirstMoves()
-    {
-        if (!_generatedFirstPossibleMoves)
-        {
-            GeneratePossibleMoves();
-            _generatedFirstPossibleMoves = true;
-        }
-    }*/
 }

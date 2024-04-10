@@ -33,7 +33,6 @@ public class CheckHandler : MonoBehaviour
 
         RemoveCheckTracker = new Piece [8,8];
         IsInCheck = false;
-        GameController.OnSetIsInCheckEvent += SetIsInCheck;
     }
 
     // Start is called before the first frame update
@@ -110,16 +109,6 @@ public class CheckHandler : MonoBehaviour
     {
         Vector2 kingPosition = new Vector2(-1,-1);
 
-        /*foreach (Piece piece in TrackingHandler.pieceTracker)
-        {
-            if (piece is King && piece.CompareTag(GameController.Turn))
-            {
-                kingPosition = new Vector2(piece.Position.x, piece.Position.y);
-                //Debug.Log(piece + " is king at x " + kingPosition.x + " y " + kingPosition.y);
-                break;
-            }
-        }*/
-
         Piece piece = null;
 
         for (int rank = 0; rank < 8; rank++)
@@ -131,8 +120,8 @@ public class CheckHandler : MonoBehaviour
                 {
                     kingPosition.x = file;
                     kingPosition.y = rank;
-                    Debug.Log("King Position x " + kingPosition.x + " y " + kingPosition.y);
-                    break;
+                    //Debug.Log("King Position x " + kingPosition.x + " y " + kingPosition.y);
+                    return kingPosition;
                 }
             }
         }

@@ -15,18 +15,11 @@ public class GameController : MonoBehaviour
     public static List<General.PossibleMove> PossibleBotMovesList;
     public static List<General.PossibleMove> PossiblePlayerMovesList;
 
-    private int _pieceSetupCount = 0;
-    private int _turnCount = 0;
-
     //  
     //  Events & Delegates
     //  
     public delegate void OnBotMove();
     public static event OnBotMove OnBotMoveEvent;
-    public delegate void OnTurnSetup();
-    public static event OnTurnSetup OnTurnSetupEvent;
-    public delegate void OnSetIsInCheck();
-    public static event OnSetIsInCheck OnSetIsInCheckEvent;
 
     void Awake()
     {
@@ -103,13 +96,13 @@ public class GameController : MonoBehaviour
             {
                 PossibleBotMovesList.Clear();
                 PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
-                //Debug.Log(BotTag + " has " + PossibleBotMovesList.Count + " possible moves after check.");
+                Debug.Log(BotTag + " has " + PossibleBotMovesList.Count + " possible moves after check.");
             }
             else 
             {
                 PossiblePlayerMovesList.Clear();
                 PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
-                //Debug.Log(BotTag + " has " + PossiblePlayerMovesList.Count + " possible moves after check.");
+                Debug.Log(BotTag + " has " + PossiblePlayerMovesList.Count + " possible moves after check.");
             }
         }
         

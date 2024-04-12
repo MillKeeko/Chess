@@ -19,33 +19,61 @@ public class SquareHighlighter : MonoBehaviour
         
     }
 
-    public static void ShowAttackingSquares()
+    public static void ShowMoveSquares(Piece piece, List<General.PossibleMove> moveList)
     {
-        List<General.PossibleMove> enemyMoveList = new List<General.PossibleMove>();
-        SpriteRenderer renderer;
-
-        if (GameController.Turn == GameController.BotTag) enemyMoveList = GameController.PossiblePlayerMovesList;
-        else enemyMoveList = GameController.PossibleBotMovesList;
-        Debug.Log("Number of enemy moves " + enemyMoveList.Count);
-
         Square[] allSquares = FindObjectsOfType<Square>();
-        Debug.Log("Number of squares " + allSquares.Length);
 
-        foreach (Square square in allSquares)
+        for (int i = 0; i < 64; i++)
         {
-            foreach (General.PossibleMove move in enemyMoveList)
+            Square square = allSquares[i];
+            foreach (General.PossibleMove move in moveList)
             {
-                Debug.Log("Square position x " + square.Position.x + " y " + square.Position.y);
-                //  Found square that is attacked
-                if (move.TargetPosition.x == square.Position.x && move.TargetPosition.y == square.Position.y)
+                SpriteRenderer renderer = square.GetComponent<SpriteRenderer>();
+                if (move.SelectedPiece == piece &&
+                    (int)move.TargetPosition.x == (int)square.Position.x && 
+                    (int)move.TargetPosition.y == (int)square.Position.y)
                 {
-                    Debug.Log("Lighting up square.");
-                    renderer = square.GetComponent<SpriteRenderer>();
-                    renderer.color = Color.red;
+                    if (renderer.color == Color.red)
+                    {
+                        renderer.color = Color.blue;
+                    }
+                    else renderer.color = Color.yellow;
+                    break;
                 }
-                break;
+                else if (renderer.color != Color.red)
+                {
+                    square.SetDefaultColour();
+                }
             }
         }
     }
 
+    public static void ShowAttackingSquares(List<General.PossibleMove> attackList)
+    {
+        //Debug.Log("Number of enemy moves " + attackList.Count);
+
+        Square[] allSquares = FindObjectsOfType<Square>();
+        //Debug.Log("Number of squares " + allSquares.Length);
+
+        for (int i = 0; i < 64; i++)
+        {
+            Square square = allSquares[i];
+            //Debug.Log("Square position x " + square.Position.x + " y " + square.Position.y);
+            foreach (General.PossibleMove move in attackList)
+            {
+                SpriteRenderer renderer = square.GetComponent<SpriteRenderer>();
+                //  Found square that is attacked
+                if ((int)move.TargetPosition.x == (int)square.Position.x && (int)move.TargetPosition.y == (int)square.Position.y)
+                {
+                    //Debug.Log(move.SelectedPiece + " at x " + move.SelectedPiece.Position.x + " y " + move.SelectedPiece.Position.y + " is attacking x " + move.TargetPosition.x + " y " + move.TargetPosition.y);
+                    renderer.color = Color.red;
+                    break;
+                }
+                else
+                {
+                    square.SetDefaultColour();
+                }
+            }
+        }
+    }
 }

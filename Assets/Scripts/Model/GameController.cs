@@ -14,12 +14,15 @@ public class GameController : MonoBehaviour
 
     public static List<General.PossibleMove> PossibleBotMovesList;
     public static List<General.PossibleMove> PossiblePlayerMovesList;
+    public static List<General.PossibleMove> PossibleEnemyAttackList;
 
     //  
     //  Events & Delegates
     //  
     public delegate void OnBotMove();
     public static event OnBotMove OnBotMoveEvent;
+    public delegate void AddDiagonalPawnAttacks();
+    public static event AddDiagonalPawnAttacks AddDiagonalPawnAttacksEvent;
 
     void Awake()
     {
@@ -36,6 +39,7 @@ public class GameController : MonoBehaviour
         RandomTeams();
         PossibleBotMovesList = new List<General.PossibleMove>();
         PossiblePlayerMovesList = new List<General.PossibleMove>();
+        PossibleEnemyAttackList = new List<General.PossibleMove>();
         TrackingHandler.OnTrackerReadyEvent += StartTurn;
         TrackingHandler.OnTrackerUpdatedEvent += ChangeTurn;
     }
@@ -67,56 +71,99 @@ public class GameController : MonoBehaviour
         StartTurn();
     }
 
-    public static void GenerateEnemyTestMovesList()
+    private void StartTurn()
+    {
+        // Reset Check flag after last move
+        CheckHandler.SetIsInCheck();
+
+        // Compile move lists 
+        ClearAndCompileMoveLists();
+
+        // Compile attack list
+        if (Turn == BotTag) CreateAttackList(PossiblePlayerMovesList);
+        else CreateAttackList(PossibleBotMovesList);
+
+        // Check if in check after generated lists
+        CheckHandler.SetIsInCheck();
+        
+        // Generate turn's move list again if in check to only allow moves that remove check
+        CreateTurnMoveList();
+
+        SquareHighlighter.ShowAttackingSquares(PossibleEnemyAttackList);
+
+        //  Trigger bot move if bot's turn
+        if (Turn == BotTag) OnBotMoveEvent?.Invoke();
+    }
+
+    private void CreateTurnMoveList()
+    {
+        if (Turn == BotTag) 
+        {
+            PossibleBotMovesList.Clear();
+            PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
+        }
+        else 
+        {
+            PossiblePlayerMovesList.Clear();
+            PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
+        }
+    }
+
+    public static void GenerateEnemyAttackList()
     {
         if (Turn == BotTag) 
         {
             PossiblePlayerMovesList.Clear();
             PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
+            CreateAttackList(PossiblePlayerMovesList);
         }
         else 
         {
             PossibleBotMovesList.Clear();
             PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
+            CreateAttackList(PossibleBotMovesList);
         }
     }
 
-    private void StartTurn()
+    private static void CreateAttackList(List<General.PossibleMove> moveList)
     {
-        //  Generate moves for turn's pieces
-        EmptyLists();
-        CheckHandler.SetIsInCheck();
-        PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
-        PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
-        CheckHandler.SetIsInCheck();
+        CopyMoveToAttackList(moveList);
+        FilterAttackList();
+        AddDiagonalPawnAttacksEvent?.Invoke();
+    }
 
-        if (CheckHandler.IsInCheck)
+    //  Just filtering out the pawn forward moves which cannot attack
+    //  ---------- I want to add in the diagonal moves which do not show up because a piece isn't there and the pawn thinks it's invalid.
+    private static void FilterAttackList()
+    {
+        int listCount = PossibleEnemyAttackList.Count;
+        for (int i = 0; i < PossibleEnemyAttackList.Count; i++)
         {
-            if (Turn == BotTag) 
+            if (PossibleEnemyAttackList[i].SelectedPiece is Pawn && 
+                PossibleEnemyAttackList[i].TargetPosition.x == PossibleEnemyAttackList[i].SelectedPiece.Position.x)
             {
-                PossibleBotMovesList.Clear();
-                PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
-                Debug.Log(BotTag + " has " + PossibleBotMovesList.Count + " possible moves after check.");
+                PossibleEnemyAttackList.RemoveAt(i);
+                i--;
+                listCount--;
             }
-            else 
-            {
-                PossiblePlayerMovesList.Clear();
-                PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
-                Debug.Log(BotTag + " has " + PossiblePlayerMovesList.Count + " possible moves after check.");
-            }
-        }
-        
-        //  Trigger bot move if bot's turn
-        if (Turn == BotTag) 
-        {
-            OnBotMoveEvent?.Invoke();
         }
     }
 
-    private void EmptyLists()
-    {   
+    private static void CopyMoveToAttackList(List<General.PossibleMove> moveList)
+    {
+        PossibleEnemyAttackList.Clear();
+        foreach (General.PossibleMove move in moveList)
+        {
+            PossibleEnemyAttackList.Add(move);
+        }
+    }
+    
+    private void ClearAndCompileMoveLists()
+    {
         PossibleBotMovesList.Clear();
         PossiblePlayerMovesList.Clear();
+        PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
+        PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
     }
 
     private void RandomTeams()

@@ -12,7 +12,6 @@ using UnityEngine;
 public class CheckHandler : MonoBehaviour
 {
     public static CheckHandler instance { get; private set; }
-    public static Piece[,] RemoveCheckTracker;
     public static bool IsInCheck { get; private set; }
 
     public delegate void OnTestRemoveCheck(Piece piece, Vector2 targetPosition);
@@ -31,7 +30,6 @@ public class CheckHandler : MonoBehaviour
             instance = this;
         }
 
-        RemoveCheckTracker = new Piece [8,8];
         IsInCheck = false;
     }
 
@@ -50,26 +48,17 @@ public class CheckHandler : MonoBehaviour
     public static void SetIsInCheck()
     {
         IsInCheck = IsKingInCheck();
-        //if (IsInCheck) Debug.Log(GameController.Turn + " is in check.");
-        //else Debug.Log(GameController.Turn + " is not in check.");
     }
 
-    //  Everything seems to be working down to this function. 
-    //   
     public static bool DoesMoveRemoveCheck(Piece piece, Vector2 targetPosition)
     {
-        //Debug.Log(piece + " DoesMoveRemoveCheck() to x " + targetPosition.x + " y " + targetPosition.y);
         bool returnBool = false;
-        //FillRemoveCheckTracker(piece, targetPosition);
         OnTestRemoveCheckEvent?.Invoke(piece, targetPosition);
 
-        GameController.GenerateEnemyTestMovesList();
+        GameController.GenerateEnemyAttackList();
         returnBool = !IsKingInCheck();
 
         OnRevertTestRemoveCheckEvent?.Invoke(piece, targetPosition);
-
-        //if (returnBool) Debug.Log("Move removes check.");
-        //else Debug.Log("Move does not remove check."); 
 
         return returnBool;
     }
@@ -79,26 +68,15 @@ public class CheckHandler : MonoBehaviour
     {
         bool returnBool = false;
         string enemyTag = General.GetEnemyTag();
-        List<General.PossibleMove> possibleEnemyMoveList = new List<General.PossibleMove>();
+        List<General.PossibleMove> possibleEnemyAttackList = GameController.PossibleEnemyAttackList;
         Vector2 kingPosition = FindKing();
-
-        if (GameController.Turn == GameController.BotTag) possibleEnemyMoveList = GameController.PossiblePlayerMovesList;
-        else possibleEnemyMoveList = GameController.PossibleBotMovesList;
-
-        //Debug.Log("Enemy is " + enemyTag + " and MoveList is count " + possibleEnemyMoveList.Count);
         
-        foreach (General.PossibleMove move in possibleEnemyMoveList)
+        foreach (General.PossibleMove attack in possibleEnemyAttackList)
         {
-            //Debug.Log("Target x " + move.TargetPosition.x + " king x " + kingPosition.x + " target y " + move.TargetPosition.y + " king y " + kingPosition.y);
-            if (move.TargetPosition.x == kingPosition.x && move.TargetPosition.y == kingPosition.y)
+            if (attack.TargetPosition.x == kingPosition.x && attack.TargetPosition.y == kingPosition.y)
             {
-                //Debug.Log("King in check from " + move.SelectedPiece + " to king position x " + kingPosition.x + " y " + kingPosition.y);
                 returnBool = true;
                 break;
-            }
-            else 
-            {
-                //Debug.Log("King not in check when " + move.SelectedPiece + " and king position is x " + kingPosition.x + " y " + kingPosition.y);
             }
         }
 
@@ -120,7 +98,6 @@ public class CheckHandler : MonoBehaviour
                 {
                     kingPosition.x = file;
                     kingPosition.y = rank;
-                    //Debug.Log("King Position x " + kingPosition.x + " y " + kingPosition.y);
                     return kingPosition;
                 }
             }
@@ -128,5 +105,4 @@ public class CheckHandler : MonoBehaviour
 
         return kingPosition;
     }
-
 }

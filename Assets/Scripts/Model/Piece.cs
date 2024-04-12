@@ -7,15 +7,12 @@ public class Piece : MonoBehaviour
 {
     public Vector2 Position;
     public List<General.PossibleMove> PossibleMovesList = new List<General.PossibleMove>();
-    public List<General.PossibleMove> PossibleRemoveCheckMovesList = new List<General.PossibleMove>();
     public bool FirstMove = true;
 
     public delegate void OnPieceCreated(Piece piece);
     public static event OnPieceCreated OnPieceCreatedEvent;
     public delegate void OnPieceSetupComplete();
     public static event OnPieceSetupComplete OnPieceSetupCompleteEvent;
-    public delegate void OnValidMove(Piece piece, Vector2 targetPosition);
-    public static event OnValidMove OnValidMoveEvent;
 
     void Awake()
     {
@@ -38,24 +35,6 @@ public class Piece : MonoBehaviour
     //  Public Methods
     //
 
-    //  Loop through possible moves to see if move attempt is valid
-    public void MoveAttempt(Vector2 targetPosition)
-    {
-        bool validMove = false;
-        //Debug.Log("MoveAttempt PossibleMovesList length " + PossibleMovesList.Count);
-        foreach (General.PossibleMove move in PossibleMovesList)
-        {
-            if (targetPosition == move.TargetPosition)
-            {
-                BoardController.ExecuteMove(this, targetPosition);
-                validMove = true;
-                if (FirstMove) FirstMove = false;
-                break; // To avoid list changing while executing - it would return after events finish and error
-            }
-        }
-        if (validMove) OnValidMoveEvent?.Invoke(this, targetPosition); // Trigger event here instead (I AM A GENIUS)
-    }
-
     //  Evaluates all 64 tiles and determines which are possible moves for this piece
     //  Adds each move to the possibleMovesList
     public void GeneratePossibleMoves()
@@ -70,29 +49,27 @@ public class Piece : MonoBehaviour
                 targetPosition = new Vector2(x, y);
                 if (IsBasicMoveValid(targetPosition, TrackingHandler.pieceTracker))
                 {
-                    if (this.CompareTag(GameController.Turn) && CheckHandler.IsInCheck)
+                    if (this.CompareTag(GameController.Turn))
                     {
                         if (CheckHandler.DoesMoveRemoveCheck(this, targetPosition))
                         {
                             General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
                             PossibleMovesList.Add(possibleMove);
-                            Debug.Log("In Check, but " + this + " to x " + targetPosition.x + " y " + targetPosition.y + " is valid.");
+                            //Debug.Log("In Check, but " + this + " to x " + targetPosition.x + " y " + targetPosition.y + " is valid.");
                         }
                     }
                     else
                     {
-                        //Debug.Log("Generating moves and not in check lol get owned.");
                         General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
                         PossibleMovesList.Add(possibleMove);
                     }
                 }
             }
         }
-        //Debug.Log(this + " has " + PossibleMovesList.Count + " possible moves.");
         TriggerSetupComplete();
     }
 
-    public void DestroyPiece()
+    public virtual void DestroyPiece()
     {
         Destroy(gameObject);
     }

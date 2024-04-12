@@ -11,6 +11,7 @@ public class Pawn : Piece
     void Awake()
     {
         SetForwardMove();
+        GameController.AddDiagonalPawnAttacksEvent += AddDiagonalPawnAttacks;
     }
 
     //
@@ -29,9 +30,40 @@ public class Pawn : Piece
         return returnBool;
     }
 
+    public override void DestroyPiece()
+    {
+        GameController.AddDiagonalPawnAttacksEvent -= AddDiagonalPawnAttacks;
+        Destroy(gameObject);
+    }
+
     //
     //  Private Methods
     //
+
+    private void AddDiagonalPawnAttacks()
+    {
+        Vector2 targetPosition;
+        General.PossibleMove attack;
+
+        if (!this.CompareTag(GameController.Turn))
+        {
+            targetPosition = new Vector2 (Position.x + 1, Position.y + (_forwardMove));
+            attack = new General.PossibleMove(targetPosition, this);
+
+            if (!GameController.PossibleEnemyAttackList.Contains(attack))
+            {
+                GameController.PossibleEnemyAttackList.Add(attack);
+            }
+
+            targetPosition = new Vector2 (Position.x - 1, Position.y + (_forwardMove));
+            attack = new General.PossibleMove(targetPosition, this);
+
+            if (!GameController.PossibleEnemyAttackList.Contains(attack))
+            {
+                GameController.PossibleEnemyAttackList.Add(attack);
+            }
+        } 
+    }
 
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules

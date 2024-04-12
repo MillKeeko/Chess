@@ -24,13 +24,11 @@ public class BoardController : MonoBehaviour
         {
             instance = this;
         }
-
-        SetupBoard();
     }
 
     void Start()
     {
-        
+        SetupBoard();
     }
 
     void Update()
@@ -193,6 +191,7 @@ public class BoardController : MonoBehaviour
                 if (instantiatedSquare != null) 
                 {
                     instantiatedSquare.Position = currentBoardPosition;
+                    instantiatedSquare.SetDefaultColour();
                     instantiatedSquare = null;
                 }
             }

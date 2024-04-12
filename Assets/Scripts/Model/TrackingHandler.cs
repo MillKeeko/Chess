@@ -35,7 +35,7 @@ public class TrackingHandler : MonoBehaviour
         
         Piece.OnPieceCreatedEvent += AddToTracker;
 
-        Piece.OnValidMoveEvent += UpdateTracker;
+        InputHandler.OnValidMoveEvent += UpdateTracker;
         BotController.OnValidBotMoveEvent += UpdateTracker;
 
         CheckHandler.OnTestRemoveCheckEvent += TestRemoveCheck;
@@ -76,6 +76,7 @@ public class TrackingHandler : MonoBehaviour
     {
         pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = _pieceRemovedTestCheck;
         pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = piece;
+        _pieceRemovedTestCheck = null;
     }
 
     private void TestRemoveCheck(Piece piece, Vector2 targetPosition)

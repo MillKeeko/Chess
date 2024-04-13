@@ -130,7 +130,8 @@ public class Pawn : Piece
         if (FirstMove && 
             (targetPosition.y == (Position.y + (2 * _forwardMove))) &&
             targetPosition.x == Position.x &&
-            pieceArray[(int)targetPosition.x, (int)targetPosition.y] == null)
+            pieceArray[(int)targetPosition.x, (int)targetPosition.y] == null &&
+            !IsRangeMoveBlocked(targetPosition))
         {
             //Debug.Log("See double move");
             returnBool = true;

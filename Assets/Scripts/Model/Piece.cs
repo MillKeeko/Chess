@@ -51,12 +51,10 @@ public class Piece : MonoBehaviour
                 {
                     if (this.CompareTag(GameController.Turn))
                     {
-                        if (this is King && this.CompareTag(GameController.PlayerTag)) Debug.Log("Asking if King can move x " + targetPosition.x + " y " + targetPosition.y);
                         if (CheckHandler.DoesMoveEndInCheck(this, targetPosition))
                         {
                             General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
                             PossibleMovesList.Add(possibleMove);
-                            //Debug.Log("In Check, but " + this + " to x " + targetPosition.x + " y " + targetPosition.y + " is valid.");
                         }
                     }
                     else

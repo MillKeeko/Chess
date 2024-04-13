@@ -16,6 +16,8 @@ public class GameController : MonoBehaviour
     public static List<General.PossibleMove> PossiblePlayerMovesList;
     public static List<General.PossibleMove> PossibleEnemyAttackList;
 
+    private int _turnMoveCount;
+
     //  
     //  Events & Delegates
     //  
@@ -40,6 +42,7 @@ public class GameController : MonoBehaviour
         PossibleBotMovesList = new List<General.PossibleMove>();
         PossiblePlayerMovesList = new List<General.PossibleMove>();
         PossibleEnemyAttackList = new List<General.PossibleMove>();
+        _turnMoveCount = 0;
         TrackingHandler.OnTrackerReadyEvent += StartTurn;
         TrackingHandler.OnTrackerUpdatedEvent += ChangeTurn;
     }
@@ -85,10 +88,23 @@ public class GameController : MonoBehaviour
         // Generate turn's move list again if in check to only allow moves that remove check
         CreateTurnMoveList();
 
-        //SquareHighlighter.ShowAttackingSquares(PossibleEnemyAttackList);
-
-        //  Trigger bot move if bot's turn
-        if (Turn == BotTag) OnBotMoveEvent?.Invoke();
+        //  Game Over Logic
+        if ( _turnMoveCount == 0)
+        {
+            if (CheckHandler.IsInCheck)
+            {
+                Debug.Log("Checkmate");
+            }
+            else 
+            {
+                Debug.Log("Stalemate");
+            }
+        }
+        else
+        {
+            //  Trigger bot move if bot's turn
+            if (Turn == BotTag) OnBotMoveEvent?.Invoke();
+        }
     }
 
     private void CreateTurnMoveList()
@@ -97,11 +113,13 @@ public class GameController : MonoBehaviour
         {
             PossibleBotMovesList.Clear();
             PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
+            _turnMoveCount = PossibleBotMovesList.Count;
         }
         else 
         {
             PossiblePlayerMovesList.Clear();
             PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
+            _turnMoveCount = PossiblePlayerMovesList.Count;
         }
     }
 

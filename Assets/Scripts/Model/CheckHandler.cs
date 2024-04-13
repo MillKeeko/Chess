@@ -56,10 +56,8 @@ public class CheckHandler : MonoBehaviour
         OnTestRemoveCheckEvent?.Invoke(piece, targetPosition);
 
         GameController.GenerateEnemyAttackList();
-        if (piece is King && piece.CompareTag(GameController.PlayerTag)) Debug.Log("TESTING KING CHECK");
         returnBool = !IsKingInCheck();
-        if (piece is King && piece.CompareTag(GameController.PlayerTag)) Debug.Log("REMOVES CHECK: " + returnBool);
-
+        
         OnRevertTestRemoveCheckEvent?.Invoke(piece, targetPosition);
 
         return returnBool;
@@ -99,7 +97,6 @@ public class CheckHandler : MonoBehaviour
                 {
                     kingPosition.x = file;
                     kingPosition.y = rank;
-                    if (piece.CompareTag(GameController.PlayerTag)) Debug.Log("Player King Position x " + kingPosition.x + " y " + kingPosition.y);
                     return kingPosition;
                 }
             }

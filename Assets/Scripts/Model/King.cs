@@ -6,6 +6,11 @@ using UnityEngine;
 
 public class King : Piece
 {
+    public delegate void CastleKingSide(Piece piece);
+    public static event CastleKingSide CastleKingSideEvent;
+    public delegate void CastleQueenSide(Piece piece);
+    public static event CastleQueenSide CastleQueenSideEvent;
+
     //
     //  Override Methods
     //
@@ -28,7 +33,51 @@ public class King : Piece
     private bool IsValidCastleMove(Vector2 targetPosition)
     {
         bool returnBool = false;
+        Piece rook;
+        int rank;
+        int kingSideOffset;
+        int queenSideOffset;
+        int kingSideRookFile;
+        int queenSideRookFile;
 
+        if (this.CompareTag(GameController.BotTag)) 
+        {
+            kingSideOffset = -2;
+            queenSideOffset = 2;
+            rank = 7;
+            kingSideRookFile = 0;
+            queenSideRookFile = 7;
+        }
+        else 
+        {
+            kingSideOffset = 2;
+            queenSideOffset = -2;
+            rank = 0;
+            kingSideRookFile = 7;
+            queenSideRookFile = 0;
+        }
+
+        if (FirstMove && (int)targetPosition.y == (int)Position.y)
+        {
+            if ((int)targetPosition.x == (int)(Position.x + kingSideOffset))
+            {
+                rook = TrackingHandler.pieceTracker[kingSideRookFile,rank];
+                if (rook != null && rook.FirstMove)
+                {
+                    CastleKingSideEvent?.Invoke(this);
+                    returnBool = true;
+                }
+            }
+            else if ((int)targetPosition.x == (int)(Position.x - queenSideOffset))
+            {
+                rook = TrackingHandler.pieceTracker[queenSideRookFile,rank];
+                if (rook != null && rook.FirstMove)
+                {
+                    CastleQueenSideEvent?.Invoke(this);
+                    returnBool = true;
+                }
+            }
+        }
         
         return returnBool;
     }

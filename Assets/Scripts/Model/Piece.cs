@@ -11,8 +11,6 @@ public class Piece : MonoBehaviour
 
     public delegate void OnPieceCreated(Piece piece);
     public static event OnPieceCreated OnPieceCreatedEvent;
-    //public delegate void OnPieceSetupComplete();
-    //public static event OnPieceSetupComplete OnPieceSetupCompleteEvent;
 
     void Awake()
     {
@@ -96,14 +94,11 @@ public class Piece : MonoBehaviour
         {
             Vector2 blockPosition = new Vector2((Position.x + (moveUnitVector.x * i)), 
                                                 (Position.y + (moveUnitVector.y * i)));
-            //Debug.Log("Position x " + Position.x + " y " + Position.y);
-            //Debug.Log("IsRangeMoveBlocked() checking " + this + " at x " + (int)blockPosition.x + " y " + (int)blockPosition.y);
             if (TrackingHandler.pieceTracker[(int)blockPosition.x,(int)blockPosition.y] != null) 
             {
                 blockingBool = true;
             }
-            //Debug.Log("No piece in the way at x " + (int)blockPosition.x + " and y " + (int)blockPosition.y);
-        }
+            }
 
         return blockingBool;
     }

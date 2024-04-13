@@ -33,14 +33,12 @@ public class SquareHighlighter : MonoBehaviour
                     (int)move.TargetPosition.x == (int)square.Position.x && 
                     (int)move.TargetPosition.y == (int)square.Position.y)
                 {
-                    if (renderer.color == Color.red)
-                    {
-                        renderer.color = Color.blue;
-                    }
+                    if (renderer.color == Color.red) renderer.color = Color.blue;
+                    else if (renderer.color == Color.blue) renderer.color = Color.blue;
                     else renderer.color = Color.yellow;
                     break;
                 }
-                else if (renderer.color != Color.red)
+                else if (renderer.color != Color.red && renderer.color != Color.blue)
                 {
                     square.SetDefaultColour();
                 }

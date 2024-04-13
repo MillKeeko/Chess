@@ -76,11 +76,14 @@ public class TrackingHandler : MonoBehaviour
     {
         pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = _pieceRemovedTestCheck;
         pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = piece;
+        if (piece is King && piece.CompareTag(GameController.PlayerTag)) Debug.Log("Putting " + piece + " back to x " + piece.Position.x + " y " + piece.Position.y);
         _pieceRemovedTestCheck = null;
     }
 
     private void TestRemoveCheck(Piece piece, Vector2 targetPosition)
     {
+        if (piece is King && piece.CompareTag(GameController.PlayerTag)) Debug.Log("Putting " + piece + " to x " + targetPosition.x + " y " + targetPosition.y + " for testing.");
+        pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = null;
         _pieceRemovedTestCheck = pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
         pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = piece;
     }

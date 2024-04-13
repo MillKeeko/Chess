@@ -12,7 +12,7 @@ using UnityEngine;
 public class CheckHandler : MonoBehaviour
 {
     public static CheckHandler instance { get; private set; }
-    public static bool IsInCheck { get; private set; }
+    public static bool IsInCheck;
 
     public delegate void OnTestRemoveCheck(Piece piece, Vector2 targetPosition);
     public static event OnTestRemoveCheck OnTestRemoveCheckEvent;
@@ -50,13 +50,15 @@ public class CheckHandler : MonoBehaviour
         IsInCheck = IsKingInCheck();
     }
 
-    public static bool DoesMoveRemoveCheck(Piece piece, Vector2 targetPosition)
+    public static bool DoesMoveEndInCheck(Piece piece, Vector2 targetPosition)
     {
         bool returnBool = false;
         OnTestRemoveCheckEvent?.Invoke(piece, targetPosition);
 
         GameController.GenerateEnemyAttackList();
+        if (piece is King && piece.CompareTag(GameController.PlayerTag)) Debug.Log("TESTING KING CHECK");
         returnBool = !IsKingInCheck();
+        if (piece is King && piece.CompareTag(GameController.PlayerTag)) Debug.Log("REMOVES CHECK: " + returnBool);
 
         OnRevertTestRemoveCheckEvent?.Invoke(piece, targetPosition);
 
@@ -67,13 +69,12 @@ public class CheckHandler : MonoBehaviour
     private static bool IsKingInCheck()
     {
         bool returnBool = false;
-        string enemyTag = General.GetEnemyTag();
-        List<General.PossibleMove> possibleEnemyAttackList = GameController.PossibleEnemyAttackList;
         Vector2 kingPosition = FindKing();
         
-        foreach (General.PossibleMove attack in possibleEnemyAttackList)
+        foreach (General.PossibleMove attack in GameController.PossibleEnemyAttackList)
         {
-            if (attack.TargetPosition.x == kingPosition.x && attack.TargetPosition.y == kingPosition.y)
+            if ((int)attack.TargetPosition.x == (int)kingPosition.x && 
+                (int)attack.TargetPosition.y == (int)kingPosition.y)
             {
                 returnBool = true;
                 break;
@@ -98,6 +99,7 @@ public class CheckHandler : MonoBehaviour
                 {
                     kingPosition.x = file;
                     kingPosition.y = rank;
+                    if (piece.CompareTag(GameController.PlayerTag)) Debug.Log("Player King Position x " + kingPosition.x + " y " + kingPosition.y);
                     return kingPosition;
                 }
             }

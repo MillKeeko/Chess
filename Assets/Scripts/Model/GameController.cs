@@ -76,12 +76,8 @@ public class GameController : MonoBehaviour
         // Reset Check flag after last move
         CheckHandler.SetIsInCheck();
 
-        // Compile move lists 
-        ClearAndCompileMoveLists();
-
-        // Compile attack list
-        if (Turn == BotTag) CreateAttackList(PossiblePlayerMovesList);
-        else CreateAttackList(PossibleBotMovesList);
+        CreateTurnMoveList();
+        CreateEnemyAttackList();
 
         // Check if in check after generated lists
         CheckHandler.SetIsInCheck();
@@ -89,7 +85,7 @@ public class GameController : MonoBehaviour
         // Generate turn's move list again if in check to only allow moves that remove check
         CreateTurnMoveList();
 
-        SquareHighlighter.ShowAttackingSquares(PossibleEnemyAttackList);
+        //SquareHighlighter.ShowAttackingSquares(PossibleEnemyAttackList);
 
         //  Trigger bot move if bot's turn
         if (Turn == BotTag) OnBotMoveEvent?.Invoke();
@@ -115,25 +111,33 @@ public class GameController : MonoBehaviour
         {
             PossiblePlayerMovesList.Clear();
             PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
-            CreateAttackList(PossiblePlayerMovesList);
         }
         else 
         {
             PossibleBotMovesList.Clear();
             PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
-            CreateAttackList(PossibleBotMovesList);
         }
+         CreateEnemyAttackList();
     }
 
-    private static void CreateAttackList(List<General.PossibleMove> moveList)
+    private static void CreateEnemyAttackList()
     {
-        CopyMoveToAttackList(moveList);
+        if (Turn == BotTag) CopyMoveToAttackList(PossiblePlayerMovesList);
+        else CopyMoveToAttackList(PossibleBotMovesList);
         FilterAttackList();
         AddDiagonalPawnAttacksEvent?.Invoke();
     }
 
+    private static void CopyMoveToAttackList(List<General.PossibleMove> moveList)
+    {
+        PossibleEnemyAttackList.Clear();
+        foreach (General.PossibleMove move in moveList)
+        {
+            PossibleEnemyAttackList.Add(move);
+        }
+    }
+
     //  Just filtering out the pawn forward moves which cannot attack
-    //  ---------- I want to add in the diagonal moves which do not show up because a piece isn't there and the pawn thinks it's invalid.
     private static void FilterAttackList()
     {
         int listCount = PossibleEnemyAttackList.Count;
@@ -149,15 +153,6 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private static void CopyMoveToAttackList(List<General.PossibleMove> moveList)
-    {
-        PossibleEnemyAttackList.Clear();
-        foreach (General.PossibleMove move in moveList)
-        {
-            PossibleEnemyAttackList.Add(move);
-        }
-    }
-    
     private void ClearAndCompileMoveLists()
     {
         PossibleBotMovesList.Clear();

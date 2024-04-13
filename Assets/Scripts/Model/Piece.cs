@@ -11,8 +11,8 @@ public class Piece : MonoBehaviour
 
     public delegate void OnPieceCreated(Piece piece);
     public static event OnPieceCreated OnPieceCreatedEvent;
-    public delegate void OnPieceSetupComplete();
-    public static event OnPieceSetupComplete OnPieceSetupCompleteEvent;
+    //public delegate void OnPieceSetupComplete();
+    //public static event OnPieceSetupComplete OnPieceSetupCompleteEvent;
 
     void Awake()
     {
@@ -51,7 +51,8 @@ public class Piece : MonoBehaviour
                 {
                     if (this.CompareTag(GameController.Turn))
                     {
-                        if (CheckHandler.DoesMoveRemoveCheck(this, targetPosition))
+                        if (this is King && this.CompareTag(GameController.PlayerTag)) Debug.Log("Asking if King can move x " + targetPosition.x + " y " + targetPosition.y);
+                        if (CheckHandler.DoesMoveEndInCheck(this, targetPosition))
                         {
                             General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
                             PossibleMovesList.Add(possibleMove);
@@ -66,17 +67,16 @@ public class Piece : MonoBehaviour
                 }
             }
         }
-        TriggerSetupComplete();
-    }
-
-    public virtual void DestroyPiece()
-    {
-        Destroy(gameObject);
     }
 
     //
     //  Virtual Methods
     //
+
+    public virtual void DestroyPiece()
+    {
+        Destroy(gameObject);
+    }
 
     public virtual bool IsBasicMoveValid(Vector2 targetPosition, Piece[,] pieceArray)
     {
@@ -86,11 +86,6 @@ public class Piece : MonoBehaviour
     //
     //  Protected Methods
     //
-
-    protected void TriggerSetupComplete()
-    {
-        OnPieceSetupCompleteEvent?.Invoke();
-    }
 
     protected bool IsRangeMoveBlocked(Vector2 targetPosition)
     {

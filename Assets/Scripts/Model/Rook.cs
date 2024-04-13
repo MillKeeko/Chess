@@ -10,10 +10,10 @@ public class Rook : Piece
     //  Override Methods
     //
 
-    public override bool IsBasicMoveValid(Vector2 targetPosition, Piece[,] pieceArray)
+    public override bool IsBasicMoveValid(Vector2 targetPosition)
     {
         bool returnBool = false;
-        if (IsValidRookMove(targetPosition, pieceArray))
+        if (IsValidRookMove(targetPosition))
         {
             returnBool = true;
         }
@@ -26,10 +26,10 @@ public class Rook : Piece
 
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules
-    private bool IsValidRookMove(Vector2 targetPosition, Piece[,] pieceArray)
+    private bool IsValidRookMove(Vector2 targetPosition)
     {
         bool returnBool = false;
-        Piece target = pieceArray[(int)targetPosition.x, (int)targetPosition.y];
+        Piece target = TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
         
         // if the difference between the x == the difference between the y, or the negative of that difference
         if ((targetPosition.x == transform.position.x  || targetPosition.y == transform.position.y) &&

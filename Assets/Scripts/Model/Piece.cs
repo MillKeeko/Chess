@@ -47,7 +47,7 @@ public class Piece : MonoBehaviour
             for (int y = 0; y < 8; y++)
             {
                 targetPosition = new Vector2(x, y);
-                if (IsBasicMoveValid(targetPosition, TrackingHandler.pieceTracker))
+                if (IsBasicMoveValid(targetPosition))
                 {
                     if (this.CompareTag(GameController.Turn))
                     {
@@ -76,7 +76,7 @@ public class Piece : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public virtual bool IsBasicMoveValid(Vector2 targetPosition, Piece[,] pieceArray)
+    public virtual bool IsBasicMoveValid(Vector2 targetPosition)
     {
         return false;
     }

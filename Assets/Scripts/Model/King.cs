@@ -10,10 +10,11 @@ public class King : Piece
     //  Override Methods
     //
 
-    public override bool IsBasicMoveValid(Vector2 targetPosition, Piece[,] pieceArray)
+    public override bool IsBasicMoveValid(Vector2 targetPosition)
     {
         bool returnBool = false;
-        if (IsValidKingMove(targetPosition, pieceArray))
+        if (IsValidKingMove(targetPosition) ||
+            IsValidCastleMove(targetPosition))
         {
             returnBool = true;
         }
@@ -24,14 +25,22 @@ public class King : Piece
     //  Private Methods
     //
 
+    private bool IsValidCastleMove(Vector2 targetPosition)
+    {
+        bool returnBool = false;
+
+        
+        return returnBool;
+    }
+
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules
-    private bool IsValidKingMove(Vector2 targetPosition, Piece[,] pieceArray)
+    private bool IsValidKingMove(Vector2 targetPosition)
     {
         bool returnBool = false;
         int targetX = (int)targetPosition.x;
         int targetY = (int)targetPosition.y;
-        Piece target = pieceArray[(int)targetPosition.x, (int)targetPosition.y];
+        Piece target = TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
 
         if (target != null && target.CompareTag(this.tag))
         {

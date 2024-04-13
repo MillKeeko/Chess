@@ -35,14 +35,10 @@ public class TrackingHandler : MonoBehaviour
         
         Piece.OnPieceCreatedEvent += AddToTracker;
 
-        InputHandler.OnValidMoveEvent += UpdateTracker;
-        BotController.OnValidBotMoveEvent += UpdateTracker;
+        MoveController.OnMoveEvent += UpdateTracker;
 
         CheckHandler.OnTestRemoveCheckEvent += TestRemoveCheck;
         CheckHandler.OnRevertTestRemoveCheckEvent += RevertTestRemoveCheck;
-
-        King.CastleKingSideEvent += CastleKingSide;
-        King.CastleQueenSideEvent += CastleQueenSide;
     }
 
     // Start is called before the first frame update
@@ -73,16 +69,6 @@ public class TrackingHandler : MonoBehaviour
                 }
             }
         }*/
-    }
-
-    private void CastleKingSide(Piece piece)
-    {
-
-    }
-
-    private void CastleQueenSide(Piece piece)
-    {
-
     }
 
     private void RevertTestRemoveCheck(Piece piece, Vector2 targetPosition)

@@ -6,9 +6,6 @@ using UnityEngine;
 
 public class BotController : MonoBehaviour
 {
-    public delegate void OnValidBotMove(Piece piece, Vector2 targetPosition);
-    public static event OnValidBotMove OnValidBotMoveEvent;
-
     void Awake()
     {
         GameController.OnBotMoveEvent += MakeMove;
@@ -41,8 +38,7 @@ public class BotController : MonoBehaviour
         Piece piece = move.SelectedPiece;
         Vector3 targetPosition = new Vector3(move.TargetPosition.x, move.TargetPosition.y, Constants.PIECE_Z_INDEX);
 
-        BoardController.ExecuteMove(piece, targetPosition);
-        OnValidBotMoveEvent?.Invoke(piece, targetPosition);
+        MoveController.PrepareExecuteMove(piece, targetPosition);
         //Debug.Log("Bot MakeRandomMove End");
     }
 }

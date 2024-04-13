@@ -7,9 +7,6 @@ using UnityEngine;
 public class InputHandler : MonoBehaviour
 {
     public static InputHandler instance { get; private set; }
-    
-    public delegate void OnValidMove(Piece piece, Vector2 targetPosition);
-    public static event OnValidMove OnValidMoveEvent;
 
     private Piece _selectedPiece;
     private Piece _targetPiece;
@@ -79,18 +76,14 @@ public class InputHandler : MonoBehaviour
 
     public void MoveAttempt(Vector2 targetPosition)
     {
-        bool validMove = false;
         //Debug.Log("MoveAttempt PossibleMovesList length " + PossibleMovesList.Count);
         foreach (PossibleMove move in GameController.PossiblePlayerMovesList)
         {
             if (targetPosition == move.TargetPosition && _selectedPiece == move.SelectedPiece)
             {
-                BoardController.ExecuteMove(_selectedPiece, targetPosition);
-                validMove = true;
-                if (_selectedPiece.FirstMove) _selectedPiece.FirstMove = false;
+                MoveController.PrepareExecuteMove(_selectedPiece, targetPosition);
                 break; // To avoid list changing while executing - it would return after events finish and error
             }
         }
-        if (validMove) OnValidMoveEvent?.Invoke(_selectedPiece, targetPosition); // Trigger event here instead (I AM A GENIUS)
     }
 }

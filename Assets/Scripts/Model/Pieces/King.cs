@@ -6,11 +6,6 @@ using UnityEngine;
 
 public class King : Piece
 {
-    public delegate void CastleKingSide(Piece piece);
-    public static event CastleKingSide CastleKingSideEvent;
-    public delegate void CastleQueenSide(Piece piece);
-    public static event CastleQueenSide CastleQueenSideEvent;
-
     //
     //  Override Methods
     //
@@ -40,45 +35,89 @@ public class King : Piece
         int kingSideRookFile;
         int queenSideRookFile;
 
-        if (this.CompareTag(GameController.BotTag)) 
-        {
-            kingSideOffset = -2;
-            queenSideOffset = 2;
-            rank = 7;
-            kingSideRookFile = 0;
-            queenSideRookFile = 7;
-        }
-        else 
+        if (GameController.PlayerTag == Constants.WHITE_TAG) 
         {
             kingSideOffset = 2;
             queenSideOffset = -2;
-            rank = 0;
             kingSideRookFile = 7;
-            queenSideRookFile = 0;
+            queenSideRookFile = 0;   
+        }
+        else 
+        {
+            kingSideOffset = -2;
+            queenSideOffset = 2;
+            kingSideRookFile = 0;
+            queenSideRookFile = 7;
         }
 
-        if (FirstMove && (int)targetPosition.y == (int)Position.y)
+        if (this.CompareTag(GameController.BotTag))
         {
-            if ((int)targetPosition.x == (int)(Position.x + kingSideOffset))
+            rank = 7;
+        }
+        else
+        {
+            rank = 0;
+        }
+
+        if (FirstMove && 
+            (int)targetPosition.y == (int)Position.y &&
+            !CheckHandler.IsInCheck &&
+            this.CompareTag(GameController.Turn))
+        {
+            if ((int)targetPosition.x == (int)(Position.x + kingSideOffset) &&
+                !IsCastleBlocked(kingSideOffset, 0))
             {
                 rook = TrackingHandler.pieceTracker[kingSideRookFile,rank];
-                if (rook != null && rook.FirstMove)
+                if (rook != null && rook.FirstMove && rook is Rook)
                 {
-                    CastleKingSideEvent?.Invoke(this);
                     returnBool = true;
                 }
             }
-            else if ((int)targetPosition.x == (int)(Position.x - queenSideOffset))
+            else if ((int)targetPosition.x == (int)(Position.x + queenSideOffset) &&
+                     !IsCastleBlocked(queenSideOffset, 1))
             {
                 rook = TrackingHandler.pieceTracker[queenSideRookFile,rank];
-                if (rook != null && rook.FirstMove)
+                if (rook != null && rook.FirstMove && rook is Rook)
                 {
-                    CastleQueenSideEvent?.Invoke(this);
                     returnBool = true;
                 }
             }
         }
         
+        return returnBool;
+    }
+
+    //  Offset is either -2 or 2
+    //  int side: 0 = kingSide, 1 = queenSide 
+    private bool IsCastleBlocked(int offset, int side)
+    {
+        bool returnBool = false;
+        int halfOffset = offset/2;
+        Vector2 positionOne = new Vector2(this.Position.x + halfOffset, this.Position.y);
+        Vector2 positionTwo = new Vector2(this.Position.x + offset, this.Position.y);
+        Vector2 positionThree = new Vector2(this.Position.x + offset + halfOffset, this.Position.y);
+
+        foreach (PossibleMove move in GameController.PossibleEnemyAttackList)
+        {
+            if ((move.TargetPosition.x == positionOne.x && move.TargetPosition.y == positionOne.y) ||
+                (move.TargetPosition.x == positionTwo.x && move.TargetPosition.y == positionTwo.y) ||
+                TrackingHandler.pieceTracker[(int)positionOne.x, (int)positionTwo.y] != null ||
+                TrackingHandler.pieceTracker[(int)positionTwo.x, (int)positionTwo.y] != null)
+            {
+                returnBool = true;
+                break;
+            }
+            else if (side == 1)
+            {
+                if (move.TargetPosition.x == positionThree.x && move.TargetPosition.y == positionThree.y ||
+                    TrackingHandler.pieceTracker[(int)positionThree.x, (int)positionThree.y] != null)
+                {
+                    returnBool = true;
+                    break;
+                }
+            }
+        }
+
         return returnBool;
     }
 

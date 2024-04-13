@@ -248,7 +248,7 @@ public class GameController : MonoBehaviour
     {
         string enemyTag = null;
 
-        if (GameController.Turn == Constants.WHITE_TAG) enemyTag = Constants.BLACK_TAG;
+        if (Turn == Constants.WHITE_TAG) enemyTag = Constants.BLACK_TAG;
         else enemyTag = Constants.WHITE_TAG;
 
         return enemyTag;    

@@ -89,7 +89,6 @@ public class Piece : MonoBehaviour
 
         Vector2 moveUnitVector = CalculateMoveUnitVector(targetPosition);
         int distance = CalculateMoveDistance(targetPosition);
-
         for (int i = 1; i < Mathf.Abs(distance); i++)
         {
             Vector2 blockPosition = new Vector2((Position.x + (moveUnitVector.x * i)), 

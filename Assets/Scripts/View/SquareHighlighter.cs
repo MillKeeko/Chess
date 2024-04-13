@@ -19,14 +19,25 @@ public class SquareHighlighter : MonoBehaviour
         
     }
 
-    public static void ShowMoveSquares(Piece piece, List<General.PossibleMove> moveList)
+    public static void SetSquaresDefault()
     {
         Square[] allSquares = FindObjectsOfType<Square>();
 
         for (int i = 0; i < 64; i++)
         {
             Square square = allSquares[i];
-            foreach (General.PossibleMove move in moveList)
+            square.SetDefaultColour();
+        }
+    }
+
+    public static void ShowMoveSquares(Piece piece, List<PossibleMove> moveList)
+    {
+        Square[] allSquares = FindObjectsOfType<Square>();
+
+        for (int i = 0; i < 64; i++)
+        {
+            Square square = allSquares[i];
+            foreach (PossibleMove move in moveList)
             {
                 SpriteRenderer renderer = square.GetComponent<SpriteRenderer>();
                 if (move.SelectedPiece == piece &&
@@ -46,7 +57,7 @@ public class SquareHighlighter : MonoBehaviour
         }
     }
 
-    public static void ShowAttackingSquares(List<General.PossibleMove> attackList)
+    public static void ShowAttackingSquares(List<PossibleMove> attackList)
     {
         //Debug.Log("Number of enemy moves " + attackList.Count);
 
@@ -57,7 +68,7 @@ public class SquareHighlighter : MonoBehaviour
         {
             Square square = allSquares[i];
             //Debug.Log("Square position x " + square.Position.x + " y " + square.Position.y);
-            foreach (General.PossibleMove move in attackList)
+            foreach (PossibleMove move in attackList)
             {
                 SpriteRenderer renderer = square.GetComponent<SpriteRenderer>();
                 //  Found square that is attacked

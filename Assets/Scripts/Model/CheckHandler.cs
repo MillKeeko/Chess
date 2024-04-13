@@ -69,7 +69,7 @@ public class CheckHandler : MonoBehaviour
         bool returnBool = false;
         Vector2 kingPosition = FindKing();
         
-        foreach (General.PossibleMove attack in GameController.PossibleEnemyAttackList)
+        foreach (PossibleMove attack in GameController.PossibleEnemyAttackList)
         {
             if ((int)attack.TargetPosition.x == (int)kingPosition.x && 
                 (int)attack.TargetPosition.y == (int)kingPosition.y)

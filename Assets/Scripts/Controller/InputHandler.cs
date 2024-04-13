@@ -81,7 +81,7 @@ public class InputHandler : MonoBehaviour
     {
         bool validMove = false;
         //Debug.Log("MoveAttempt PossibleMovesList length " + PossibleMovesList.Count);
-        foreach (General.PossibleMove move in GameController.PossiblePlayerMovesList)
+        foreach (PossibleMove move in GameController.PossiblePlayerMovesList)
         {
             if (targetPosition == move.TargetPosition && _selectedPiece == move.SelectedPiece)
             {

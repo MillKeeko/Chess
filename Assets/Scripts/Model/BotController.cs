@@ -36,7 +36,7 @@ public class BotController : MonoBehaviour
         //Debug.Log("Bot MakeRandomMove Start");
         int randomIndex = Random.Range(0, GameController.PossibleBotMovesList.Count);
         //Debug.Log("Random index " + randomIndex);
-        General.PossibleMove move = GameController.PossibleBotMovesList[randomIndex];
+        PossibleMove move = GameController.PossibleBotMovesList[randomIndex];
 
         Piece piece = move.SelectedPiece;
         Vector3 targetPosition = new Vector3(move.TargetPosition.x, move.TargetPosition.y, Constants.PIECE_Z_INDEX);

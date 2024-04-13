@@ -4,6 +4,19 @@ using UnityEngine;
 
 //  Model
 
+public struct PossibleMove
+{
+    public Vector2 TargetPosition;
+    public Piece SelectedPiece;
+
+    // Constructor
+    public PossibleMove (Vector2 targetPosition, Piece selectedPiece)
+    {
+        TargetPosition = targetPosition;
+        SelectedPiece = selectedPiece;
+    }
+};
+
 public class GameController : MonoBehaviour
 {
     public static GameController instance { get; private set; }
@@ -12,9 +25,9 @@ public class GameController : MonoBehaviour
     public static string BotTag { get; private set; }
     public static string Turn { get; private set; }
 
-    public static List<General.PossibleMove> PossibleBotMovesList;
-    public static List<General.PossibleMove> PossiblePlayerMovesList;
-    public static List<General.PossibleMove> PossibleEnemyAttackList;
+    public static List<PossibleMove> PossibleBotMovesList;
+    public static List<PossibleMove> PossiblePlayerMovesList;
+    public static List<PossibleMove> PossibleEnemyAttackList;
 
     private int _turnMoveCount;
 
@@ -39,9 +52,9 @@ public class GameController : MonoBehaviour
 
         Turn = Constants.WHITE_TAG;
         RandomTeams();
-        PossibleBotMovesList = new List<General.PossibleMove>();
-        PossiblePlayerMovesList = new List<General.PossibleMove>();
-        PossibleEnemyAttackList = new List<General.PossibleMove>();
+        PossibleBotMovesList = new List<PossibleMove>();
+        PossiblePlayerMovesList = new List<PossibleMove>();
+        PossibleEnemyAttackList = new List<PossibleMove>();
         _turnMoveCount = 0;
         TrackingHandler.OnTrackerReadyEvent += StartTurn;
         TrackingHandler.OnTrackerUpdatedEvent += ChangeTurn;
@@ -88,6 +101,8 @@ public class GameController : MonoBehaviour
         // Generate turn's move list again if in check to only allow moves that remove check
         CreateTurnMoveList();
 
+        SquareHighlighter.SetSquaresDefault();
+
         //  Game Over Logic
         if ( _turnMoveCount == 0)
         {
@@ -112,13 +127,13 @@ public class GameController : MonoBehaviour
         if (Turn == BotTag) 
         {
             PossibleBotMovesList.Clear();
-            PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
+            PossibleBotMovesList = CompilePossibleMoves(BotTag);
             _turnMoveCount = PossibleBotMovesList.Count;
         }
         else 
         {
             PossiblePlayerMovesList.Clear();
-            PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
+            PossiblePlayerMovesList = CompilePossibleMoves(PlayerTag);
             _turnMoveCount = PossiblePlayerMovesList.Count;
         }
     }
@@ -128,12 +143,12 @@ public class GameController : MonoBehaviour
         if (Turn == BotTag) 
         {
             PossiblePlayerMovesList.Clear();
-            PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
+            PossiblePlayerMovesList = CompilePossibleMoves(PlayerTag);
         }
         else 
         {
             PossibleBotMovesList.Clear();
-            PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
+            PossibleBotMovesList = CompilePossibleMoves(BotTag);
         }
          CreateEnemyAttackList();
     }
@@ -146,10 +161,10 @@ public class GameController : MonoBehaviour
         AddDiagonalPawnAttacksEvent?.Invoke();
     }
 
-    private static void CopyMoveToAttackList(List<General.PossibleMove> moveList)
+    private static void CopyMoveToAttackList(List<PossibleMove> moveList)
     {
         PossibleEnemyAttackList.Clear();
-        foreach (General.PossibleMove move in moveList)
+        foreach (PossibleMove move in moveList)
         {
             PossibleEnemyAttackList.Add(move);
         }
@@ -175,8 +190,8 @@ public class GameController : MonoBehaviour
     {
         PossibleBotMovesList.Clear();
         PossiblePlayerMovesList.Clear();
-        PossibleBotMovesList = General.CompilePossibleMoves(BotTag);
-        PossiblePlayerMovesList = General.CompilePossibleMoves(PlayerTag);
+        PossibleBotMovesList = CompilePossibleMoves(BotTag);
+        PossiblePlayerMovesList = CompilePossibleMoves(PlayerTag);
     }
 
     private void RandomTeams()
@@ -192,5 +207,50 @@ public class GameController : MonoBehaviour
             PlayerTag = Constants.BLACK_TAG;
             BotTag = Constants.WHITE_TAG;
         }
+    }
+
+    public static List<PossibleMove> CompilePossibleMoves(string tag)
+    {
+        List<Piece> pieceList = GeneratePieceList(tag);
+        List<PossibleMove> possibleMoveList = new List<PossibleMove>();
+
+        foreach (Piece piece in pieceList)
+        {
+            piece.GeneratePossibleMoves();
+            possibleMoveList.AddRange(piece.PossibleMovesList);
+        }
+
+        //Debug.Log("PossibleMove count " + possibleMoveList.Count);
+        return possibleMoveList;
+    }
+
+    public static List<Piece> GeneratePieceList(string tag)
+    {
+        List<Piece> pieceList = new List<Piece>();
+
+        for (int rank = 0; rank < 8; rank++)
+        {
+            for (int file = 0; file < 8; file++)
+            {
+                Piece piece = TrackingHandler.pieceTracker[rank, file];
+                if (piece != null && piece.CompareTag(tag))
+                {
+                    pieceList.Add(piece);
+                }
+            }
+        }
+
+        //Debug.Log("Piece list count " + pieceList.Count);
+        return pieceList;
+    } 
+
+    public static string GetEnemyTag()
+    {
+        string enemyTag = null;
+
+        if (GameController.Turn == Constants.WHITE_TAG) enemyTag = Constants.BLACK_TAG;
+        else enemyTag = Constants.WHITE_TAG;
+
+        return enemyTag;    
     }
 }

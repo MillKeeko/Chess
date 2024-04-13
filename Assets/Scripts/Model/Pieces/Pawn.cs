@@ -43,12 +43,12 @@ public class Pawn : Piece
     private void AddDiagonalPawnAttacks()
     {
         Vector2 targetPosition;
-        General.PossibleMove attack;
+        PossibleMove attack;
 
         if (!this.CompareTag(GameController.Turn))
         {
             targetPosition = new Vector2 (Position.x + 1, Position.y + (_forwardMove));
-            attack = new General.PossibleMove(targetPosition, this);
+            attack = new PossibleMove(targetPosition, this);
 
             if (!GameController.PossibleEnemyAttackList.Contains(attack))
             {
@@ -56,7 +56,7 @@ public class Pawn : Piece
             }
 
             targetPosition = new Vector2 (Position.x - 1, Position.y + (_forwardMove));
-            attack = new General.PossibleMove(targetPosition, this);
+            attack = new PossibleMove(targetPosition, this);
 
             if (!GameController.PossibleEnemyAttackList.Contains(attack))
             {

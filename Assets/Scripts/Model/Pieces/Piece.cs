@@ -6,7 +6,7 @@ using UnityEngine;
 public class Piece : MonoBehaviour
 {
     public Vector2 Position;
-    public List<General.PossibleMove> PossibleMovesList = new List<General.PossibleMove>();
+    public List<PossibleMove> PossibleMovesList = new List<PossibleMove>();
     public bool FirstMove = true;
 
     public delegate void OnPieceCreated(Piece piece);
@@ -51,13 +51,13 @@ public class Piece : MonoBehaviour
                     {
                         if (CheckHandler.DoesMoveEndInCheck(this, targetPosition))
                         {
-                            General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
+                            PossibleMove possibleMove = new PossibleMove(targetPosition, this);
                             PossibleMovesList.Add(possibleMove);
                         }
                     }
                     else
                     {
-                        General.PossibleMove possibleMove = new General.PossibleMove(targetPosition, this);
+                        PossibleMove possibleMove = new PossibleMove(targetPosition, this);
                         PossibleMovesList.Add(possibleMove);
                     }
                 }

@@ -8,6 +8,12 @@ public class MoveController : MonoBehaviour
 
     public delegate void OnMove(Piece piece, Vector2 targetPosition);
     public static event OnMove OnMoveEvent;
+    public delegate void OnEnPassant(Piece piece, Vector2 targetPosition);
+    public static event OnEnPassant OnEnPassantEvent;
+
+
+    public static bool IsEnPassantPossible { get; private set; }
+    public static Vector2 EnPassantTargetPosition { get; private set; }
 
     void Awake()
     {
@@ -19,14 +25,55 @@ public class MoveController : MonoBehaviour
         {
             instance = this;
         }
+
+        IsEnPassantPossible = false;
+        EnPassantTargetPosition = new Vector2 (-1, -1);
     }
 
     public static void PrepareExecuteMove(Piece piece, Vector2 targetPosition)
     {
-        if (piece.FirstMove) piece.FirstMove = false;
         if (IsCastleMove(piece, targetPosition)) MoveRookForCastle(piece, targetPosition);
+        TriggerMoveExecution(piece, targetPosition);
+    }
+
+    private static void TriggerMoveExecution (Piece piece, Vector2 targetPosition)
+    {
+        if (piece.FirstMove) piece.FirstMove = false;
+        SetIsEnPassantVariables(piece, targetPosition);
         BoardController.ExecuteMove(piece, targetPosition);
-        OnMoveEvent?.Invoke(piece, targetPosition);
+        if (IsEnPassantMove(piece, targetPosition)) OnEnPassantEvent?.Invoke(piece, targetPosition);
+        else OnMoveEvent?.Invoke(piece, targetPosition);
+    }
+
+    private static bool IsEnPassantMove(Piece piece, Vector2 targetPosition)
+    {
+        if (piece is Pawn && targetPosition == EnPassantTargetPosition) return true;
+        else return false;
+    }
+
+    private static void SetIsEnPassantVariables(Piece piece, Vector2 targetPosition)
+    {
+        if (piece is Pawn)
+        {
+            if (piece.Position.y - targetPosition.y == 2)
+            {
+                IsEnPassantPossible = true;
+                EnPassantTargetPosition = new Vector2 (piece.Position.x, piece.Position.y - 1);
+            }
+            else if (piece.Position.y - targetPosition.y == -2)
+            {
+                IsEnPassantPossible = true;
+                EnPassantTargetPosition = new Vector2 (piece.Position.x, piece.Position.y + 1);
+            }
+            else
+            {
+                IsEnPassantPossible = false;
+            }
+        }
+        else 
+        {
+            IsEnPassantPossible = false;
+        }
     }
 
     private static void MoveRookForCastle(Piece piece, Vector2 targetPosition)
@@ -48,8 +95,7 @@ public class MoveController : MonoBehaviour
         
         Piece rook = TrackingHandler.pieceTracker[rookFile, (int)piece.Position.y];
         Vector2 rookTargetPosition = new Vector2(rookTargetFile, piece.Position.y);
-        BoardController.ExecuteMove(rook, rookTargetPosition);
-        OnMoveEvent?.Invoke(rook, rookTargetPosition);
+        TriggerMoveExecution(piece, targetPosition);
     }
 
     private static bool IsCastleMove(Piece piece, Vector2 targetPosition)
@@ -60,7 +106,6 @@ public class MoveController : MonoBehaviour
         {
             returnBool = true;
         }
-        Debug.Log("IsCastleMove " + returnBool);
         return returnBool;
     }
 }

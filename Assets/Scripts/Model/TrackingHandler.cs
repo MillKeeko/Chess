@@ -36,6 +36,7 @@ public class TrackingHandler : MonoBehaviour
         Piece.OnPieceCreatedEvent += AddToTracker;
 
         MoveController.OnMoveEvent += UpdateTracker;
+        MoveController.OnEnPassantEvent += UpdateTrackerEnPassant;
 
         CheckHandler.OnTestRemoveCheckEvent += TestRemoveCheck;
         CheckHandler.OnRevertTestRemoveCheckEvent += RevertTestRemoveCheck;
@@ -95,7 +96,24 @@ public class TrackingHandler : MonoBehaviour
         }
         pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = piece;
         piece.Position = targetPosition;
-        if (piece.FirstMove) piece.FirstMove = false;
+        OnTrackerUpdatedEvent?.Invoke();
+    }
+
+    private void UpdateTrackerEnPassant(Piece piece, Vector2 targetPosition)
+    {
+        pieceTracker[(int)piece.Position.x, (int)piece.Position.y] = null;
+        if (targetPosition.y == 5)
+        {
+            TrackerCount--;
+            pieceTracker[(int)targetPosition.x, ((int)targetPosition.y - 1)].DestroyPiece();
+        }
+        else if (targetPosition.y == 2)
+        {
+            TrackerCount--;
+            pieceTracker[(int)targetPosition.x, ((int)targetPosition.y + 1)].DestroyPiece();
+        }
+        pieceTracker[(int)targetPosition.x, (int)targetPosition.y] = piece;
+        piece.Position = targetPosition;
         OnTrackerUpdatedEvent?.Invoke();
     }
 

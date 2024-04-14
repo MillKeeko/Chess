@@ -23,7 +23,8 @@ public class Pawn : Piece
         bool returnBool = false;
         if (IsValidDiagonalAttack(targetPosition) || 
             IsValidFirstMoveDouble(targetPosition) || 
-            IsValidForwardMove(targetPosition))
+            IsValidForwardMove(targetPosition) ||
+            IsValidEnPassant(targetPosition))
         {
             returnBool = true;
         }
@@ -39,6 +40,19 @@ public class Pawn : Piece
     //
     //  Private Methods
     //
+
+    private bool IsValidEnPassant(Vector2 targetPosition)
+    {
+        if (targetPosition.x == Position.x + 1 || targetPosition.x == Position.x - 1)
+        {
+            if (targetPosition.y == (Position.y + _forwardMove) &&
+                targetPosition == MoveController.EnPassantTargetPosition)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private void AddDiagonalPawnAttacks()
     {

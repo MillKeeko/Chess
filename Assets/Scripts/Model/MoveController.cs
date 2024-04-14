@@ -95,7 +95,7 @@ public class MoveController : MonoBehaviour
         
         Piece rook = TrackingHandler.pieceTracker[rookFile, (int)piece.Position.y];
         Vector2 rookTargetPosition = new Vector2(rookTargetFile, piece.Position.y);
-        TriggerMoveExecution(piece, targetPosition);
+        TriggerMoveExecution(rook, rookTargetPosition);
     }
 
     private static bool IsCastleMove(Piece piece, Vector2 targetPosition)

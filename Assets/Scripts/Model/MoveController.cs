@@ -58,21 +58,25 @@ public class MoveController : MonoBehaviour
             if (piece.Position.y - targetPosition.y == 2)
             {
                 IsEnPassantPossible = true;
+                Debug.Log("EnPassant possible.");
                 EnPassantTargetPosition = new Vector2 (piece.Position.x, piece.Position.y - 1);
             }
             else if (piece.Position.y - targetPosition.y == -2)
             {
                 IsEnPassantPossible = true;
+                Debug.Log("EnPassant possible.");
                 EnPassantTargetPosition = new Vector2 (piece.Position.x, piece.Position.y + 1);
             }
             else
             {
                 IsEnPassantPossible = false;
+                Debug.Log("EnPassant impossible.");
             }
         }
         else 
         {
             IsEnPassantPossible = false;
+            Debug.Log("EnPassant impossible.");
         }
     }
 

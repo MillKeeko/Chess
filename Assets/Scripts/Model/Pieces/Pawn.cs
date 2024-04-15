@@ -46,7 +46,8 @@ public class Pawn : Piece
         if (targetPosition.x == Position.x + 1 || targetPosition.x == Position.x - 1)
         {
             if (targetPosition.y == (Position.y + _forwardMove) &&
-                targetPosition == MoveController.EnPassantTargetPosition)
+                targetPosition == MoveController.EnPassantTargetPosition &&
+                MoveController.IsEnPassantPossible)
             {
                 return true;
             }

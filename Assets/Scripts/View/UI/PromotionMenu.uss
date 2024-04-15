@@ -1,0 +1,6 @@
+.Button {
+    width: 20%;
+    height: 10%;
+    align-self: center;
+    margin-top: 0;
+}

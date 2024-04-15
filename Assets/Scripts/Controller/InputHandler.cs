@@ -53,7 +53,7 @@ public class InputHandler : MonoBehaviour
                     _targetPiece = hit.collider.GetComponent<Piece>();
                     targetPosition = new Vector2 (_targetPiece.Position.x, _targetPiece.Position.y);
                     //Debug.Log("Trying to take piece.");
-                    MoveAttempt(targetPosition);
+                    if (!MoveAttempt(targetPosition)) SquareHighlighter.SetSquaresDefault();
                     _selectedPiece = null; // reset selected piece
                 }
                 //  Check player is trying to move a piece
@@ -62,7 +62,7 @@ public class InputHandler : MonoBehaviour
                     _targetSquare = hit.collider.GetComponent<Square>();
                     targetPosition = new Vector2 (_targetSquare.Position.x, _targetSquare.Position.y);
                     //Debug.Log("Trying to move piece.");
-                    MoveAttempt(targetPosition);
+                    if (!MoveAttempt(targetPosition)) SquareHighlighter.SetSquaresDefault();
                     _selectedPiece = null; // reset selected piece
                 }
                 // Else player not selecting or moving anything
@@ -74,16 +74,19 @@ public class InputHandler : MonoBehaviour
         }
     }
 
-    public void MoveAttempt(Vector2 targetPosition)
+    public bool MoveAttempt(Vector2 targetPosition)
     {
+        bool returnBool = false;
         //Debug.Log("MoveAttempt PossibleMovesList length " + PossibleMovesList.Count);
         foreach (PossibleMove move in GameController.PossiblePlayerMovesList)
         {
             if (targetPosition == move.TargetPosition && _selectedPiece == move.SelectedPiece)
             {
                 MoveController.PrepareExecuteMove(_selectedPiece, targetPosition);
+                returnBool = true;
                 break; // To avoid list changing while executing - it would return after events finish and error
             }
         }
+        return returnBool;
     }
 }

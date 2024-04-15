@@ -2,13 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//  BEGINNING OF CHECK ACTUALLY WORKING!!!!!!
-//  Known bugs:
-//      -   King can move itself to "block" check from itself
-//          -   Interesting that this is only true for the bot.... hmm...
-//      -   Player can put themselves into check
-//      -   
-
 public class CheckHandler : MonoBehaviour
 {
     public static CheckHandler instance { get; private set; }

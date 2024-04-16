@@ -7,6 +7,15 @@ using UnityEngine;
 
 public class SquareHighlighter : MonoBehaviour
 {
+    public static Vector2 LastPiecePosition; // Used for last move highlighting
+    public static Vector2 LastMoveTarget;
+
+    void Awake()
+    {
+        LastPiecePosition = new Vector2 (-1, -1);
+        LastMoveTarget = new Vector2 (-1, -1);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,20 +35,30 @@ public class SquareHighlighter : MonoBehaviour
         for (int i = 0; i < 64; i++)
         {
             Square square = allSquares[i];
-            square.SetDefaultColour();
+            SpriteRenderer renderer = square.GetComponent<SpriteRenderer>();
+            if (square.Position == LastPiecePosition || 
+                square.Position == LastMoveTarget)
+            {
+                renderer.color = Color.green;
+            }
+            else
+            {
+                square.SetDefaultColour();
+            }
         }
     }
 
-    public static void ShowMoveSquares(Piece piece, List<PossibleMove> moveList)
+    public static void ShowMoveSquares(Piece piece)
     {
         Square[] allSquares = FindObjectsOfType<Square>();
 
         for (int i = 0; i < 64; i++)
         {
             Square square = allSquares[i];
-            foreach (PossibleMove move in moveList)
+            SpriteRenderer renderer = square.GetComponent<SpriteRenderer>();
+
+            foreach (PossibleMove move in piece.PossibleMovesList)
             {
-                SpriteRenderer renderer = square.GetComponent<SpriteRenderer>();
                 if (move.SelectedPiece == piece &&
                     (int)move.TargetPosition.x == (int)square.Position.x && 
                     (int)move.TargetPosition.y == (int)square.Position.y)
@@ -49,15 +68,20 @@ public class SquareHighlighter : MonoBehaviour
                     else renderer.color = Color.yellow;
                     break;
                 }
-                else if (renderer.color != Color.red && renderer.color != Color.blue)
+                else if (square.Position == LastPiecePosition || 
+                         square.Position == LastMoveTarget)
+                {
+                    renderer.color = Color.green;
+                }
+                /*else if (renderer.color != Color.red && renderer.color != Color.blue)
                 {
                     square.SetDefaultColour();
-                }
+                }*/
             }
         }
     }
 
-    public static void ShowAttackingSquares(List<PossibleMove> attackList)
+    /*public static void ShowAttackingSquares(List<PossibleMove> attackList)
     {
         //Debug.Log("Number of enemy moves " + attackList.Count);
 
@@ -84,5 +108,5 @@ public class SquareHighlighter : MonoBehaviour
                 }
             }
         }
-    }
+    }*/
 }

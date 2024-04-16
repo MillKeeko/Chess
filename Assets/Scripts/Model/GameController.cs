@@ -150,7 +150,7 @@ public class GameController : MonoBehaviour
             PossibleBotMovesList.Clear();
             PossibleBotMovesList = CompilePossibleMoves(BotTag);
         }
-         CreateEnemyAttackList();
+        CreateEnemyAttackList();
     }
 
     private static void CreateEnemyAttackList()

@@ -13,6 +13,7 @@ public class BoardController : MonoBehaviour
     public GameObject PawnBlack, RookBlack, KnightBlack, BishopBlack, QueenBlack, KingBlack;
 
     private int _blackPawnRank, _blackPieceRank, _whitePawnRank, _whitePieceRank, _queenFile, _kingFile;
+    private Vector2 _promotionPosition;
 
     void Awake()
     {
@@ -24,16 +25,16 @@ public class BoardController : MonoBehaviour
         {
             instance = this;
         }
+
+        _promotionPosition = new Vector2 (-1, -1);
+
+        PromotionMenuController.OnPromotionEvent += PromotePawn;
+        TrackingHandler.OnPromotionNeedPositionEvent += SetPromotionPosition;
     }
 
     void Start()
     {
         SetupBoard();
-    }
-
-    void Update()
-    {
-        
     }
 
     //
@@ -48,6 +49,37 @@ public class BoardController : MonoBehaviour
     //
     //  Private Methods
     //
+
+    private void PromotePawn(Pieces pieceType)
+    {
+        Piece piece = null;
+        switch (pieceType)
+        {
+            case Pieces.Queen:
+                if (GameController.Turn == Constants.WHITE_TAG) piece = MakeChessPiece(QueenWhite, _promotionPosition);
+                else piece = MakeChessPiece(QueenBlack, _promotionPosition);
+                break;
+            case Pieces.Knight:
+                if (GameController.Turn == Constants.WHITE_TAG) piece = MakeChessPiece(KnightWhite, _promotionPosition);
+                else piece = MakeChessPiece(KnightBlack, _promotionPosition);
+                break;
+            case Pieces.Rook:
+                if (GameController.Turn == Constants.WHITE_TAG) piece = MakeChessPiece(RookWhite, _promotionPosition);
+                else piece = MakeChessPiece(RookBlack, _promotionPosition);
+                break;
+            case Pieces.Bishop:
+                if (GameController.Turn == Constants.WHITE_TAG) piece = MakeChessPiece(BishopWhite, _promotionPosition);
+                else piece = MakeChessPiece(BishopBlack, _promotionPosition);
+                break;
+        }
+        piece.Position = _promotionPosition; // *********Is this good VIEW logic???
+    }
+
+    private void SetPromotionPosition(Vector2 targetPosition)
+    {
+        _promotionPosition.x = targetPosition.x;
+        _promotionPosition.y = targetPosition.y;
+    }
 
     // Create board and place pieces
     private void SetupBoard()

@@ -1,9 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/PromotionMenu.uss?fileID=7433441132597879392&amp;guid=ac1b67003eccb7347bfbe5346fb10fbf&amp;type=3#PromotionMenu" />
-    <ui:VisualElement name="Panel" style="flex-grow: 1;">
-        <ui:Button text="Queen" parse-escape-sequences="true" display-tooltip-when-elided="true" class="Button" />
-        <ui:Button text="Knight" parse-escape-sequences="true" display-tooltip-when-elided="true" class="Button" />
-        <ui:Button text="Bishop" parse-escape-sequences="true" display-tooltip-when-elided="true" class="Button" />
-        <ui:Button text="Rook" parse-escape-sequences="true" display-tooltip-when-elided="true" class="Button" />
+    <Style src="project://database/Assets/Scripts/View/UI/PromotionMenu.uss?fileID=7433441132597879392&amp;guid=ac1b67003eccb7347bfbe5346fb10fbf&amp;type=3#PromotionMenu" />
+    <ui:VisualElement style="flex-grow: 1; left: 20%; top: 20%; right: 20%; bottom: 20%; position: absolute;">
+        <ui:Button text="Queen" parse-escape-sequences="true" display-tooltip-when-elided="true" name="QueenBtn" class="Button" />
+        <ui:Button text="Knight" parse-escape-sequences="true" display-tooltip-when-elided="true" name="KnightBtn" class="Button" />
+        <ui:Button text="Rook" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RookBtn" class="Button" />
+        <ui:Button text="Bishop" parse-escape-sequences="true" display-tooltip-when-elided="true" name="BishopBtn" class="Button" />
     </ui:VisualElement>
 </ui:UXML>

@@ -4,6 +4,15 @@ using UnityEngine;
 
 //  Model
 
+public enum Pieces
+    {
+        Queen,
+        Rook,
+        Bishop,
+        Knight,
+        Pawn
+    }
+
 public struct PossibleMove
 {
     public Vector2 TargetPosition;
@@ -58,18 +67,6 @@ public class GameController : MonoBehaviour
         _turnMoveCount = 0;
         TrackingHandler.OnTrackerReadyEvent += StartTurn;
         TrackingHandler.OnTrackerUpdatedEvent += ChangeTurn;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     private void ChangeTurn()

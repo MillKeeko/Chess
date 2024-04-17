@@ -1,6 +1,6 @@
 .Button {
-    width: 20%;
-    height: 10%;
+    width: 36%;
+    height: 24%;
     align-self: center;
     margin-top: 0;
 }

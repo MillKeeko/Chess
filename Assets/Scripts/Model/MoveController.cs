@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//  Model
+
 public class MoveController : MonoBehaviour
 {
     public static MoveController instance { get; private set; }
@@ -10,7 +12,6 @@ public class MoveController : MonoBehaviour
     public static event OnMove OnMoveEvent;
     public delegate void OnEnPassant(Piece piece, Vector2 targetPosition);
     public static event OnEnPassant OnEnPassantEvent;
-
 
     public static bool IsEnPassantPossible { get; private set; }
     public static Vector2 EnPassantTargetPosition { get; private set; }

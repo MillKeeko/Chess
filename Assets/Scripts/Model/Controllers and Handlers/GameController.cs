@@ -9,6 +9,7 @@ using UnityEngine;
 //      -   I have recreated this, seems to only happen when in check by a pawn.
 //  -   I've placed a pawn forward to the 6th rank and received a nullreferenceexception at UpdateTrackerEnPassant, the pawn stopped working
 //  -   I've gotten a stalemate when I checkmated the bot on the 8th rank with a rook on the 7th and a rook on the 8th
+//  -   Bot cannot promote itself, player has to choose it's promotion.
 
 public enum Pieces
 {
@@ -110,6 +111,7 @@ public class GameController : MonoBehaviour
         //  Game Over Logic
         if ( _turnMoveCount == 0)
         {
+            Debug.Log("Turn = " + Turn + " and in check? " + CheckHandler.IsInCheck);
             if (CheckHandler.IsInCheck)
             {
                 Debug.Log("Checkmate");

@@ -4,13 +4,6 @@ using UnityEngine;
 
 //  Model
 
-//  We have 1 move list, the possible bot move list, for this specific turn
-//  How does the bot decide which move is best? 
-//  -   Assign a value to the board. 
-//      -   Add all pieces' values + bonus for their position on the board
-//  -   Iterate all available moves and attach total value
-//  -   Make move which maximizes value
-
 public class BotController : MonoBehaviour
 {
     public delegate void OnTestBoardValue(Piece piece, Vector2 targetPosition);
@@ -26,8 +19,8 @@ public class BotController : MonoBehaviour
     private void MakeMove()
     {
         int maxBoardValue = 0;
-        PossibleMove bestMove = GameController.PossibleBotMovesList[0]; // initializing to first move
         int testBoardValue = 0;
+        List<PossibleMove> bestMoveList = new List<PossibleMove>();
                 
         foreach (PossibleMove move in GameController.PossibleBotMovesList)
         {
@@ -46,12 +39,15 @@ public class BotController : MonoBehaviour
                 }
             }
 
-            Debug.Log(testBoardValue);
-
             if (testBoardValue > maxBoardValue) 
             {
+                bestMoveList.Clear();
+                bestMoveList.Add(move);
                 maxBoardValue = testBoardValue;
-                bestMove = move;
+            }
+            else if (testBoardValue == maxBoardValue)
+            {
+                bestMoveList.Add(move);
             }
 
             testBoardValue = 0; // Reset test value
@@ -59,17 +55,31 @@ public class BotController : MonoBehaviour
             OnRevertTestBoardValueEvent?.Invoke(move.SelectedPiece, move.TargetPosition);
         }
 
-        MoveController.PrepareExecuteMove(bestMove.SelectedPiece, bestMove.TargetPosition);
+        Debug.Log("Black board value = " + maxBoardValue);
+
+        MakeRandomMove(bestMoveList);
     }   
 
-    //  Only using this from now on when MakeMove is not working and need to test something unrelated
-    private void MakeRandomMove()
+    //  Intended to replace MakeMove()
+    private void MakeBetterMove()
     {
-        int randomIndex = Random.Range(0, GameController.PossibleBotMovesList.Count);
-        PossibleMove move = GameController.PossibleBotMovesList[randomIndex];
+        
+    }
+
+    private void SearchMoves()
+    {
+        //  Generate Player response Moves
+    }
+
+    private void MakeRandomMove(List<PossibleMove> moveList)
+    {
+        int randomIndex = Random.Range(0, moveList.Count);
+        PossibleMove move = moveList[randomIndex];
+
+        Debug.Log("Best move list count = " + moveList.Count);
 
         Piece piece = move.SelectedPiece;
-        Vector3 targetPosition = new Vector3(move.TargetPosition.x, move.TargetPosition.y, Constants.PIECE_Z_INDEX);
+        Vector2 targetPosition = new Vector3(move.TargetPosition.x, move.TargetPosition.y);
 
         MoveController.PrepareExecuteMove(piece, targetPosition);
     }

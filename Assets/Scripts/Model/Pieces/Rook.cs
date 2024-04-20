@@ -6,6 +6,11 @@ using UnityEngine;
 
 public class Rook : Piece
 {
+    void Awake()
+    {
+        Value = 500;
+    }
+
     //
     //  Override Methods
     //

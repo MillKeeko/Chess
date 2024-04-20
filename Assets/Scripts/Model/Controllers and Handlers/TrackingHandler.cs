@@ -43,6 +43,11 @@ public class TrackingHandler : MonoBehaviour
 
         CheckHandler.OnTestRemoveCheckEvent += TestRemoveCheck;
         CheckHandler.OnRevertTestRemoveCheckEvent += RevertTestRemoveCheck;
+
+        //  Lets change this method name
+        //  I hesitate because I think changing pieceTracker is a mistake entirely and should be done in a separate test array
+        BotController.OnTestBoardValueEvent += TestRemoveCheck; 
+        BotController.OnRevertTestBoardValueEvent += RevertTestRemoveCheck;
     }
 
     private static bool IsPawnPromotion(Piece piece, Vector2 targetPosition)

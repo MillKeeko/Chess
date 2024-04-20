@@ -10,6 +10,7 @@ public class Pawn : Piece
 
     void Awake()
     {
+        Value = 100;
         SetForwardMove();
         GameController.AddDiagonalPawnAttacksEvent += AddDiagonalPawnAttacks;
     }

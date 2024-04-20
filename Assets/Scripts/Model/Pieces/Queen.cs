@@ -6,6 +6,12 @@ using UnityEngine;
 
 public class Queen : Piece
 {
+    void Awake()
+    {
+        Value = 900;
+    }
+
+
     //
     //  Override Methods
     //

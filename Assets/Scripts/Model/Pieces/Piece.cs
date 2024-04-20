@@ -8,6 +8,7 @@ public class Piece : MonoBehaviour
     public Vector2 Position;
     public List<PossibleMove> PossibleMovesList = new List<PossibleMove>();
     public bool FirstMove = true;
+    public int Value;
 
     public delegate void OnPieceCreated(Piece piece);
     public static event OnPieceCreated OnPieceCreatedEvent;

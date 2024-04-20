@@ -6,6 +6,11 @@ using UnityEngine;
 
 public class Knight : Piece
 {
+    void Awake()
+    {
+        Value = 300;
+    }
+
     //
     //  Override Methods
     //

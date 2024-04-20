@@ -73,11 +73,13 @@ public class MoveController : MonoBehaviour
             else
             {
                 IsEnPassantPossible = false;
+                EnPassantTargetPosition = new Vector2 (-1, -1);
             }
         }
         else 
         {
             IsEnPassantPossible = false;
+            EnPassantTargetPosition = new Vector2 (-1, -1);
         }
     }
 

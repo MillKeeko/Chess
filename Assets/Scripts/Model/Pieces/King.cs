@@ -6,6 +6,11 @@ using UnityEngine;
 
 public class King : Piece
 {
+    void Awake()
+    {
+        Value = 10000;
+    }
+
     //
     //  Override Methods
     //

@@ -4,14 +4,21 @@ using UnityEngine;
 
 //  Model
 
+//  Bugs
+//  -   Once I could have taken a pawn with a queen while in check by the pawn but it only let me take with the king
+//  -   Once I placed a pawn forward to the 6th rank and received a nullreferenceexception at UpdateTrackerEnPassant, the pawn stopped working
+//  -   Once I've gotten a stalemate when I checkmated the bot on the 8th rank with a rook on the 7th and a rook on the 8th
+//  -   Multiple times if I click multiple pieces the available moves for both pieces become highlighted.
+
 public enum Pieces
-    {
-        Queen,
-        Rook,
-        Bishop,
-        Knight,
-        Pawn
-    }
+{
+    King,
+    Queen,
+    Rook,
+    Bishop,
+    Knight,
+    Pawn
+}
 
 public struct PossibleMove
 {

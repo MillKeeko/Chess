@@ -45,6 +45,7 @@ public class InputHandler : MonoBehaviour
                 if (hit.collider.CompareTag(GameController.PlayerTag))
                 {
                     _selectedPiece = hit.collider.GetComponent<Piece>();
+                    SquareHighlighter.SetSquaresDefault();
                     SquareHighlighter.ShowMoveSquares(_selectedPiece);
                 }
                 //  Check player is trying to take a piece

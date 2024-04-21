@@ -6,14 +6,59 @@ using UnityEngine;
 
 public class BotController : MonoBehaviour
 {
-    public delegate void OnTestBoardValue(Piece piece, Vector2 targetPosition);
-    public static event OnTestBoardValue OnTestBoardValueEvent;
-    public delegate void OnRevertTestBoardValue(Piece piece, Vector2 targetPosition);
-    public static event OnRevertTestBoardValue OnRevertTestBoardValueEvent;
+    private Piece[,] _botPieceTracker;
+
+    private Piece _pieceRemovedTest = null;
 
     void Awake()
     {
+        _botPieceTracker = new Piece [8,8];
+
+        TrackingHandler.OnTrackerReadyEvent += SetupTracker;
+
+        MoveController.OnMoveEvent += UpdateTracker;
+
         GameController.OnBotMoveEvent += MakeMove;
+    }
+
+     private void RevertTestPosition(Piece piece, Vector2 targetPosition)
+    {
+        _botPieceTracker[(int)targetPosition.x, (int)targetPosition.y] = _pieceRemovedTest;
+        _botPieceTracker[(int)piece.Position.x, (int)piece.Position.y] = piece;
+        _pieceRemovedTest = null;
+        piece.BotTestPosition = piece.Position;
+    }
+
+    private void TestPosition(Piece piece, Vector2 targetPosition)
+    {
+        _botPieceTracker[(int)piece.Position.x, (int)piece.Position.y] = null;
+        _pieceRemovedTest = _botPieceTracker[(int)targetPosition.x, (int)targetPosition.y];
+        _botPieceTracker[(int)targetPosition.x, (int)targetPosition.y] = piece;
+        piece.BotTestPosition = targetPosition;
+    }
+
+    private void UpdateTracker(Piece piece, Vector2 targetPosition)
+    {
+        _botPieceTracker[(int)piece.Position.x, (int)piece.Position.y] = null;
+        _botPieceTracker[(int)targetPosition.x, (int)targetPosition.y] = piece;
+        piece.BotTestPosition = targetPosition;
+    }
+
+    private void SetupTracker()
+    {
+        for (int rank = 0; rank < 8; rank++)
+        {
+            for (int file = 0; file < 8; file++)
+            {
+                Vector2 targetPosition = new Vector2(rank, file);
+                _botPieceTracker[rank,file] = TrackingHandler.pieceTracker[rank,file];
+
+                if (_botPieceTracker[rank,file] != null)
+                {
+                    _botPieceTracker[rank,file].BotTestPosition = targetPosition;
+                }
+            }
+        }
     }
 
     private void MakeMove()
@@ -24,17 +69,17 @@ public class BotController : MonoBehaviour
                 
         foreach (PossibleMove move in GameController.PossibleBotMovesList)
         {
-            OnTestBoardValueEvent?.Invoke(move.SelectedPiece, move.TargetPosition);
+            TestPosition(move.SelectedPiece, move.TargetPosition);
 
-            for (int row = 0; row < 8; row++)
+            for (int rank = 0; rank < 8; rank++)
             {
-                for (int col = 0; col < 8; col++)
+                for (int file = 0; file < 8; file++)
                 {
-                    Piece piece = TrackingHandler.pieceTracker[row, col];
+                    Piece piece = _botPieceTracker[rank, file];
                     if (piece != null && piece.CompareTag(GameController.BotTag))
                     {
                         testBoardValue += piece.Value;
-                        testBoardValue += PieceBonuses.GetPieceBonus(piece, row, col);
+                        testBoardValue += PieceBonuses.GetPieceBonus(piece, rank, file);
                     }
                 }
             }
@@ -52,10 +97,10 @@ public class BotController : MonoBehaviour
 
             testBoardValue = 0; // Reset test value
 
-            OnRevertTestBoardValueEvent?.Invoke(move.SelectedPiece, move.TargetPosition);
+            RevertTestPosition(move.SelectedPiece, move.TargetPosition);
         }
 
-        Debug.Log("Black board value = " + maxBoardValue);
+        Debug.Log("Bot board value = " + maxBoardValue);
 
         MakeRandomMove(bestMoveList);
     }   
@@ -63,7 +108,7 @@ public class BotController : MonoBehaviour
     //  Intended to replace MakeMove()
     private void MakeBetterMove()
     {
-        
+
     }
 
     private void SearchMoves()

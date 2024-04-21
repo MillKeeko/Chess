@@ -6,6 +6,7 @@ using UnityEngine;
 public class Piece : MonoBehaviour
 {
     public Vector2 Position;
+    public Vector2 BotTestPosition;
     public List<PossibleMove> PossibleMovesList = new List<PossibleMove>();
     public bool FirstMove = true;
     public int Value;

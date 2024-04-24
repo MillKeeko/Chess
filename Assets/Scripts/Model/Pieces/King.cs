@@ -15,11 +15,11 @@ public class King : Piece
     //  Override Methods
     //
 
-    public override bool IsBasicMoveValid(Vector2 targetPosition)
+    public override bool IsBasicMoveValid(Piece[,] boardPosition, Vector2 targetPosition)
     {
         bool returnBool = false;
-        if (IsValidKingMove(targetPosition) ||
-            IsValidCastleMove(targetPosition))
+        if (IsValidKingMove(boardPosition, targetPosition) ||
+            IsValidCastleMove(boardPosition, targetPosition))
         {
             returnBool = true;
         }
@@ -30,7 +30,7 @@ public class King : Piece
     //  Private Methods
     //
 
-    private bool IsValidCastleMove(Vector2 targetPosition)
+    private bool IsValidCastleMove(Piece[,] boardPosition, Vector2 targetPosition)
     {
         bool returnBool = false;
         Piece rook;
@@ -70,18 +70,18 @@ public class King : Piece
             this.CompareTag(GameController.Turn))
         {
             if ((int)targetPosition.x == (int)(Position.x + kingSideOffset) &&
-                !IsCastleBlocked(kingSideOffset, 0))
+                !IsCastleBlocked(boardPosition, kingSideOffset, 0))
             {
-                rook = TrackingHandler.pieceTracker[kingSideRookFile,rank];
+                rook = boardPosition[kingSideRookFile,rank];
                 if (rook != null && rook.FirstMove && rook is Rook)
                 {
                     returnBool = true;
                 }
             }
             else if ((int)targetPosition.x == (int)(Position.x + queenSideOffset) &&
-                     !IsCastleBlocked(queenSideOffset, 1))
+                     !IsCastleBlocked(boardPosition, queenSideOffset, 1))
             {
-                rook = TrackingHandler.pieceTracker[queenSideRookFile,rank];
+                rook = boardPosition[queenSideRookFile,rank];
                 if (rook != null && rook.FirstMove && rook is Rook)
                 {
                     returnBool = true;
@@ -94,7 +94,7 @@ public class King : Piece
 
     //  Offset is either -2 or 2
     //  int side: 0 = kingSide, 1 = queenSide 
-    private bool IsCastleBlocked(int offset, int side)
+    private bool IsCastleBlocked(Piece[,] boardPosition, int offset, int side)
     {
         bool returnBool = false;
         int halfOffset = offset/2;
@@ -106,8 +106,8 @@ public class King : Piece
         {
             if ((move.TargetPosition.x == positionOne.x && move.TargetPosition.y == positionOne.y) ||
                 (move.TargetPosition.x == positionTwo.x && move.TargetPosition.y == positionTwo.y) ||
-                TrackingHandler.pieceTracker[(int)positionOne.x, (int)positionTwo.y] != null ||
-                TrackingHandler.pieceTracker[(int)positionTwo.x, (int)positionTwo.y] != null)
+                boardPosition[(int)positionOne.x, (int)positionTwo.y] != null ||
+                boardPosition[(int)positionTwo.x, (int)positionTwo.y] != null)
             {
                 returnBool = true;
                 break;
@@ -115,7 +115,7 @@ public class King : Piece
             else if (side == 1)
             {
                 if (move.TargetPosition.x == positionThree.x && move.TargetPosition.y == positionThree.y ||
-                    TrackingHandler.pieceTracker[(int)positionThree.x, (int)positionThree.y] != null)
+                    boardPosition[(int)positionThree.x, (int)positionThree.y] != null)
                 {
                     returnBool = true;
                     break;
@@ -126,14 +126,14 @@ public class King : Piece
         return returnBool;
     }
 
-    //  Take vector2 representing move target location in TrackingHandler.pieceTracker
+    //  Take vector2 representing move target location in boardPosition
     //  Returns bool if given position of piece, the move follows the rules
-    private bool IsValidKingMove(Vector2 targetPosition)
+    private bool IsValidKingMove(Piece[,] boardPosition, Vector2 targetPosition)
     {
         bool returnBool = false;
         int targetX = (int)targetPosition.x;
         int targetY = (int)targetPosition.y;
-        Piece target = TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
+        Piece target = boardPosition[(int)targetPosition.x, (int)targetPosition.y];
 
         if (target != null && target.CompareTag(this.tag))
         {

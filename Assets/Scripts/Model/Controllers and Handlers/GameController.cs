@@ -10,6 +10,7 @@ using UnityEngine;
 //  -   I've placed a pawn forward to the 6th rank and received a nullreferenceexception at UpdateTrackerEnPassant, the pawn stopped working
 //  -   I've gotten a stalemate when I checkmated the bot on the 8th rank with a rook on the 7th and a rook on the 8th
 //  -   Bot cannot promote itself, player has to choose it's promotion.
+//  -   When bot castles queenside it will put the king in the B file. Not sure about Kingside yet. Doesn't happen for player.
 
 public enum Pieces
 {
@@ -111,35 +112,40 @@ public class GameController : MonoBehaviour
         //  Game Over Logic
         if ( _turnMoveCount == 0)
         {
-            Debug.Log("Turn = " + Turn + " and in check? " + CheckHandler.IsInCheck);
-            if (CheckHandler.IsInCheck)
-            {
-                Debug.Log("Checkmate");
-            }
-            else 
-            {
-                Debug.Log("Stalemate");
-            }
+            GameOver();
         }
         else
         {
-            //  Trigger bot move if bot's turn
+            //  Trigger bot move if bot's turn, else do nothing just wait for player move
             if (Turn == BotTag) OnBotMoveEvent?.Invoke();
         }
     }
+
+    private void GameOver()
+    {
+        Debug.Log("Turn = " + Turn + " and in check? " + CheckHandler.IsInCheck);
+        if (CheckHandler.IsInCheck)
+        {
+            Debug.Log("Checkmate");
+        }
+        else 
+        {
+            Debug.Log("Stalemate");
+        }
+    }   
 
     private void CreateTurnMoveList()
     {
         if (Turn == BotTag) 
         {
             PossibleBotMovesList.Clear();
-            PossibleBotMovesList = CompilePossibleMoves(BotTag);
+            PossibleBotMovesList = MoveGenerator.CompilePossibleMoves(TrackingHandler.pieceTracker, BotTag);
             _turnMoveCount = PossibleBotMovesList.Count;
         }
         else 
         {
             PossiblePlayerMovesList.Clear();
-            PossiblePlayerMovesList = CompilePossibleMoves(PlayerTag);
+            PossiblePlayerMovesList = MoveGenerator.CompilePossibleMoves(TrackingHandler.pieceTracker, PlayerTag);
             _turnMoveCount = PossiblePlayerMovesList.Count;
         }
     }
@@ -149,12 +155,12 @@ public class GameController : MonoBehaviour
         if (Turn == BotTag) 
         {
             PossiblePlayerMovesList.Clear();
-            PossiblePlayerMovesList = CompilePossibleMoves(PlayerTag);
+            PossiblePlayerMovesList = MoveGenerator.CompilePossibleMoves(TrackingHandler.pieceTracker, PlayerTag);
         }
         else 
         {
             PossibleBotMovesList.Clear();
-            PossibleBotMovesList = CompilePossibleMoves(BotTag);
+            PossibleBotMovesList = MoveGenerator.CompilePossibleMoves(TrackingHandler.pieceTracker, BotTag);
         }
         CreateEnemyAttackList();
     }
@@ -196,8 +202,8 @@ public class GameController : MonoBehaviour
     {
         PossibleBotMovesList.Clear();
         PossiblePlayerMovesList.Clear();
-        PossibleBotMovesList = CompilePossibleMoves(BotTag);
-        PossiblePlayerMovesList = CompilePossibleMoves(PlayerTag);
+        PossibleBotMovesList = MoveGenerator.CompilePossibleMoves(TrackingHandler.pieceTracker, BotTag);
+        PossiblePlayerMovesList = MoveGenerator.CompilePossibleMoves(TrackingHandler.pieceTracker, PlayerTag);
     }
 
     private void RandomTeams()
@@ -215,40 +221,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public static List<PossibleMove> CompilePossibleMoves(string tag)
-    {
-        List<Piece> pieceList = GeneratePieceList(tag);
-        List<PossibleMove> possibleMoveList = new List<PossibleMove>();
-
-        foreach (Piece piece in pieceList)
-        {
-            piece.GeneratePossibleMoves();
-            possibleMoveList.AddRange(piece.PossibleMovesList);
-        }
-
-        //Debug.Log("PossibleMove count " + possibleMoveList.Count);
-        return possibleMoveList;
-    }
-
-    public static List<Piece> GeneratePieceList(string tag)
-    {
-        List<Piece> pieceList = new List<Piece>();
-
-        for (int rank = 0; rank < 8; rank++)
-        {
-            for (int file = 0; file < 8; file++)
-            {
-                Piece piece = TrackingHandler.pieceTracker[rank, file];
-                if (piece != null && piece.CompareTag(tag))
-                {
-                    pieceList.Add(piece);
-                }
-            }
-        }
-
-        //Debug.Log("Piece list count " + pieceList.Count);
-        return pieceList;
-    } 
+    
 
     public static string GetEnemyTag()
     {

@@ -37,7 +37,7 @@ public class Piece : MonoBehaviour
 
     //  Evaluates all 64 tiles and determines which are possible moves for this piece
     //  Adds each move to the possibleMovesList
-    public void GeneratePossibleMoves()
+    public void GeneratePossibleMoves(Piece[,] boardPosition)
     {
         Vector2 targetPosition;
         PossibleMovesList.Clear();
@@ -47,7 +47,7 @@ public class Piece : MonoBehaviour
             for (int y = 0; y < 8; y++)
             {
                 targetPosition = new Vector2(x, y);
-                if (IsBasicMoveValid(targetPosition))
+                if (IsBasicMoveValid(boardPosition, targetPosition))
                 {
                     if (this.CompareTag(GameController.Turn))
                     {
@@ -76,7 +76,7 @@ public class Piece : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public virtual bool IsBasicMoveValid(Vector2 targetPosition)
+    public virtual bool IsBasicMoveValid(Piece[,] boardPosition, Vector2 targetPosition)
     {
         return false;
     }
@@ -85,7 +85,7 @@ public class Piece : MonoBehaviour
     //  Protected Methods
     //
 
-    protected bool IsRangeMoveBlocked(Vector2 targetPosition)
+    protected bool IsRangeMoveBlocked(Piece[,] boardPosition, Vector2 targetPosition)
     {
         bool blockingBool = false;
 
@@ -95,7 +95,7 @@ public class Piece : MonoBehaviour
         {
             Vector2 blockPosition = new Vector2((Position.x + (moveUnitVector.x * i)), 
                                                 (Position.y + (moveUnitVector.y * i)));
-            if (TrackingHandler.pieceTracker[(int)blockPosition.x,(int)blockPosition.y] != null) 
+            if (boardPosition[(int)blockPosition.x,(int)blockPosition.y] != null) 
             {
                 blockingBool = true;
             }

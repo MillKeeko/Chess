@@ -15,10 +15,10 @@ public class Bishop : Piece
     //  Override Methods
     //
 
-    public override bool IsBasicMoveValid(Vector2 targetPosition)
+    public override bool IsBasicMoveValid(Piece[,] boardPosition, Vector2 targetPosition)
     {
         bool returnBool = false;
-        if (IsValidBishopMove(targetPosition))
+        if (IsValidBishopMove(boardPosition, targetPosition))
         {
             returnBool = true;
         }
@@ -31,16 +31,16 @@ public class Bishop : Piece
 
     //  Take vector2 representing move target location in TrackingHandler.pieceTracker
     //  Returns bool if given position of piece, the move follows the rules
-    private bool IsValidBishopMove(Vector2 targetPosition)
+    private bool IsValidBishopMove(Piece[,] boardPosition, Vector2 targetPosition)
     {
         bool returnBool = false;
-        Piece target = TrackingHandler.pieceTracker[(int)targetPosition.x, (int)targetPosition.y];
+        Piece target = boardPosition[(int)targetPosition.x, (int)targetPosition.y];
 
         // if the difference between the x == the difference between the y, or the negative of that difference
         if ((targetPosition.x - transform.position.x == targetPosition.y - transform.position.y ||
             targetPosition.x - transform.position.x == -1 * (targetPosition.y - transform.position.y)) &&
             (target == null || !target.CompareTag(this.tag)) &&
-            !IsRangeMoveBlocked(targetPosition))
+            !IsRangeMoveBlocked(boardPosition, targetPosition))
         {
             returnBool = true;
         }

@@ -36,7 +36,7 @@ public class CheckHandler : MonoBehaviour
         bool returnBool = false;
         OnTestRemoveCheckEvent?.Invoke(piece, targetPosition);
 
-        GameController.GenerateEnemyAttackList();
+        MoveGenerator.GenerateEnemyAttackList();
         returnBool = !IsKingInCheck();
         
         OnRevertTestRemoveCheckEvent?.Invoke(piece, targetPosition);
@@ -50,7 +50,7 @@ public class CheckHandler : MonoBehaviour
         bool returnBool = false;
         Vector2 kingPosition = FindKing();
         
-        foreach (PossibleMove attack in GameController.PossibleEnemyAttackList)
+        foreach (PossibleMove attack in MoveGenerator.PossibleEnemyAttackList)
         {
             if ((int)attack.TargetPosition.x == (int)kingPosition.x && 
                 (int)attack.TargetPosition.y == (int)kingPosition.y)

@@ -102,7 +102,7 @@ public class King : Piece
         Vector2 positionTwo = new Vector2(this.Position.x + offset, this.Position.y);
         Vector2 positionThree = new Vector2(this.Position.x + offset + halfOffset, this.Position.y);
 
-        foreach (PossibleMove move in GameController.PossibleEnemyAttackList)
+        foreach (PossibleMove move in MoveGenerator.PossibleEnemyAttackList)
         {
             if ((move.TargetPosition.x == positionOne.x && move.TargetPosition.y == positionOne.y) ||
                 (move.TargetPosition.x == positionTwo.x && move.TargetPosition.y == positionTwo.y) ||

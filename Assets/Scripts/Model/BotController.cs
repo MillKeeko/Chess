@@ -67,7 +67,7 @@ public class BotController : MonoBehaviour
         int testBoardValue = 0;
         List<PossibleMove> bestMoveList = new List<PossibleMove>();
                 
-        foreach (PossibleMove move in GameController.PossibleBotMovesList)
+        foreach (PossibleMove move in MoveGenerator.PossibleBotMovesList)
         {
             TestPosition(move.SelectedPiece, move.TargetPosition);
 
@@ -100,7 +100,7 @@ public class BotController : MonoBehaviour
             RevertTestPosition(move.SelectedPiece, move.TargetPosition);
         }
 
-        Debug.Log("Bot board value = " + maxBoardValue);
+        //Debug.Log("Bot board value = " + maxBoardValue);
 
         MakeRandomMove(bestMoveList);
     }   
@@ -121,7 +121,7 @@ public class BotController : MonoBehaviour
         int randomIndex = Random.Range(0, moveList.Count);
         PossibleMove move = moveList[randomIndex];
 
-        Debug.Log("Best move list count = " + moveList.Count);
+        //Debug.Log("Best move list count = " + moveList.Count);
 
         Piece piece = move.SelectedPiece;
         Vector2 targetPosition = new Vector3(move.TargetPosition.x, move.TargetPosition.y);

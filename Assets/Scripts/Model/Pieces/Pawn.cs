@@ -12,7 +12,7 @@ public class Pawn : Piece
     {
         Value = 100;
         SetForwardMove();
-        GameController.AddDiagonalPawnAttacksEvent += AddDiagonalPawnAttacks;
+        MoveGenerator.AddDiagonalPawnAttacksEvent += AddDiagonalPawnAttacks;
     }
 
     //
@@ -34,7 +34,7 @@ public class Pawn : Piece
 
     public override void DestroyPiece()
     {
-        GameController.AddDiagonalPawnAttacksEvent -= AddDiagonalPawnAttacks;
+        MoveGenerator.AddDiagonalPawnAttacksEvent -= AddDiagonalPawnAttacks;
         Destroy(gameObject);
     }
 
@@ -141,17 +141,17 @@ public class Pawn : Piece
             targetPosition = new Vector2 (Position.x + 1, Position.y + (_forwardMove));
             attack = new PossibleMove(targetPosition, this);
 
-            if (!GameController.PossibleEnemyAttackList.Contains(attack))
+            if (!MoveGenerator.PossibleEnemyAttackList.Contains(attack))
             {
-                GameController.PossibleEnemyAttackList.Add(attack);
+                MoveGenerator.PossibleEnemyAttackList.Add(attack);
             }
 
             targetPosition = new Vector2 (Position.x - 1, Position.y + (_forwardMove));
             attack = new PossibleMove(targetPosition, this);
 
-            if (!GameController.PossibleEnemyAttackList.Contains(attack))
+            if (!MoveGenerator.PossibleEnemyAttackList.Contains(attack))
             {
-                GameController.PossibleEnemyAttackList.Add(attack);
+                MoveGenerator.PossibleEnemyAttackList.Add(attack);
             }
         } 
     }
